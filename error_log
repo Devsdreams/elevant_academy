@@ -1,0 +1,1 @@
+[31-Jul-2024 01:36:05 America/Boise] PHP Fatal error:  Can't use function return value in write context in /home1/gitalds0/public_html/dacademycom/application/views/backend/admin/about.php on line 64
