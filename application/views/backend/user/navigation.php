@@ -69,6 +69,12 @@ $status_wise_courses = $this->crud_model->get_status_wise_courses();
 						<span><?php echo get_phrase('payout_settings'); ?></span>
 					</a>
 				</li>
+				<li class="side-nav-item">
+					<a href="<?php echo site_url('user/affiliates'); ?>" class="side-nav-link <?php if ($page_name == 'affiliates') echo 'active'; ?>">
+						<i class="dripicons-network-1"></i>
+						<span><?php echo get_phrase('manage_affiliates'); ?></span>
+					</a>
+				</li>
 			<?php else : ?>
 				<li class="side-nav-item">
 					<a href="<?php echo site_url('user/become_an_instructor'); ?>" class="side-nav-link <?php if ($page_name == 'become_an_instructor') echo 'active'; ?>">

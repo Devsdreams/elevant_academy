@@ -303,6 +303,25 @@ $status_wise_courses = $this->crud_model->get_status_wise_courses();
 			</li>
 		<?php endif; ?>
 
+		<li class="side-nav-item <?php if ($page_name == 'affiliates' || $page_name == 'affiliates_manual' || $page_name == 'affiliates_approval') : ?> active <?php endif; ?>">
+			<a href="javascript: void(0);" class="side-nav-link <?php if ($page_name == 'affiliates' || $page_name == 'affiliates_manual' || $page_name == 'affiliates_approval') : ?> active <?php endif; ?>">
+				<i class="mdi mdi-account-multiple"></i>
+				<span><?php echo get_phrase('affiliates'); ?></span>
+				<span class="menu-arrow"></span>
+			</a>
+			<ul class="side-nav-second-level" aria-expanded="false">
+				<li class="<?php if ($page_name == 'affiliates') echo 'active'; ?>">
+					<a href="<?php echo site_url('admin/affiliates'); ?>"><?php echo get_phrase('manage_affiliates'); ?></a>
+				</li>
+				<li class="<?php if ($page_name == 'affiliates_manual') echo 'active'; ?>">
+					<a href="<?php echo site_url('admin/affiliates_manual'); ?>"><?php echo get_phrase('register_affiliate_manually'); ?></a>
+				</li>
+				<li class="<?php if ($page_name == 'affiliates_approval') echo 'active'; ?>">
+					<a href="<?php echo site_url('admin/affiliates_approval'); ?>"><?php echo get_phrase('approve_affiliates'); ?></a>
+				</li>
+			</ul>
+		</li>
+
 		<?php if (addon_status('offline_payment')) : ?>
 			<li class="side-nav-item">
 				<a href="javascript: void(0);" class="side-nav-link <?php if ($page_name == 'offline_payment_pending' || $page_name == 'offline_payment_approve' || $page_name == 'offline_payment_suspended') : ?> active <?php endif; ?>">

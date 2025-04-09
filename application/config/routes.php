@@ -86,4 +86,13 @@ $route['blogs/(:any)'] = "blog/blogs/$1";
 $route['page/(:any)'] = "page/index/$1";
 //End Custom page
 
+$route['admin/affiliates_manual'] = 'admin/affiliates_manual';
+$route['admin/affiliates_approval'] = 'admin/affiliates_approval';
+$route['admin/affiliates/delete/(:num)'] = 'admin/delete_affiliate/$1';
+
+$route['user/affiliates'] = 'user/affiliates';
+$route['user/affiliates_manual'] = 'user/affiliates_manual';
+$route['user/affiliates_approval'] = 'user/affiliates_approval';
+$route['user/affiliates/delete/(:num)'] = 'user/delete_affiliate/$1';
+
 $route['translate_uri_dashes'] = FALSE;

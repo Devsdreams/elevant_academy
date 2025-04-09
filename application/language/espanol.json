@@ -1040,5 +1040,13 @@
     "expiry_date": "Expiry date",
     "coupon_added_successfully": "Coupon added successfully",
     "ingresos_administrativos": "Ingresos administrativos",
-    "ingresos_de_los_instructores": "Ingresos de los instructores"
+    "ingresos_de_los_instructores": "Ingresos de los instructores",
+    "manage_affiliates": "Manage affiliates",
+    "affiliates": "Affiliates",
+    "add_affiliate": "Add affiliate",
+    "affiliates_list": "Affiliates list",
+    "full_name": "Full name",
+    "options": "Options",
+    "approve": "Approve",
+    "disapprove": "Disapprove"
 }

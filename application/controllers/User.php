@@ -874,24 +874,111 @@ class User extends CI_Controller
         echo json_encode($response);
     }
 
+    public function affiliates() {
+        $this->load->model('Affiliate_model');
+        $this->load->model('crud_model'); // Asegúrate de cargar el modelo para obtener los cursos
 
+        $affiliates = $this->Affiliate_model->get_all_affiliates();
 
+        // Agregar el nombre del curso a cada afiliado
+        foreach ($affiliates as &$affiliate) {
+            if (!empty($affiliate['course_id'])) {
+                $course = $this->crud_model->get_course_by_id($affiliate['course_id'])->row_array();
+                $affiliate['course_name'] = $course ? $course['title'] : get_phrase('no_course_assigned');
+            } else {
+                $affiliate['course_name'] = get_phrase('no_course_assigned');
+            }
+        }
 
+        $data['affiliates'] = $affiliates;
+        $data['page_name'] = 'affiliates';
+        $data['page_title'] = get_phrase('manage_affiliates');
+        $this->load->view('backend/index', $data);
+    }
 
+    public function affiliates_manual() {
+        if ($this->session->userdata('user_login') != true) {
+            redirect(site_url('login'), 'refresh');
+        }
 
+        // Obtener los cursos del instructor autenticado
+        $this->load->model('crud_model');
+        $data['courses'] = $this->crud_model->get_status_wise_courses_for_instructor('active')->result_array();
 
+        $data['page_name'] = 'affiliates_manual';
+        $data['page_title'] = get_phrase('register_affiliate_manually');
+        $this->load->view('backend/index', $data);
+    }
 
+    public function affiliates_approval() {
+        $this->load->model('Affiliate_model');
+        $data['affiliates'] = $this->Affiliate_model->get_pending_affiliates();
+        $data['courses'] = $this->Affiliate_model->get_all_courses();
+        $data['page_name'] = 'affiliates_approval';
+        $data['page_title'] = get_phrase('register_affiliates_for_approval');
+        $this->load->view('backend/index', $data);
+    }
 
+    public function save_affiliate_manual() {
+        $course_id = $this->input->post('course_id');
+        $courses = $this->crud_model->get_status_wise_courses_for_instructor('active')->result_array();
+        $valid_course_ids = array_column($courses, 'id');
 
+        if (!in_array($course_id, $valid_course_ids)) {
+            $this->session->set_flashdata('error_message', get_phrase('invalid_course_selected'));
+            redirect(site_url('user/affiliates_manual'));
+        }
 
+        $this->load->library('form_validation');
 
+        $this->form_validation->set_rules('name', get_phrase('full_name'), 'required|regex_match[/^[a-zA-Z\s]+$/]');
+        $this->form_validation->set_rules('email', get_phrase('email'), 'required|valid_email');
+        $this->form_validation->set_rules('course_id', get_phrase('course_id'), 'required');
+        $this->form_validation->set_rules('payment_method', get_phrase('payment_method'), 'regex_match[/^[a-zA-Z\s]+$/]');
+        $this->form_validation->set_rules('payment_identifier', get_phrase('payment_identifier'), 'max_length[255]');
+        $this->form_validation->set_rules('custom_commission', get_phrase('custom_commission'), 'numeric|greater_than_equal_to[0]|less_than_equal_to[100]');
 
+        if ($this->form_validation->run() == FALSE) {
+            $this->session->set_flashdata('error_message', validation_errors());
+            redirect(site_url('user/affiliates'));
+        } else {
+            $unique_code = strtoupper(substr(md5(uniqid(rand(), true)), 0, 4)) . strtoupper(substr(md5(uniqid(rand(), true)), 0, 2));
+            $data = [
+                'full_name' => $this->input->post('name'),
+                'email' => $this->input->post('email'),
+                'course_id' => $this->input->post('course_id'),
+                'unique_code' => $unique_code,
+                'payment_method' => $this->input->post('payment_method'),
+                'payment_identifier' => $this->input->post('payment_identifier'),
+                'custom_commission' => $this->input->post('custom_commission'),
+                'status' => 'inactive',
+                'registration_date' => date('Y-m-d H:i:s')
+            ];
+            $this->load->model('Affiliate_model');
+            $this->Affiliate_model->save_affiliate($data);
+            $this->session->set_flashdata('flash_message', get_phrase('affiliate_registered_successfully'));
+            redirect(site_url('user/affiliates'));
+        }
+    }
 
+    public function approve_affiliate($affiliate_id) {
+        $this->load->model('Affiliate_model');
+        $this->Affiliate_model->update_affiliate_status($affiliate_id, 'active');
+        $this->session->set_flashdata('flash_message', get_phrase('affiliate_approved_successfully'));
+        redirect(site_url('user/affiliates'));
+    }
 
+    public function reject_affiliate($affiliate_id) {
+        $this->load->model('Affiliate_model');
+        $this->Affiliate_model->update_affiliate_status($affiliate_id, 'inactive');
+        $this->session->set_flashdata('flash_message', get_phrase('affiliate_rejected_successfully'));
+        redirect(site_url('user/affiliates'));
+    }
 
-
-
-
-
-
+    public function delete_affiliate($affiliate_id) {
+        $this->load->model('Affiliate_model');
+        $this->Affiliate_model->delete_affiliate($affiliate_id);
+        $this->session->set_flashdata('flash_message', get_phrase('affiliate_deleted_successfully'));
+        redirect(site_url('user/affiliates'));
+    }
 }

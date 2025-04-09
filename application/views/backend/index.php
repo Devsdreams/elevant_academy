@@ -36,6 +36,7 @@
     <!-- all the js files -->
     <?php include 'includes_bottom.php'; ?>
     <?php include 'modal.php'; ?>
+    <?php include 'modal_add_affiliate.php'; ?>
     <?php include 'common_scripts.php'; ?>
 </body>
 </html>
