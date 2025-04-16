@@ -702,34 +702,41 @@ $instructor_details = $this->user_model->get_all_user($course_details['user_id']
   }
 
   function handleBuyNow(elem) {
-
-    url1 = '<?php echo site_url('home/handleCartItemForBuyNowButton'); ?>';
-    url2 = '<?php echo site_url('home/refreshWishList'); ?>';
-    urlToRedirect = '<?php echo site_url('home/shopping_cart'); ?>';
+    var url1 = '<?php echo site_url('home/handleCartItemForBuyNowButton'); ?>';
+    var url2 = '<?php echo site_url('home/refreshWishList'); ?>';
+    var urlToRedirect = '<?php echo site_url('home/shopping_cart'); ?>';
     var explodedArray = elem.id.split("_");
     var course_id = explodedArray[1];
 
+    // Verificar si la URL actual contiene el parámetro "ref"
+    var currentUrl = window.location.href;
+    var refParam = '';
+    if (currentUrl.includes('?ref=')) {
+        refParam = currentUrl.split('?ref=')[1].split('&')[0]; // Extraer el valor de "ref"
+        urlToRedirect += '?ref=' + refParam; // Agregar "ref" a la URL de redirección
+    }
+
     $.ajax({
-      url: url1,
-      type: 'POST',
-      data: {
-        course_id: course_id
-      },
-      success: function(response) {
-        $('#cart_items').html(response);
-        $.ajax({
-          url: url2,
-          type: 'POST',
-          success: function(response) {
-            $('#wishlist_items').html(response);
-            toastr.success('<?php echo site_phrase('please_wait') . '....'; ?>');
-            setTimeout(
-              function() {
-                window.location.replace(urlToRedirect);
-              }, 1000);
-          }
-        });
-      }
+        url: url1,
+        type: 'POST',
+        data: {
+            course_id: course_id
+        },
+        success: function(response) {
+            $('#cart_items').html(response);
+            $.ajax({
+                url: url2,
+                type: 'POST',
+                success: function(response) {
+                    $('#wishlist_items').html(response);
+                    toastr.success('<?php echo site_phrase('please_wait') . '....'; ?>');
+                    setTimeout(
+                        function() {
+                            window.location.replace(urlToRedirect);
+                        }, 1000);
+                }
+            });
+        }
     });
   }
 
