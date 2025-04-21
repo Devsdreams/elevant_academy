@@ -9,21 +9,27 @@ class Affiliate_model extends CI_Model {
         $this->db->insert('affiliate', $data);
         $affiliate_id = $this->db->insert_id();
 
-        // Generar un enlace de afiliado para un curso de ejemplo
-        $this->generate_affiliate_link($affiliate_id, 1); // 1 es un ID de curso de ejemplo
+        // Generar el enlace de afiliado con el curso seleccionado
+        if (isset($data['course_id'])) {
+            $this->generate_affiliate_link($affiliate_id, $data['course_id']);
+        }
     }
 
     public function generate_affiliate_link($affiliate_id, $course_id) {
-        // Obtener el nombre completo del afiliado
+        // Obtener los datos del afiliado
         $affiliate = $this->db->get_where('affiliate', ['affiliate_id' => $affiliate_id])->row_array();
         $full_name = isset($affiliate['full_name']) ? $affiliate['full_name'] : 'user' . $affiliate_id;
-    
+
         // Formatear el nombre para que sea válido en la URL
         $formatted_name = strtolower(str_replace(' ', '_', $full_name));
-    
-        // Generar el enlace con el parámetro ?ref=usuario123
-        $generated_url = base_url("course/$course_id?ref=$formatted_name");
-    
+
+        // Obtener los detalles del curso
+        $course = $this->db->get_where('course', ['id' => $course_id])->row_array();
+        $course_slug = isset($course['title']) ? slugify($course['title']) : 'course';
+
+        // Generar el enlace con el parámetro ?ref=nombre_afiliado
+        $generated_url = base_url("home/course/$course_slug/$course_id?ref=$formatted_name");
+
         // Guardar los datos en la tabla affiliate_link
         $link_data = [
             'affiliate_id' => $affiliate_id,
@@ -32,7 +38,7 @@ class Affiliate_model extends CI_Model {
             'generated_url' => $generated_url,
             'status' => 'active'
         ];
-    
+
         $this->db->insert('affiliate_link', $link_data);
     }
 
