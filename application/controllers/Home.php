@@ -145,18 +145,44 @@ class Home extends CI_Controller
 
     public function course($slug = "", $course_id = "")
     {
-        //course_addon start
+        $ref = $this->input->get('ref'); // Captura el parámetro 'ref' de la URL
+        
+        if ($ref) {
+            // Convertir el ref a su forma original
+            $full_name = ucwords(str_replace('_', ' ', $ref));
+            
+            // Buscar al afiliado por su full_name
+            $affiliate = $this->db->get_where('affiliate', ['full_name' => $full_name])->row_array();
+            
+            if ($affiliate) {
+                
+                // Verifica si existe un enlace activo para el afiliado y el curso
+                $affiliate_link = $this->db->get_where('affiliate_link', [
+                    'affiliate_id' => $affiliate['affiliate_id'], // Usa el affiliate_id obtenido previamente
+                    'course_id' => $course_id,
+                    'status' => 'active'
+                ])->row_array();
+                /* var_dump($affiliate_link); */
+                if ($affiliate_link) {
+                    /* var_dump($affiliate_link); */
+                    // Registra el clic en la tabla 'click' usando el método local
+                    $user_ip = $this->input->ip_address();
+                    $user_agent = $this->input->user_agent();
+                    $country = $this->get_user_country($user_ip); // Método para obtener el país basado en la IP
+                    $this->register_click($affiliate_link['link_id'], $user_ip, $user_agent, $country);
+                }
+            }
+        }
 
-
+        // Lógica existente (no se elimina)
         if (addon_status('affiliate_course')) {
             if (isset($_GET['ref'])) {
                 $CI    = &get_instance();
                 $CI->load->model('addons/affiliate_course_model');
                 $affiliator_details_for_checking_active_status = $_GET['ref'];
                 $check_validity = $CI->affiliate_course_model->get_user_by_unique_identifier($affiliator_details_for_checking_active_status);
-           
-                if ($check_validity['status'] == 1 && $check_validity['user_id']!=$this->session->userdata('user_id')) {
 
+                if ($check_validity['status'] == 1 && $check_validity['user_id'] != $this->session->userdata('user_id')) {
                     if (isset($_GET['ref'])) {
                         $this->session->set_userdata('course_referee', $_GET['ref']);
                         $this->session->set_userdata('course_reffer_id', $course_id);
@@ -164,29 +190,54 @@ class Home extends CI_Controller
                         $this->session->unset_userdata('course_referee');
                         $this->session->unset_userdata('course_reffer_id');
                     }
-                }
-                else
-                {
+                } else {
                     $this->session->set_flashdata('error_message', get_phrase('you can not reffer yourself'));
                     redirect(site_url('home/courses'), 'refresh');
-            
                 }
             }
         }
-        
 
-
-
-        //course_addon end 
-
+        //course_addon end
 
         $this->access_denied_courses($course_id);
         $page_data['course_id'] = $course_id;
         $page_data['page_name'] = "course_page";
         $page_data['page_title'] = site_phrase('course');
 
-    
         $this->load->view('frontend/' . get_frontend_settings('theme') . '/index', $page_data);
+    }
+
+    private function get_user_country($ip)
+    {
+        // Verificar si la IP es local
+        if ($ip === '::1' || $ip === '127.0.0.1') {
+            return 'Barranquilla'; // Ciudad predeterminada para IP local
+        }
+
+        // Usar una API externa para obtener el país basado en la IP
+        $url = "http://ip-api.com/json/" . $ip;
+        $response = @file_get_contents($url);
+        $data = json_decode($response, true);
+
+        if ($data && $data['status'] === 'success') {
+            return $data['country'];
+        }
+
+        return 'Unknown';
+    }
+
+    public function register_click($link_id, $user_ip, $user_agent) {
+        $country = $this->get_user_country($user_ip); // Llama a la función para obtener el país basado en la IP
+        $data = [
+            'affiliate_id' => $this->db->get_where('affiliate_link', ['link_id' => $link_id])->row()->affiliate_id,
+            'link_id' => $link_id,
+            'user_ip' => $user_ip,
+            'user_agent' => $user_agent,
+            'click_date' => date('Y-m-d H:i:s'),
+            'country' => $country,
+            'converted' => 0
+        ];
+        $this->db->insert('click', $data);
     }
 
     public function instructor_page($instructor_id = "")

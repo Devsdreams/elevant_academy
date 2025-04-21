@@ -94,5 +94,10 @@ $route['user/affiliates'] = 'user/affiliates';
 $route['user/affiliates_manual'] = 'user/affiliates_manual';
 $route['user/affiliates_approval'] = 'user/affiliates_approval';
 $route['user/affiliates/delete/(:num)'] = 'user/delete_affiliate/$1';
+$route['user/manage_affiliates'] = 'user/manage_affiliates';
+
+/* $route['affiliate/click/(:num)'] = 'user/track_affiliate_click/$1';  */
+
+$route['home/course/(:any)/(:num)'] = 'home/course/$1/$2';
 
 $route['translate_uri_dashes'] = FALSE;

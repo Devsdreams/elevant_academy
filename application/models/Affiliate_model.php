@@ -128,4 +128,30 @@ class Affiliate_model extends CI_Model {
         // Responder con un mensaje de éxito
         echo json_encode(['status' => 'success', 'message' => get_phrase('affiliate_deleted_successfully')]);
     }
+
+    /* public function register_click($link_id, $user_ip, $user_agent, $country) {
+        $data = [
+            'affiliate_id' => $this->db->get_where('affiliate_link', ['id' => $link_id])->row()->affiliate_id,
+            'link_id' => $link_id,
+            'user_ip' => $user_ip,
+            'user_agent' => $user_agent,
+            'click_date' => date('Y-m-d H:i:s'),
+            'country' => $country,
+            'converted' => 0
+        ];
+        $this->db->insert('click', $data);
+    } */
+
+    public function get_affiliates_with_data($instructor_id) {
+        $this->db->select('a.full_name, a.email, c.title as course_title, COUNT(cl.click_id) as clicks, 
+                           SUM(cl.converted) as leads, COUNT(p.id) as sales, SUM(p.instructor_revenue) as commission');
+        $this->db->from('affiliate a');
+        $this->db->join('affiliate_link al', 'a.affiliate_id = al.affiliate_id', 'left');
+        $this->db->join('click cl', 'al.link_id = cl.link_id', 'left');
+        $this->db->join('payment p', 'al.course_id = p.course_id AND cl.affiliate_id = p.affiliate_id', 'left');
+        $this->db->join('course c', 'al.course_id = c.id', 'left');
+        $this->db->where('c.user_id', $instructor_id);
+        $this->db->group_by('a.affiliate_id');
+        return $this->db->get()->result_array();
+    }
 }

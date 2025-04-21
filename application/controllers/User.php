@@ -981,4 +981,41 @@ class User extends CI_Controller
         $this->session->set_flashdata('flash_message', get_phrase('affiliate_deleted_successfully'));
         redirect(site_url('user/affiliates'));
     }
+
+    public function track_affiliate_click($affiliate_id, $link_id) {
+        $this->load->model('User_model');
+        $this->User_model->register_click($affiliate_id, $link_id);
+        redirect(base_url()); // Redirige al usuario después de registrar el clic
+    }
+
+    public function manage_affiliates() {
+        if (!$this->session->userdata('user_login')) {
+            redirect(site_url('login'), 'refresh');
+        }
+
+        $page_data['page_name'] = 'manage_affiliates';
+        $page_data['page_title'] = get_phrase('manage_affiliates');
+        $this->load->view('backend/index', $page_data);
+    }
+
+    public function export_affiliate_data() {
+        $this->load->model('Affiliate_model');
+        $instructor_id = $this->session->userdata('user_id');
+        $affiliates = $this->Affiliate_model->get_affiliates_with_data($instructor_id);
+
+        header("Content-Description: File Transfer");
+        header("Content-Disposition: attachment; filename=affiliate_data.csv");
+        header("Content-Type: application/csv; ");
+
+        $file = fopen('php://output', 'w');
+        $header = array('Affiliate Name', 'Email', 'Course', 'Clicks', 'Leads', 'Sales', 'Commission');
+        fputcsv($file, $header);
+
+        foreach ($affiliates as $affiliate) {
+            fputcsv($file, $affiliate);
+        }
+
+        fclose($file);
+        exit;
+    }
 }

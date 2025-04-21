@@ -72,6 +72,12 @@ $status_wise_courses = $this->crud_model->get_status_wise_courses();
 				<li class="side-nav-item">
 					<a href="<?php echo site_url('user/affiliates'); ?>" class="side-nav-link <?php if ($page_name == 'affiliates') echo 'active'; ?>">
 						<i class="dripicons-network-1"></i>
+						<span><?php echo get_phrase('affiliates'); ?></span>
+					</a>
+				</li>
+				<li class="side-nav-item">
+					<a href="<?php echo site_url('user/manage_affiliates'); ?>" class="side-nav-link <?php if ($page_name == 'manage_affiliates') echo 'active'; ?>">
+						<i class="dripicons-network-1"></i>
 						<span><?php echo get_phrase('manage_affiliates'); ?></span>
 					</a>
 				</li>
