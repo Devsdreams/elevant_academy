@@ -875,20 +875,15 @@ class User extends CI_Controller
     }
 
     public function affiliates() {
-        $this->load->model('Affiliate_model');
-        $this->load->model('crud_model'); // Asegúrate de cargar el modelo para obtener los cursos
-
-        $affiliates = $this->Affiliate_model->get_all_affiliates();
-
-        // Agregar el nombre del curso a cada afiliado
-        foreach ($affiliates as &$affiliate) {
-            if (!empty($affiliate['course_id'])) {
-                $course = $this->crud_model->get_course_by_id($affiliate['course_id'])->row_array();
-                $affiliate['course_name'] = $course ? $course['title'] : get_phrase('no_course_assigned');
-            } else {
-                $affiliate['course_name'] = get_phrase('no_course_assigned');
-            }
+        if (!$this->session->userdata('user_login')) {
+            redirect(site_url('login'), 'refresh');
         }
+
+        $this->load->model('Affiliate_model'); // Cargar el modelo de afiliados
+        $instructor_id = $this->session->userdata('user_id'); // Obtener el ID del instructor logueado
+
+        // Obtener afiliados asociados a los cursos del instructor logueado
+        $affiliates = $this->Affiliate_model->get_all_affiliates($instructor_id);
 
         $data['affiliates'] = $affiliates;
         $data['page_name'] = 'affiliates';

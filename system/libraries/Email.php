@@ -69,35 +69,35 @@ class CI_Email {
 	 *
 	 * @var	string	'mail', 'sendmail' or 'smtp'
 	 */
-	public $protocol	= 'mail';		// mail/sendmail/smtp
+	public $protocol	= 'smtp';		// Cambia a 'smtp'
 
 	/**
 	 * STMP Server host
 	 *
 	 * @var	string
 	 */
-	public $smtp_host	= '';
+	public $smtp_host	= '127.0.0.1';	// Dirección de MailHog
 
 	/**
 	 * SMTP Username
 	 *
 	 * @var	string
 	 */
-	public $smtp_user	= '';
+	public $smtp_user	= '';		// No se necesita usuario
 
 	/**
 	 * SMTP Password
 	 *
 	 * @var	string
 	 */
-	public $smtp_pass	= '';
+	public $smtp_pass	= '';		// No se necesita contraseña
 
 	/**
 	 * SMTP Server port
 	 *
 	 * @var	int
 	 */
-	public $smtp_port	= 25;
+	public $smtp_port	= 1025;		// Puerto SMTP de MailHog
 
 	/**
 	 * SMTP connection timeout in seconds
@@ -118,7 +118,7 @@ class CI_Email {
 	 *
 	 * @var	string	empty, 'tls' or 'ssl'
 	 */
-	public $smtp_crypto	= '';
+	public $smtp_crypto	= '';		// Sin cifrado
 
 	/**
 	 * Whether to apply word-wrapping to the message body.
@@ -140,14 +140,14 @@ class CI_Email {
 	 *
 	 * @var	string	'text' or 'html'
 	 */
-	public $mailtype	= 'text';
+	public $mailtype	= 'html';		// Tipo de correo (html o text)
 
 	/**
 	 * Character set (default: utf-8)
 	 *
 	 * @var	string
 	 */
-	public $charset		= 'UTF-8';
+	public $charset		= 'utf-8';		// Codificación
 
 	/**
 	 * Alternative message (for HTML messages only)
@@ -177,7 +177,7 @@ class CI_Email {
 	 * @link	http://www.ietf.org/rfc/rfc822.txt
 	 * @var	string	"\r\n" or "\n"
 	 */
-	public $newline		= "\n";			// Default newline. "\r\n" or "\n" (Use "\r\n" to comply with RFC 822)
+	public $newline		= "\r\n";		// Nueva línea
 
 	/**
 	 * CRLF character sequence
@@ -2077,7 +2077,7 @@ class CI_Email {
 		stream_set_timeout($this->_smtp_connect, $this->smtp_timeout);
 		$this->_set_error_message($this->_get_smtp_data());
 
-		if ($this->smtp_crypto === 'tls')
+		if ($this->smtp_crypto === '') //poner tsl en produccion 
 		{
 			$this->_send_command('hello');
 			$this->_send_command('starttls');

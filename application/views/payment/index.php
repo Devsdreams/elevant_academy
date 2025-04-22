@@ -20,7 +20,7 @@
 			include "go_back_to_mobile_app.php";
 		endif;
 		echo '<div class="container-fluid">';
-		    echo 'hola';
+		    /* echo 'hola'; */
 			include 'payment_gateway.php';
 		echo '</div>';
 

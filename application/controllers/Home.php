@@ -454,9 +454,82 @@ class Home extends CI_Controller
         if ($this->session->userdata('user_login') != 1)
             redirect('login', 'refresh');
 
+        // Capturar el parámetro 'ref' de la URL
+        $ref = $this->input->get('ref');
+        $user_id = $this->session->userdata('user_id');
+        $cart_items = $this->session->userdata('cart_items'); // Cursos en el carrito
+
+        log_message('debug', 'Ref: ' . $ref);
+        log_message('debug', 'User ID: ' . $user_id);
+        log_message('debug', 'Cart Items: ' . json_encode($cart_items));
+
+        if ($ref && !empty($cart_items)) {
+            // Convertir el ref a su forma original (reemplazar guiones bajos por espacios y capitalizar)
+            $full_name = ucwords(str_replace('_', ' ', $ref));
+
+            // Buscar al afiliado por su nombre completo
+            $affiliate = $this->db->get_where('affiliate', ['full_name' => $full_name])->row_array();
+
+            log_message('debug', 'Affiliate: ' . json_encode($affiliate));
+
+            if ($affiliate) {
+                foreach ($cart_items as $course_id) {
+                    // Calcular la comisión
+                    $course = $this->db->get_where('course', ['id' => $course_id])->row_array();
+                    $price = $course['price'];
+                    $commission = $this->calculate_commission($affiliate['affiliate_id'], $course_id, $price);
+
+                    log_message('debug', 'Course: ' . json_encode($course));
+                    log_message('debug', 'Commission: ' . $commission);
+
+                    // Registrar la conversión en la tabla 'conversion'
+                    $conversion_data = [
+                        'affiliate_id' => $affiliate['affiliate_id'],
+                        'link_id' => $this->get_affiliate_link_id($affiliate['affiliate_id'], $course_id),
+                        'buyer_user_id' => $user_id,
+                        'course_id' => $course_id,
+                        'total_amount' => $price,
+                        'calculated_commission' => $commission,
+                        'affiliate_payment_status' => 'pending',
+                        'conversion_date' => date('Y-m-d H:i:s')
+                    ];
+                    $this->db->insert('conversion', $conversion_data);
+
+                    log_message('debug', 'Conversion Data: ' . json_encode($conversion_data));
+                }
+            }
+        }
+
+        // Continuar con el flujo normal del pago
         $page_data['total_price_of_checking_out'] = $this->session->userdata('total_price_of_checking_out');
         $page_data['page_title'] = site_phrase("payment_gateway");
         $this->load->view('payment/index', $page_data);
+    }
+
+    // Método para calcular la comisión
+    private function calculate_commission($affiliate_id, $course_id, $price)
+    {
+        // Obtener la configuración de comisión
+        $config = $this->db->get_where('general_configuration', ['course_id' => $course_id])->row_array();
+        $default_commission = $config ? $config['default_commission'] : 10; // Porcentaje por defecto
+
+        // Si el afiliado tiene una comisión personalizada, usarla
+        $affiliate = $this->db->get_where('affiliate', ['affiliate_id' => $affiliate_id])->row_array();
+        $commission = $affiliate['custom_commission'] ?? $default_commission;
+
+        // Calcular la comisión
+        return ($price * $commission) / 100;
+    }
+
+    // Método para obtener el ID del enlace de afiliado
+    private function get_affiliate_link_id($affiliate_id, $course_id)
+    {
+        $link = $this->db->get_where('affiliate_link', [
+            'affiliate_id' => $affiliate_id,
+            'course_id' => $course_id
+        ])->row_array();
+
+        return $link ? $link['link_id'] : null;
     }
 
     // SHOW PAYPAL CHECKOUT PAGE

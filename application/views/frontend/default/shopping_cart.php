@@ -79,18 +79,22 @@
     }
 
     function handleCheckOut() {
+        var ref = new URLSearchParams(window.location.search).get('ref'); // Obtener el parámetro 'ref' de la URL
+        var checkoutUrl = '<?php echo site_url('home/payment'); ?>';
+
+        if (ref) {
+            checkoutUrl += '?ref=' + ref;
+        }
+
         $.ajax({
-            url: '<?php echo site_url('home/isLoggedIn?url_history='.base64_encode(current_url())); ?>',
+            url: checkoutUrl,
+            type: 'POST',
             success: function(response) {
-                if (!response) {
-                    window.location.replace("<?php echo site_url('login'); ?>");
-                } else if ("<?php echo $total_price; ?>" > 0) {
-                    // $('#paymentModal').modal('show');
-                    //$('.total_price_of_checking_out').val($('#total_price_of_checking_out').text());
-                    window.location.replace("<?php echo site_url('home/payment'); ?>");
-                } else {
-                    toastr.error('<?php echo site_phrase('there_are_no_courses_on_your_cart'); ?>');
-                }
+                // Redirigir al usuario al flujo de pago
+                window.location.replace('<?php echo site_url('home/payment'); ?>');
+            },
+            error: function() {
+                toastr.error('<?php echo site_phrase('an_error_occurred'); ?>');
             }
         });
     }

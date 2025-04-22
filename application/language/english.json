@@ -1112,5 +1112,17 @@
     "download_xlsx": "Download xlsx",
     "successfully_enrolled": "Successfully enrolled",
     "student_name": "Student name",
-    "amount_to_pay": "Amount to pay"
+    "amount_to_pay": "Amount to pay",
+    "shopping_car": "Shopping car",
+    "an_error_occurred": "An error occurred",
+    "checkout_count": "Checkout count",
+    "total_sales": "Total sales",
+    "link": "Link",
+    "access": "Access",
+    "checkouts": "Checkouts",
+    "total_accesses": "Total accesses",
+    "total_checkouts": "Total checkouts",
+    "check_your_inbox_for_the_request": "Check your inbox for the request",
+    "change_password": "Change password",
+    "enter_your_new_password": "Enter your new password"
 }

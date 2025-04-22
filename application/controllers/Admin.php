@@ -1942,7 +1942,7 @@ class Admin extends CI_Controller
         $this->load->model('Affiliate_model');
         $this->load->model('crud_model'); // Asegúrate de cargar el modelo para obtener los cursos
 
-        $affiliates = $this->Affiliate_model->get_all_affiliates();
+        $affiliates = $this->Affiliate_model->get_all_affiliates_no_filter();
 
         // Agregar el nombre del curso a cada afiliado
         foreach ($affiliates as &$affiliate) {
@@ -1959,18 +1959,4 @@ class Admin extends CI_Controller
         $data['page_title'] = get_phrase('manage_affiliates');
         $this->load->view('backend/index', $data);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

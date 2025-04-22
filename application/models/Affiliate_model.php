@@ -64,9 +64,38 @@ class Affiliate_model extends CI_Model {
         return $this->db->get()->result_array();
     }
 
-    public function get_all_affiliates() {
-        $this->db->select('*');
-        $this->db->from('affiliate');
+    public function get_all_affiliates($instructor_id) {
+        $this->db->select('
+            a.affiliate_id,
+            a.full_name,
+            a.email,
+            a.unique_code,
+            a.status,
+            al.generated_url,
+            c.title as course_title
+        ');
+        $this->db->from('affiliate a');
+        $this->db->join('affiliate_link al', 'a.affiliate_id = al.affiliate_id', 'inner'); // Relación con los enlaces de afiliados
+        $this->db->join('course c', 'al.course_id = c.id', 'inner'); // Relación con los cursos
+        $this->db->where('c.user_id', $instructor_id); // Filtrar por cursos creados por el instructor logueado
+        $this->db->group_by('a.affiliate_id'); // Agrupar por afiliado
+        return $this->db->get()->result_array();
+    }
+
+    public function get_all_affiliates_no_filter() {
+        $this->db->select('
+            a.affiliate_id,
+            a.full_name,
+            a.email,
+            a.unique_code,
+            a.status,
+            al.generated_url,
+            c.title as course_title
+        ');
+        $this->db->from('affiliate a');
+        $this->db->join('affiliate_link al', 'a.affiliate_id = al.affiliate_id', 'left'); // Relación con los enlaces de afiliados
+        $this->db->join('course c', 'al.course_id = c.id', 'left'); // Relación con los cursos
+        $this->db->group_by('a.affiliate_id'); // Agrupar por afiliado
         return $this->db->get()->result_array();
     }
 
@@ -128,19 +157,6 @@ class Affiliate_model extends CI_Model {
         // Responder con un mensaje de éxito
         echo json_encode(['status' => 'success', 'message' => get_phrase('affiliate_deleted_successfully')]);
     }
-
-    /* public function register_click($link_id, $user_ip, $user_agent, $country) {
-        $data = [
-            'affiliate_id' => $this->db->get_where('affiliate_link', ['id' => $link_id])->row()->affiliate_id,
-            'link_id' => $link_id,
-            'user_ip' => $user_ip,
-            'user_agent' => $user_agent,
-            'click_date' => date('Y-m-d H:i:s'),
-            'country' => $country,
-            'converted' => 0
-        ];
-        $this->db->insert('click', $data);
-    } */
 
     public function get_affiliates_with_data($instructor_id) {
         $this->db->select('a.full_name, a.email, c.title as course_title, COUNT(cl.click_id) as clicks, 

@@ -316,9 +316,9 @@ $status_wise_courses = $this->crud_model->get_status_wise_courses();
 				<li class="<?php if ($page_name == 'affiliates_manual') echo 'active'; ?>">
 					<a href="<?php echo site_url('admin/affiliates_manual'); ?>"><?php echo get_phrase('register_affiliate_manually'); ?></a>
 				</li>
-				<li class="<?php if ($page_name == 'affiliates_approval') echo 'active'; ?>">
+				<!-- <li class="<?php if ($page_name == 'affiliates_approval') echo 'active'; ?>">
 					<a href="<?php echo site_url('admin/affiliates_approval'); ?>"><?php echo get_phrase('approve_affiliates'); ?></a>
-				</li>
+				</li> -->
 			</ul>
 		</li>
 

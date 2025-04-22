@@ -1,13 +1,43 @@
 <?php
 try {
-    $instructor_id = $this->session->userdata('user_id');
-    $number_of_affiliates = $this->db->count_all('affiliate'); // Ejemplo de consulta simple
+    $instructor_id = $this->session->userdata('user_id'); // Obtener el ID del instructor logueado
+
+    // Consulta para obtener los afiliados, sus enlaces, cursos asociados, conteo de accesos y conversiones
+    $this->db->select('
+        a.affiliate_id, 
+        a.full_name, 
+        a.email, 
+        a.custom_commission, 
+        c.title as course_title, 
+        al.generated_url, 
+        COUNT(DISTINCT cl.click_id) as access_count, 
+        COUNT(DISTINCT cv.conversion_id) as checkout_count, 
+        SUM(cv.total_amount) as total_sales, 
+        a.status
+    ');
+    $this->db->from('affiliate a');
+    $this->db->join('affiliate_link al', 'a.affiliate_id = al.affiliate_id', 'left');
+    $this->db->join('course c', 'al.course_id = c.id', 'left'); // Relación con los cursos
+    $this->db->join('click cl', 'al.link_id = cl.link_id', 'left');
+    $this->db->join('conversion cv', 'al.link_id = cv.link_id', 'left');
+    $this->db->where('c.user_id', $instructor_id); // Filtrar por cursos creados por el instructor logueado
+    $this->db->group_by(['a.affiliate_id', 'c.id']);
+    $affiliates = $this->db->get()->result_array();
+
+    // Calcular el total de checkouts (ventas) sumando los valores de checkout_count de los afiliados
+    $number_of_affiliate_sales = array_sum(array_column($affiliates, 'checkout_count'));
+
+    // Calcular el total de accesos y checkouts a través de enlaces de afiliados
+    $total_access_count = array_sum(array_column($affiliates, 'access_count'));
+    $total_checkout_count = array_sum(array_column($affiliates, 'checkout_count'));
 } catch (Exception $e) {
     echo "Error en la consulta: " . $e->getMessage();
-    $number_of_affiliates = 0; // Valor por defecto en caso de error
+    $affiliates = [];
+    $number_of_affiliate_sales = 0;
+    $total_access_count = 0;
+    $total_checkout_count = 0;
 }
 
-$number_of_affiliate_sales = 25;
 $total_affiliate_earnings = 500.00;
 $pending_affiliate_earnings = 150.00;
 $months = array('january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december');
@@ -35,7 +65,7 @@ $month_wise_affiliate_earnings = array_fill(0, 12, rand(50, 200)); // Datos fict
                             <div class="card shadow-none m-0">
                                 <div class="card-body text-center">
                                     <i class="dripicons-user-group text-muted" style="font-size: 24px;"></i>
-                                    <h3><span><?php echo $number_of_affiliates; ?></span></h3>
+                                    <h3><span><?php echo count($affiliates); ?></span></h3>
                                     <p class="text-muted font-15 mb-0"><?php echo get_phrase('number_of_affiliates'); ?></p>
                                 </div>
                             </div>
@@ -58,9 +88,9 @@ $month_wise_affiliate_earnings = array_fill(0, 12, rand(50, 200)); // Datos fict
                         <a href="javascript:void(0);" class="text-secondary">
                             <div class="card shadow-none m-0 border-left">
                                 <div class="card-body text-center">
-                                    <i class="dripicons-wallet text-muted" style="font-size: 24px;"></i>
-                                    <h3><span><?php echo currency($total_affiliate_earnings); ?></span></h3>
-                                    <p class="text-muted font-15 mb-0"><?php echo get_phrase('total_earnings'); ?></p>
+                                    <i class="dripicons-clock text-muted" style="font-size: 24px;"></i>
+                                    <h3><span><?php echo $total_access_count; ?></span></h3>
+                                    <p class="text-muted font-15 mb-0"><?php echo get_phrase('total_accesses'); ?></p>
                                 </div>
                             </div>
                         </a>
@@ -70,13 +100,15 @@ $month_wise_affiliate_earnings = array_fill(0, 12, rand(50, 200)); // Datos fict
                         <a href="javascript:void(0);" class="text-secondary">
                             <div class="card shadow-none m-0 border-left">
                                 <div class="card-body text-center">
-                                    <i class="dripicons-clock text-muted" style="font-size: 24px;"></i>
-                                    <h3><span><?php echo currency($pending_affiliate_earnings); ?></span></h3>
-                                    <p class="text-muted font-15 mb-0"><?php echo get_phrase('pending_earnings'); ?></p>
+                                    <i class="dripicons-wallet text-muted" style="font-size: 24px;"></i>
+                                    <h3><span><?php echo currency($total_affiliate_earnings); ?></span></h3>
+                                    <p class="text-muted font-15 mb-0"><?php echo get_phrase('total_earnings'); ?></p>
                                 </div>
                             </div>
                         </a>
                     </div>
+
+                    
                 </div> <!-- end row -->
             </div>
         </div> <!-- end card-box-->
@@ -98,42 +130,41 @@ $month_wise_affiliate_earnings = array_fill(0, 12, rand(50, 200)); // Datos fict
                     <table id="manage-affiliates-datatable" class="table table-striped table-centered mb-0">
                         <thead>
                             <tr>
-                                <th>#</th>
-                                <th><?php echo get_phrase('full_name'); ?></th>
+                                <!-- <th>#</th> -->
+                                <th><?php echo get_phrase('name'); ?></th>
                                 <th><?php echo get_phrase('email'); ?></th>
                                 <th><?php echo get_phrase('course'); ?></th>
-                                <th><?php echo get_phrase('affiliate_link'); ?></th>
-                                <th><?php echo get_phrase('access_count'); ?></th>
+                                <th><?php echo get_phrase('link'); ?></th>
+                                <th><?php echo get_phrase('access'); ?></th>
+                                <th><?php echo get_phrase('checkouts'); ?></th>
                                 <th><?php echo get_phrase('commission'); ?></th>
                                 <th><?php echo get_phrase('status'); ?></th>
                             </tr>
                         </thead>
                         <tbody>
-                            <?php 
-                            // Consulta para obtener los afiliados, sus enlaces, cursos asociados y conteo de accesos
-                            $this->db->select('a.affiliate_id, a.full_name, a.email, a.custom_commission, c.title as course_title, al.generated_url, COUNT(cl.click_id) as access_count, a.status');
-                            $this->db->from('affiliate a');
-                            $this->db->join('affiliate_link al', 'a.affiliate_id = al.affiliate_id', 'left');
-                            $this->db->join('course c', 'al.course_id = c.id', 'left');
-                            $this->db->join('click cl', 'al.link_id = cl.link_id', 'left');
-                            $this->db->group_by(['a.affiliate_id', 'c.id']);
-                            $affiliates = $this->db->get()->result_array();
-                            
-                            foreach ($affiliates as $key => $affiliate): ?>
+                            <?php foreach ($affiliates as $key => $affiliate): ?>
                                 <tr>
-                                    <td><?php echo $key + 1; ?></td>
+                                    <!-- <td><?php echo $key + 1; ?></td> -->
                                     <td><?php echo $affiliate['full_name']; ?></td>
                                     <td><?php echo $affiliate['email']; ?></td>
                                     <td><?php echo !empty($affiliate['course_title']) ? $affiliate['course_title'] : get_phrase('no_course_assigned'); ?></td>
-                                    <td><?php echo !empty($affiliate['generated_url']) ? $affiliate['generated_url'] : get_phrase('no_link'); ?></td>
+                                    <td>
+                                        <?php if (!empty($affiliate['generated_url'])): ?>
+                                            <a href="<?php echo $affiliate['generated_url']; ?>" target="_blank"><?php echo get_phrase('view_link'); ?></a>
+                                        <?php else: ?>
+                                            <?php echo get_phrase('no_link'); ?>
+                                        <?php endif; ?>
+                                    </td>
                                     <td><?php echo $affiliate['access_count']; ?></td>
+                                    <td><?php echo $affiliate['checkout_count']; ?></td>
+                                    <!-- <td><?php echo currency($affiliate['total_sales'] ?? 0); ?></td> -->
                                     <td><?php echo currency($affiliate['custom_commission'] ?? 0); ?></td>
                                     <td><?php echo ucfirst($affiliate['status']); ?></td>
                                 </tr>
                             <?php endforeach; ?>
                             <?php if (empty($affiliates)): ?>
                                 <tr>
-                                    <td colspan="8" class="text-center"><?php echo get_phrase('no_affiliates_found'); ?></td>
+                                    <td colspan="10" class="text-center"><?php echo get_phrase('no_affiliates_found'); ?></td>
                                 </tr>
                             <?php endif; ?>
                         </tbody>
