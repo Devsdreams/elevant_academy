@@ -1013,4 +1013,258 @@ class User extends CI_Controller
         fclose($file);
         exit;
     }
+
+    public function create_campaign()
+    {
+        if ($this->session->userdata('user_login') != true) {
+            redirect(site_url('login'), 'refresh');
+        }
+
+        $this->load->model('User_model'); // Cargar el modelo de usuario
+        $this->load->model('Campaign_model'); // Cargar el modelo de campañas
+
+        // Obtener los detalles del usuario autenticado
+        $user_id = $this->session->userdata('user_id');
+        $user_details = $this->User_model->get_user($user_id)->row_array();
+
+        $data['user_details'] = $user_details; // Pasar los detalles del usuario a la vista
+        $data['groups'] = $this->Campaign_model->get_groups(); // Obtener los grupos disponibles
+        $data['page_name'] = 'create_campaign';
+        $data['page_title'] = get_phrase('create_campaign');
+        $this->load->view('backend/index', $data);
+    }
+
+    // Método para manejar la creación de una nueva campaña
+    public function save_campaign()
+    {
+        if ($this->session->userdata('user_login') != true) {
+            redirect(site_url('login'), 'refresh');
+        }
+
+        $this->load->model('Campaign_model');
+
+        // Datos básicos de la campaña
+        $data = [
+            'name' => $this->input->post('campaign_name'),
+            'subject' => $this->input->post('subject'),
+            'content' => $this->input->post('content'),
+            'created_at' => date('Y-m-d H:i:s')
+        ];
+
+        // Si se selecciona enviar a un solo usuario
+        if ($this->input->post('send_to_single_user') == 1) {
+            $data['group_id'] = null; // No se usa un grupo
+            $data['user_email'] = $this->input->post('user_email');
+        } else {
+            // Si se selecciona un grupo
+            $data['group_id'] = $this->input->post('group_id');
+            $data['user_email'] = null; // No se usa un correo individual
+        }
+
+        // Guardar la campaña
+        $campaign_id = $this->Campaign_model->create_campaign($data);
+
+        // Preparar el envío de correos
+        if ($this->input->post('send_to_single_user') == 1) {
+            // Enviar a un solo usuario
+            $this->send_email_to_user($data['user_email'], $data['subject'], $data['content']);
+        } else {
+            // Enviar a un grupo
+            $this->send_email_to_group($data['group_id'], $data['subject'], $data['content']);
+        }
+
+        $this->session->set_flashdata('flash_message', get_phrase('campaign_created_and_emails_sent_successfully'));
+        redirect(site_url('user/create_campaign'));
+    }
+
+    // Enviar correo a un solo usuario
+    private function send_email_to_user($email, $subject, $content)
+    {
+        if (!empty($email)) {
+            $this->load->model('Email_model');
+            $from = get_settings('system_email'); // Obtener el correo del sistema
+            $this->Email_model->send_smtp_mail($content, $subject, $email, $from);
+        }
+    }
+
+    // Enviar correos a un grupo
+    private function send_email_to_group($group_id, $subject, $content)
+    {
+        if (!empty($group_id)) {
+            $group = $this->db->get_where('email_groups', ['id' => $group_id])->row_array();
+            if ($group && !empty($group['mails'])) {
+                $emails = json_decode($group['mails'], true); // Decodificar el listado de correos
+                if (!empty($emails)) {
+                    $this->load->model('Email_model');
+                    $from = get_settings('system_email'); // Obtener el correo del sistema
+                    foreach ($emails as $email) {
+                        $this->Email_model->send_smtp_mail($content, $subject, $email, $from);
+                    }
+                }
+            }
+        }
+    }
+
+    // Método para mostrar la página de gestión de grupos
+    public function groups()
+    {
+        if ($this->session->userdata('user_login') != true) {
+            redirect(site_url('login'), 'refresh');
+        }
+
+        $this->load->model('Campaign_model');
+        $data['groups'] = $this->Campaign_model->get_groups(); // Obtener todos los grupos
+        $data['page_name'] = 'groups';
+        $data['page_title'] = get_phrase('groups');
+        $this->load->view('backend/index', $data);
+    }
+
+    // Método para manejar la creación de un nuevo grupo
+    public function save_group()
+    {
+        if ($this->session->userdata('user_login') != true) {
+            redirect(site_url('login'), 'refresh');
+        }
+
+        $this->load->model('Campaign_model');
+
+        // Procesar contactos manuales
+        $manual_contacts = $this->input->post('manual_emails'); // Recibir los contactos como JSON
+        $contacts = [];
+        if (!empty($manual_contacts)) {
+            $contacts = json_decode($manual_contacts, true); // Decodificar los contactos manuales
+        }
+
+        // Procesar archivo Excel
+        if (!empty($_FILES['email_file']['name'])) {
+            $config['upload_path'] = './uploads/';
+            $config['allowed_types'] = 'xls|xlsx';
+            $config['file_name'] = time() . '_' . $_FILES['email_file']['name'];
+
+            $this->load->library('upload', $config);
+
+            if ($this->upload->do_upload('email_file')) {
+                $file_data = $this->upload->data();
+                $file_path = $file_data['full_path'];
+
+                // Cargar la librería de Excel
+                $this->load->library('excel');
+                $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($file_path);
+                $sheet = $spreadsheet->getActiveSheet();
+                $highestRow = $sheet->getHighestRow();
+
+                // Recorrer las filas del archivo
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    $name = $sheet->getCell('A' . $row)->getValue();
+                    $email = $sheet->getCell('B' . $row)->getValue();
+                    $number = $sheet->getCell('C' . $row)->getValue();
+                    $company = $sheet->getCell('D' . $row)->getValue();
+
+                    if (!empty($email)) {
+                        $contacts[] = [
+                            'name' => $name,
+                            'email' => $email,
+                            'number' => $number,
+                            'company' => $company
+                        ];
+                    }
+                }
+
+                unlink($file_path); // Eliminar el archivo después de procesarlo
+            } else {
+                $this->session->set_flashdata('error_message', $this->upload->display_errors());
+                redirect(site_url('user/groups'));
+            }
+        }
+
+        // Eliminar duplicados basados en el correo electrónico
+        $unique_contacts = [];
+        foreach ($contacts as $contact) {
+            if (!isset($unique_contacts[$contact['email']])) {
+                $unique_contacts[$contact['email']] = $contact;
+            }
+        }
+        $contacts = array_values($unique_contacts); // Reindexar el array
+
+        // Guardar el grupo con los contactos
+        $data = [
+            'name' => $this->input->post('group_name'),
+            'mails' => json_encode($contacts) // Guardar los contactos como JSON
+        ];
+
+        $this->Campaign_model->create_group($data);
+        $this->session->set_flashdata('flash_message', get_phrase('group_created_successfully'));
+        redirect(site_url('user/groups'));
+    }
+
+    public function download_contact_format()
+    {
+        $this->load->library('excel');
+
+        // Crear una nueva hoja de cálculo
+        $spreadsheet = $this->excel->createSpreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Agregar encabezados
+        $sheet->setCellValue('A1', 'Name');
+        $sheet->setCellValue('B1', 'Email');
+        $sheet->setCellValue('C1', 'Number');
+        $sheet->setCellValue('D1', 'Company');
+
+        // Configurar el nombre del archivo
+        $filename = 'contact_format.xlsx';
+
+        // Descargar el archivo
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+
+        $writer = $this->excel->createWriter($spreadsheet, 'Xlsx');
+        $writer->save('php://output');
+        exit;
+    }
+
+    public function contact()
+    {
+        if ($this->session->userdata('user_login') != true) {
+            redirect(site_url('login'), 'refresh');
+        }
+
+        $this->load->model('Campaign_model'); // Cargar el modelo de campañas
+        $data['groups'] = $this->Campaign_model->get_groups(); // Obtener los datos de la tabla email_groups
+        $data['page_name'] = 'contact';
+        $data['page_title'] = get_phrase('contacts');
+        $this->load->view('backend/index', $data);
+    }
+
+    public function update_contact()
+    {
+        $email = $this->input->post('email');
+        $name = $this->input->post('name');
+        $number = $this->input->post('number');
+        $company = $this->input->post('company');
+
+        $this->load->model('Campaign_model');
+        $result = $this->Campaign_model->update_contact($email, $name, $number, $company);
+
+        if ($result) {
+            echo json_encode(['status' => 'success']);
+        } else {
+            echo json_encode(['status' => 'error']);
+        }
+    }
+
+    public function delete_contact()
+    {
+        $email = $this->input->post('email');
+
+        $this->load->model('Campaign_model');
+        $result = $this->Campaign_model->delete_contact($email);
+
+        if ($result) {
+            echo json_encode(['status' => 'success']);
+        } else {
+            echo json_encode(['status' => 'error']);
+        }
+    }
 }

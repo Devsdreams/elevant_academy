@@ -95,6 +95,9 @@ $route['user/affiliates_manual'] = 'user/affiliates_manual';
 $route['user/affiliates_approval'] = 'user/affiliates_approval';
 $route['user/affiliates/delete/(:num)'] = 'user/delete_affiliate/$1';
 $route['user/manage_affiliates'] = 'user/manage_affiliates';
+$route['user/create_campaign'] = 'user/create_campaign';
+$route['user/groups'] = 'user/groups';
+$route['user/contact'] = 'user/contact';
 
 /* $route['affiliate/click/(:num)'] = 'user/track_affiliate_click/$1';  */
 

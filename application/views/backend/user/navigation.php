@@ -198,6 +198,24 @@ $status_wise_courses = $this->crud_model->get_status_wise_courses();
 		//course_addon end 
 		?>
 
+		<li class="side-nav-item <?php if ($page_name == 'campaigns' || $page_name == 'create_campaign' || $page_name == 'groups' || $page_name == 'contacts') echo 'active'; ?>">
+			<a href="javascript: void(0);" class="side-nav-link <?php if ($page_name == 'campaigns' || $page_name == 'create_campaign' || $page_name == 'groups' || $page_name == 'contacts') echo 'active'; ?>">
+				<i class="mdi mdi-email"></i>
+				<span><?php echo get_phrase('Marketing'); ?></span>
+				<span class="menu-arrow"></span>
+			</a>
+			<ul class="side-nav-second-level" aria-expanded="false">
+				<li class="<?php if ($page_name == 'contact') echo 'active'; ?>">
+					<a href="<?php echo site_url('user/contact'); ?>"><?php echo get_phrase('contacts'); ?></a>
+				</li>
+				<li class="<?php if ($page_name == 'create_campaign') echo 'active'; ?>">
+					<a href="<?php echo site_url('user/create_campaign'); ?>"><?php echo get_phrase('create_campaign'); ?></a>
+				</li>
+				<li class="<?php if ($page_name == 'groups') echo 'active'; ?>">
+					<a href="<?php echo site_url('user/groups'); ?>"><?php echo get_phrase('create_groups'); ?></a>
+				</li>
+			</ul>
+		</li>
 
 	</ul>
 </div>

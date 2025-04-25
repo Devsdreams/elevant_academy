@@ -12097,3 +12097,220 @@ INFO - 2025-04-22 23:54:10 --> Session: Class initialized using 'database' drive
 INFO - 2025-04-22 23:54:10 --> File loaded: C:\xampp\htdocs\elevant_academy\application\views\frontend/default/index.php
 INFO - 2025-04-22 23:54:10 --> Final output sent to browser
 DEBUG - 2025-04-22 23:54:10 --> Total execution time: 0.0986
+INFO - 2025-04-22 23:59:21 --> Config Class Initialized
+INFO - 2025-04-22 23:59:21 --> Hooks Class Initialized
+DEBUG - 2025-04-22 23:59:21 --> UTF-8 Support Enabled
+INFO - 2025-04-22 23:59:21 --> Utf8 Class Initialized
+INFO - 2025-04-22 23:59:21 --> URI Class Initialized
+INFO - 2025-04-22 23:59:21 --> Router Class Initialized
+INFO - 2025-04-22 23:59:21 --> Output Class Initialized
+INFO - 2025-04-22 23:59:21 --> Security Class Initialized
+DEBUG - 2025-04-22 23:59:21 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-04-22 23:59:21 --> Input Class Initialized
+INFO - 2025-04-22 23:59:21 --> Language Class Initialized
+INFO - 2025-04-22 23:59:21 --> Loader Class Initialized
+INFO - 2025-04-22 23:59:21 --> Helper loaded: url_helper
+INFO - 2025-04-22 23:59:21 --> Helper loaded: file_helper
+INFO - 2025-04-22 23:59:21 --> Helper loaded: form_helper
+INFO - 2025-04-22 23:59:21 --> Helper loaded: security_helper
+INFO - 2025-04-22 23:59:21 --> Helper loaded: string_helper
+INFO - 2025-04-22 23:59:21 --> Helper loaded: inflector_helper
+INFO - 2025-04-22 23:59:21 --> Helper loaded: directory_helper
+INFO - 2025-04-22 23:59:21 --> Helper loaded: download_helper
+INFO - 2025-04-22 23:59:21 --> Helper loaded: user_helper
+INFO - 2025-04-22 23:59:21 --> Helper loaded: multi_language_helper
+INFO - 2025-04-22 23:59:21 --> Helper loaded: common_helper
+INFO - 2025-04-22 23:59:21 --> Helper loaded: pagination_helper
+INFO - 2025-04-22 23:59:21 --> Helper loaded: addon_helper
+INFO - 2025-04-22 23:59:21 --> XML-RPC Class Initialized
+INFO - 2025-04-22 23:59:21 --> Language file loaded: language/english/pagination_lang.php
+INFO - 2025-04-22 23:59:21 --> Pagination Class Initialized
+INFO - 2025-04-22 23:59:21 --> Model "User_model" initialized
+INFO - 2025-04-22 23:59:21 --> Model "Crud_model" initialized
+INFO - 2025-04-22 23:59:21 --> Model "Video_model" initialized
+INFO - 2025-04-22 23:59:21 --> Model "Email_model" initialized
+INFO - 2025-04-22 23:59:21 --> Model "Payment_model" initialized
+INFO - 2025-04-22 23:59:21 --> Model "Lazyloaddata_model" initialized
+INFO - 2025-04-22 23:59:21 --> Model "Api_model" initialized
+INFO - 2025-04-22 23:59:21 --> Model "Addon_model" initialized
+INFO - 2025-04-22 23:59:21 --> Model "Social_login_modal" initialized
+INFO - 2025-04-22 23:59:21 --> Controller Class Initialized
+INFO - 2025-04-22 23:59:21 --> Database Driver Class Initialized
+INFO - 2025-04-22 23:59:21 --> Session: Class initialized using 'database' driver.
+ERROR - 2025-04-22 23:59:21 --> Severity: Warning --> include(modal_add_affiliate.php): failed to open stream: No such file or directory C:\xampp\htdocs\elevant_academy\application\views\backend\index.php 39
+ERROR - 2025-04-22 23:59:21 --> Severity: Warning --> include(): Failed opening 'modal_add_affiliate.php' for inclusion (include_path='C:\xampp\php\PEAR') C:\xampp\htdocs\elevant_academy\application\views\backend\index.php 39
+INFO - 2025-04-22 23:59:21 --> File loaded: C:\xampp\htdocs\elevant_academy\application\views\backend/index.php
+INFO - 2025-04-22 23:59:21 --> Final output sent to browser
+DEBUG - 2025-04-22 23:59:21 --> Total execution time: 0.1153
+INFO - 2025-04-22 23:59:22 --> Config Class Initialized
+INFO - 2025-04-22 23:59:22 --> Hooks Class Initialized
+DEBUG - 2025-04-22 23:59:22 --> UTF-8 Support Enabled
+INFO - 2025-04-22 23:59:22 --> Utf8 Class Initialized
+INFO - 2025-04-22 23:59:22 --> URI Class Initialized
+INFO - 2025-04-22 23:59:22 --> Config Class Initialized
+INFO - 2025-04-22 23:59:22 --> Hooks Class Initialized
+INFO - 2025-04-22 23:59:22 --> Router Class Initialized
+INFO - 2025-04-22 23:59:22 --> Output Class Initialized
+DEBUG - 2025-04-22 23:59:22 --> UTF-8 Support Enabled
+INFO - 2025-04-22 23:59:22 --> Utf8 Class Initialized
+INFO - 2025-04-22 23:59:22 --> Security Class Initialized
+INFO - 2025-04-22 23:59:22 --> URI Class Initialized
+DEBUG - 2025-04-22 23:59:22 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-04-22 23:59:22 --> Input Class Initialized
+INFO - 2025-04-22 23:59:22 --> Language Class Initialized
+INFO - 2025-04-22 23:59:22 --> Router Class Initialized
+INFO - 2025-04-22 23:59:22 --> Output Class Initialized
+INFO - 2025-04-22 23:59:22 --> Security Class Initialized
+INFO - 2025-04-22 23:59:22 --> Loader Class Initialized
+DEBUG - 2025-04-22 23:59:22 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-04-22 23:59:22 --> Input Class Initialized
+INFO - 2025-04-22 23:59:22 --> Language Class Initialized
+INFO - 2025-04-22 23:59:22 --> Helper loaded: url_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: file_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: form_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: security_helper
+INFO - 2025-04-22 23:59:22 --> Loader Class Initialized
+INFO - 2025-04-22 23:59:22 --> Helper loaded: string_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: inflector_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: url_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: directory_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: file_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: download_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: user_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: form_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: multi_language_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: security_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: string_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: common_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: inflector_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: pagination_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: directory_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: addon_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: download_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: user_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: multi_language_helper
+INFO - 2025-04-22 23:59:22 --> XML-RPC Class Initialized
+INFO - 2025-04-22 23:59:22 --> Helper loaded: common_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: pagination_helper
+INFO - 2025-04-22 23:59:22 --> Language file loaded: language/english/pagination_lang.php
+INFO - 2025-04-22 23:59:22 --> Pagination Class Initialized
+INFO - 2025-04-22 23:59:22 --> Helper loaded: addon_helper
+INFO - 2025-04-22 23:59:22 --> Model "User_model" initialized
+INFO - 2025-04-22 23:59:22 --> XML-RPC Class Initialized
+INFO - 2025-04-22 23:59:22 --> Language file loaded: language/english/pagination_lang.php
+INFO - 2025-04-22 23:59:22 --> Pagination Class Initialized
+INFO - 2025-04-22 23:59:22 --> Model "User_model" initialized
+INFO - 2025-04-22 23:59:22 --> Model "Crud_model" initialized
+INFO - 2025-04-22 23:59:22 --> Model "Video_model" initialized
+INFO - 2025-04-22 23:59:22 --> Model "Email_model" initialized
+INFO - 2025-04-22 23:59:22 --> Model "Crud_model" initialized
+INFO - 2025-04-22 23:59:22 --> Model "Video_model" initialized
+INFO - 2025-04-22 23:59:22 --> Model "Email_model" initialized
+INFO - 2025-04-22 23:59:22 --> Model "Payment_model" initialized
+INFO - 2025-04-22 23:59:22 --> Model "Lazyloaddata_model" initialized
+INFO - 2025-04-22 23:59:22 --> Model "Payment_model" initialized
+INFO - 2025-04-22 23:59:22 --> Model "Api_model" initialized
+INFO - 2025-04-22 23:59:22 --> Model "Lazyloaddata_model" initialized
+INFO - 2025-04-22 23:59:22 --> Model "Addon_model" initialized
+INFO - 2025-04-22 23:59:22 --> Model "Social_login_modal" initialized
+INFO - 2025-04-22 23:59:22 --> Controller Class Initialized
+INFO - 2025-04-22 23:59:22 --> Model "Api_model" initialized
+INFO - 2025-04-22 23:59:22 --> Model "Addon_model" initialized
+INFO - 2025-04-22 23:59:22 --> Model "Social_login_modal" initialized
+INFO - 2025-04-22 23:59:22 --> Controller Class Initialized
+INFO - 2025-04-22 23:59:22 --> Database Driver Class Initialized
+INFO - 2025-04-22 23:59:22 --> Database Driver Class Initialized
+INFO - 2025-04-22 23:59:22 --> Session: Class initialized using 'database' driver.
+INFO - 2025-04-22 23:59:22 --> File loaded: C:\xampp\htdocs\elevant_academy\application\views\frontend/default/index.php
+INFO - 2025-04-22 23:59:22 --> Final output sent to browser
+DEBUG - 2025-04-22 23:59:22 --> Total execution time: 0.1012
+INFO - 2025-04-22 23:59:22 --> Session: Class initialized using 'database' driver.
+INFO - 2025-04-22 23:59:22 --> Config Class Initialized
+INFO - 2025-04-22 23:59:22 --> Hooks Class Initialized
+DEBUG - 2025-04-22 23:59:22 --> UTF-8 Support Enabled
+INFO - 2025-04-22 23:59:22 --> Utf8 Class Initialized
+INFO - 2025-04-22 23:59:22 --> URI Class Initialized
+INFO - 2025-04-22 23:59:22 --> Router Class Initialized
+INFO - 2025-04-22 23:59:22 --> File loaded: C:\xampp\htdocs\elevant_academy\application\views\frontend/default/index.php
+INFO - 2025-04-22 23:59:22 --> Final output sent to browser
+DEBUG - 2025-04-22 23:59:22 --> Total execution time: 0.1498
+INFO - 2025-04-22 23:59:22 --> Output Class Initialized
+INFO - 2025-04-22 23:59:22 --> Security Class Initialized
+DEBUG - 2025-04-22 23:59:22 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-04-22 23:59:22 --> Input Class Initialized
+INFO - 2025-04-22 23:59:22 --> Language Class Initialized
+INFO - 2025-04-22 23:59:22 --> Loader Class Initialized
+INFO - 2025-04-22 23:59:22 --> Helper loaded: url_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: file_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: form_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: security_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: string_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: inflector_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: directory_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: download_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: user_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: multi_language_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: common_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: pagination_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: addon_helper
+INFO - 2025-04-22 23:59:22 --> XML-RPC Class Initialized
+INFO - 2025-04-22 23:59:22 --> Language file loaded: language/english/pagination_lang.php
+INFO - 2025-04-22 23:59:22 --> Pagination Class Initialized
+INFO - 2025-04-22 23:59:22 --> Model "User_model" initialized
+INFO - 2025-04-22 23:59:22 --> Model "Crud_model" initialized
+INFO - 2025-04-22 23:59:22 --> Model "Video_model" initialized
+INFO - 2025-04-22 23:59:22 --> Model "Email_model" initialized
+INFO - 2025-04-22 23:59:22 --> Model "Payment_model" initialized
+INFO - 2025-04-22 23:59:22 --> Model "Lazyloaddata_model" initialized
+INFO - 2025-04-22 23:59:22 --> Model "Api_model" initialized
+INFO - 2025-04-22 23:59:22 --> Model "Addon_model" initialized
+INFO - 2025-04-22 23:59:22 --> Model "Social_login_modal" initialized
+INFO - 2025-04-22 23:59:22 --> Controller Class Initialized
+INFO - 2025-04-22 23:59:22 --> Database Driver Class Initialized
+INFO - 2025-04-22 23:59:22 --> Session: Class initialized using 'database' driver.
+INFO - 2025-04-22 23:59:22 --> File loaded: C:\xampp\htdocs\elevant_academy\application\views\frontend/default/index.php
+INFO - 2025-04-22 23:59:22 --> Final output sent to browser
+DEBUG - 2025-04-22 23:59:22 --> Total execution time: 0.0861
+INFO - 2025-04-22 23:59:22 --> Config Class Initialized
+INFO - 2025-04-22 23:59:22 --> Hooks Class Initialized
+DEBUG - 2025-04-22 23:59:22 --> UTF-8 Support Enabled
+INFO - 2025-04-22 23:59:22 --> Utf8 Class Initialized
+INFO - 2025-04-22 23:59:22 --> URI Class Initialized
+INFO - 2025-04-22 23:59:22 --> Router Class Initialized
+INFO - 2025-04-22 23:59:22 --> Output Class Initialized
+INFO - 2025-04-22 23:59:22 --> Security Class Initialized
+DEBUG - 2025-04-22 23:59:22 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-04-22 23:59:22 --> Input Class Initialized
+INFO - 2025-04-22 23:59:22 --> Language Class Initialized
+INFO - 2025-04-22 23:59:22 --> Loader Class Initialized
+INFO - 2025-04-22 23:59:22 --> Helper loaded: url_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: file_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: form_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: security_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: string_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: inflector_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: directory_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: download_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: user_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: multi_language_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: common_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: pagination_helper
+INFO - 2025-04-22 23:59:22 --> Helper loaded: addon_helper
+INFO - 2025-04-22 23:59:22 --> XML-RPC Class Initialized
+INFO - 2025-04-22 23:59:22 --> Language file loaded: language/english/pagination_lang.php
+INFO - 2025-04-22 23:59:22 --> Pagination Class Initialized
+INFO - 2025-04-22 23:59:22 --> Model "User_model" initialized
+INFO - 2025-04-22 23:59:22 --> Model "Crud_model" initialized
+INFO - 2025-04-22 23:59:22 --> Model "Video_model" initialized
+INFO - 2025-04-22 23:59:22 --> Model "Email_model" initialized
+INFO - 2025-04-22 23:59:22 --> Model "Payment_model" initialized
+INFO - 2025-04-22 23:59:22 --> Model "Lazyloaddata_model" initialized
+INFO - 2025-04-22 23:59:22 --> Model "Api_model" initialized
+INFO - 2025-04-22 23:59:22 --> Model "Addon_model" initialized
+INFO - 2025-04-22 23:59:22 --> Model "Social_login_modal" initialized
+INFO - 2025-04-22 23:59:22 --> Controller Class Initialized
+INFO - 2025-04-22 23:59:22 --> Database Driver Class Initialized
+INFO - 2025-04-22 23:59:22 --> Session: Class initialized using 'database' driver.
+INFO - 2025-04-22 23:59:22 --> File loaded: C:\xampp\htdocs\elevant_academy\application\views\frontend/default/index.php
+INFO - 2025-04-22 23:59:22 --> Final output sent to browser
+DEBUG - 2025-04-22 23:59:22 --> Total execution time: 0.0966
