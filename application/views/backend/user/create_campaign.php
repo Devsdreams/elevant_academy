@@ -122,14 +122,13 @@
                                 </div>
                             </div>
 
-                            <!-- Idioma del correo -->
+                            <!-- Selección de grupos -->
                             <div class="form-group">
-                                <label for="language"><?php echo get_phrase('language'); ?></label>
-                                <select class="form-control" id="language" name="language" required>
-                                    <option value="en"><?php echo get_phrase('english'); ?></option>
-                                    <option value="es"><?php echo get_phrase('spanish'); ?></option>
-                                    <option value="fr"><?php echo get_phrase('french'); ?></option>
-                                    <option value="de"><?php echo get_phrase('german'); ?></option>
+                                <label for="group"><?php echo get_phrase('select_groups'); ?></label>
+                                <select class="form-control select2" id="group" name="group_ids[]" multiple="multiple" required>
+                                    <?php foreach ($groups as $group): ?>
+                                        <option value="<?php echo $group['id']; ?>"><?php echo $group['name']; ?></option>
+                                    <?php endforeach; ?>
                                 </select>
                             </div>
                         </div>
@@ -140,47 +139,6 @@
                 <div class="tab-pane" id="send_or_schedule">
                     <div class="row">
                         <div class="col-12">
-                            <div class="form-group">
-                                <label>
-                                    <input type="checkbox" id="send_to_single_user" name="send_to_single_user" value="1">
-                                    <?php echo get_phrase('send_to_single_user'); ?>
-                                </label>
-                            </div>
-
-                            <div class="form-group" id="single_user_email" style="display: none;">
-                                <label for="user_email"><?php echo get_phrase('user_email'); ?></label>
-                                <input type="email" class="form-control" id="user_email" name="user_email">
-                            </div>
-
-                            <div class="form-group" id="group_selection">
-                                <label for="group"><?php echo get_phrase('select_group'); ?></label>
-                                <select class="form-control" id="group" name="group_id">
-                                    <?php foreach ($groups as $group): ?>
-                                        <option value="<?php echo $group['id']; ?>"><?php echo $group['name']; ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-
-                            <h4><?php echo get_phrase('existing_groups'); ?></h4>
-                            <ul>
-                                <?php foreach ($groups as $group): ?>
-                                    <li>
-                                        <strong><?php echo $group['name']; ?></strong>
-                                        <br>
-                                        <small>
-                                            <?php echo get_phrase('contacts'); ?>:
-                                            <ul>
-                                                <?php foreach (json_decode($group['mails'], true) as $contact): ?>
-                                                    <li>
-                                                        <?php echo $contact['name']; ?> (<?php echo $contact['email']; ?>) - <?php echo $contact['number']; ?>, <?php echo $contact['company']; ?>
-                                                    </li>
-                                                <?php endforeach; ?>
-                                            </ul>
-                                        </small>
-                                    </li>
-                                <?php endforeach; ?>
-                            </ul>
-
                             <div class="form-group">
                                 <label for="schedule_date"><?php echo get_phrase('schedule_date'); ?></label>
                                 <input type="datetime-local" class="form-control" id="schedule_date" name="schedule_date">
@@ -206,21 +164,26 @@
     </form>
 </div>
 
-<script>
-    document.getElementById('send_to_single_user').addEventListener('change', function () {
-        const isChecked = this.checked;
-        document.getElementById('single_user_email').style.display = isChecked ? 'block' : 'none';
-        document.getElementById('group_selection').style.display = isChecked ? 'none' : 'block';
-    });
+<!-- Librerías necesarias -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
 
-    document.getElementById('change_sender_email').addEventListener('change', function () {
-        const senderEmailField = document.getElementById('sender_email');
-        if (this.checked) {
-            senderEmailField.removeAttribute('readonly');
-            senderEmailField.value = ''; // Limpia el campo si se selecciona otro correo
-        } else {
-            senderEmailField.setAttribute('readonly', true);
-            senderEmailField.value = '<?php echo $user_details['email']; ?>'; // Restaura el correo por defecto
-        }
+<script>
+    $(document).ready(function () {
+        // Inicializar Select2
+        $('.select2').select2({
+            placeholder: "<?php echo get_phrase('select_groups'); ?>",
+            allowClear: true
+        });
+
+        // Mostrar/ocultar campo de correo del remitente
+        $('#change_sender_email').on('change', function () {
+            const senderEmailField = $('#sender_email');
+            if ($(this).is(':checked')) {
+                senderEmailField.removeAttr('readonly').val('');
+            } else {
+                senderEmailField.attr('readonly', true).val('<?php echo $user_details['email']; ?>');
+            }
+        });
     });
 </script>

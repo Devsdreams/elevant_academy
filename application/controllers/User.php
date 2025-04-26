@@ -1034,7 +1034,6 @@ class User extends CI_Controller
         $this->load->view('backend/index', $data);
     }
 
-    // Método para manejar la creación de una nueva campaña
     public function save_campaign()
     {
         if ($this->session->userdata('user_login') != true) {
@@ -1056,8 +1055,9 @@ class User extends CI_Controller
             $data['group_id'] = null; // No se usa un grupo
             $data['user_email'] = $this->input->post('user_email');
         } else {
-            // Si se selecciona un grupo
-            $data['group_id'] = $this->input->post('group_id');
+            // Si se seleccionan grupos
+            $group_ids = $this->input->post('group_ids'); // IDs de los grupos seleccionados
+            $data['group_id'] = json_encode($group_ids); // Guardar como JSON
             $data['user_email'] = null; // No se usa un correo individual
         }
 
@@ -1069,8 +1069,8 @@ class User extends CI_Controller
             // Enviar a un solo usuario
             $this->send_email_to_user($data['user_email'], $data['subject'], $data['content']);
         } else {
-            // Enviar a un grupo
-            $this->send_email_to_group($data['group_id'], $data['subject'], $data['content']);
+            // Enviar a los grupos seleccionados
+            $this->send_email_to_groups($group_ids, $data['subject'], $data['content']);
         }
 
         $this->session->set_flashdata('flash_message', get_phrase('campaign_created_and_emails_sent_successfully'));
@@ -1088,18 +1088,18 @@ class User extends CI_Controller
     }
 
     // Enviar correos a un grupo
-    private function send_email_to_group($group_id, $subject, $content)
+    private function send_email_to_groups($group_ids, $subject, $content)
     {
-        if (!empty($group_id)) {
-            $group = $this->db->get_where('email_groups', ['id' => $group_id])->row_array();
-            if ($group && !empty($group['mails'])) {
-                $emails = json_decode($group['mails'], true); // Decodificar el listado de correos
-                if (!empty($emails)) {
-                    $this->load->model('Email_model');
-                    $from = get_settings('system_email'); // Obtener el correo del sistema
-                    foreach ($emails as $email) {
-                        $this->Email_model->send_smtp_mail($content, $subject, $email, $from);
-                    }
+        if (!empty($group_ids)) {
+            $this->load->model('Campaign_model');
+            $emails = $this->Campaign_model->get_emails_by_group_ids($group_ids); // Obtener correos de los grupos
+
+            if (!empty($emails)) {
+                $this->load->model('Email_model');
+                $from = get_settings('system_email'); // Obtener el correo del sistema
+
+                foreach ($emails as $email) {
+                    $this->Email_model->send_smtp_mail($content, $subject, $email, $from);
                 }
             }
         }

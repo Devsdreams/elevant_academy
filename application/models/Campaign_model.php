@@ -13,8 +13,12 @@ class Campaign_model extends CI_Model
     // Crear una nueva campaña
     public function create_campaign($data)
     {
-        $this->db->insert('campaigns', $data);
-        return $this->db->insert_id(); // Retorna el ID de la campaña creada
+        if ($this->db->insert('campaigns', $data)) {
+            return $this->db->insert_id(); // Retorna el ID de la campaña creada
+        } else {
+            log_message('error', 'Error al insertar campaña: ' . $this->db->last_query());
+            return false;
+        }
     }
 
     // Obtener todos los grupos
@@ -110,5 +114,22 @@ class Campaign_model extends CI_Model
         }
 
         return false; // No se encontró el contacto
+    }
+ 
+    // Obtener correos por IDs de grupos
+    public function get_emails_by_group_ids($group_ids)
+    {
+        $this->db->where_in('id', $group_ids);
+        $groups = $this->db->get('email_groups')->result_array();
+
+        $emails = [];
+        foreach ($groups as $group) {
+            $mails = json_decode($group['mails'], true);
+            foreach ($mails as $mail) {
+                $emails[] = $mail['email'];
+            }
+        }
+
+        return array_unique($emails); // Eliminar duplicados
     }
 }

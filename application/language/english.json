@@ -1215,5 +1215,8 @@
     "error_updating_contact": "Error updating contact",
     "contact_deleted_successfully": "Contact deleted successfully",
     "error_deleting_contact": "Error deleting contact",
-    "edit_functionality_not_implemented": "Edit functionality not implemented"
+    "edit_functionality_not_implemented": "Edit functionality not implemented",
+    "select_groups": "Select groups",
+    "emails_sent_successfully": "Emails sent successfully",
+    "error_saving_campaign": "Error saving campaign"
 }
