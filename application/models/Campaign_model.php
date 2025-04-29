@@ -10,6 +10,12 @@ class Campaign_model extends CI_Model
         return $this->db->get('campaigns')->result_array();
     }
 
+    // Obtener campaña por ID
+    public function get_campaign_by_id($campaign_id)
+    {
+        return $this->db->get_where('campaigns', ['id' => $campaign_id])->row_array();
+    }
+
     // Crear una nueva campaña
     public function create_campaign($data)
     {
@@ -62,33 +68,47 @@ class Campaign_model extends CI_Model
     }
 
     // Actualizar un contacto
-    public function update_contact($email, $name, $number, $company)
+    public function update_contact($email, $name, $number, $company, $new_group = null)
     {
-        // Buscar el grupo que contiene el contacto
+        // Buscar el grupo actual que contiene el contacto
         $this->db->like('mails', $email);
-        $group = $this->db->get('email_groups')->row_array();
+        $current_group = $this->db->get('email_groups')->row_array();
 
-        if ($group) {
+        if ($current_group) {
             // Decodificar el JSON de los contactos
-            $mails = json_decode($group['mails'], true);
+            $mails = json_decode($current_group['mails'], true);
 
-            // Buscar y actualizar el contacto
-            foreach ($mails as &$mail) {
-                if ($mail['email'] === $email) {
-                    $mail['name'] = $name;
-                    $mail['number'] = $number;
-                    $mail['company'] = $company;
-                    break;
-                }
-            }
+            // Buscar y eliminar el contacto del grupo actual
+            $updated_mails = array_filter($mails, function ($mail) use ($email) {
+                return $mail['email'] !== $email;
+            });
 
-            // Codificar el JSON actualizado y guardar en la base de datos
-            $updated_mails = json_encode($mails);
-            $this->db->where('id', $group['id']);
-            return $this->db->update('email_groups', ['mails' => $updated_mails]);
+            // Actualizar el grupo actual con los contactos restantes
+            $this->db->where('id', $current_group['id']);
+            $this->db->update('email_groups', ['mails' => json_encode(array_values($updated_mails))]);
         }
 
-        return false; // No se encontró el contacto
+        // Si se especifica un nuevo grupo, agregar el contacto al nuevo grupo
+        if ($new_group) {
+            $this->db->where('name', $new_group);
+            $target_group = $this->db->get('email_groups')->row_array();
+
+            if ($target_group) {
+                $target_mails = json_decode($target_group['mails'], true);
+                $target_mails[] = [
+                    'name' => $name,
+                    'email' => $email,
+                    'number' => $number,
+                    'company' => $company
+                ];
+
+                // Actualizar el nuevo grupo con el contacto agregado
+                $this->db->where('id', $target_group['id']);
+                return $this->db->update('email_groups', ['mails' => json_encode($target_mails)]);
+            }
+        }
+
+        return false; // Si no se especifica un nuevo grupo o no se encuentra, devolver false
     }
 
     // Eliminar un contacto
@@ -131,5 +151,32 @@ class Campaign_model extends CI_Model
         }
 
         return array_unique($emails); // Eliminar duplicados
+    }
+
+    // Enviar correo de campaña
+    public function send_campaign_email($campaign_id)
+    {
+        $this->load->model('Campaign_model');
+
+        // Obtener los datos de la campaña
+        $campaign = $this->Campaign_model->get_campaign_by_id($campaign_id);
+
+        // Decodificar los datos dinámicos de la plantilla
+        $template_data = json_decode($campaign['template_data'], true);
+
+        // Cargar la plantilla seleccionada
+        $email_body = $this->load->view('email/campains/' . $campaign['template'], $template_data, true);
+
+        // Enviar el correo
+        $this->load->model('Email_model');
+        $this->Email_model->send_smtp_mail($email_body, $campaign['subject'], $campaign['user_email'], $campaign['sender_email']);
+    }
+
+    // Verificar si un grupo existe
+    public function group_exists($group_id)
+    {
+        $this->db->where('id', $group_id);
+        $query = $this->db->get('email_groups');
+        return $query->num_rows() > 0;
     }
 }

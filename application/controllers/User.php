@@ -1042,39 +1042,85 @@ class User extends CI_Controller
 
         $this->load->model('Campaign_model');
 
-        // Datos básicos de la campaña
+        // Datos mínimos de la campaña
         $data = [
             'name' => $this->input->post('campaign_name'),
             'subject' => $this->input->post('subject'),
-            'content' => $this->input->post('content'),
-            'created_at' => date('Y-m-d H:i:s')
+            'sender_email' => $this->input->post('sender_email'),
+            'created_at' => date('Y-m-d H:i:s'),
+            'template' => $this->input->post('template'),
+            'template_data' => $this->input->post('template_data') // Guardar los datos de la plantilla como JSON
         ];
 
-        // Si se selecciona enviar a un solo usuario
         if ($this->input->post('send_to_single_user') == 1) {
-            $data['group_id'] = null; // No se usa un grupo
+            // Si se envía a un solo usuario
             $data['user_email'] = $this->input->post('user_email');
-        } else {
-            // Si se seleccionan grupos
-            $group_ids = $this->input->post('group_ids'); // IDs de los grupos seleccionados
-            $data['group_id'] = json_encode($group_ids); // Guardar como JSON
-            $data['user_email'] = null; // No se usa un correo individual
-        }
+            $data['group_id'] = null; // No se asigna un grupo si es un solo usuario
 
-        // Guardar la campaña
-        $campaign_id = $this->Campaign_model->create_campaign($data);
+            // Guardar la campaña
+            $campaign_id = $this->Campaign_model->create_campaign($data);
 
-        // Preparar el envío de correos
-        if ($this->input->post('send_to_single_user') == 1) {
-            // Enviar a un solo usuario
-            $this->send_email_to_user($data['user_email'], $data['subject'], $data['content']);
+            if (!$campaign_id) {
+                log_message('error', 'Error al guardar la campaña en la base de datos.');
+                $this->session->set_flashdata('error_message', get_phrase('error_saving_campaign'));
+            } else {
+                log_message('debug', 'Campaña guardada exitosamente con ID: ' . $campaign_id);
+
+                // Obtener los datos de la campaña desde la base de datos
+                $campaign = $this->Campaign_model->get_campaign_by_id($campaign_id);
+
+                // Enviar el correo con los datos de la campaña
+                $this->send_email_with_template(
+                    $campaign['user_email'],
+                    $campaign['subject'],
+                    $campaign['template'],
+                    $campaign['template_data']
+                );
+            }
         } else {
-            // Enviar a los grupos seleccionados
-            $this->send_email_to_groups($group_ids, $data['subject'], $data['content']);
+            // Si se seleccionan varios grupos
+            $group_ids = $this->input->post('group_ids');
+            foreach ($group_ids as $group_id) {
+                $data['group_id'] = $group_id;
+                $data['user_email'] = null; // No se asigna un usuario si es para un grupo
+
+                $campaign_id = $this->Campaign_model->create_campaign($data);
+
+                if (!$campaign_id) {
+                    log_message('error', 'Error al guardar la campaña para el grupo ID: ' . $group_id);
+                    $this->session->set_flashdata('error_message', get_phrase('error_saving_campaign'));
+                } else {
+                    log_message('debug', 'Campaña guardada exitosamente para el grupo ID: ' . $group_id);
+
+                    // Obtener los datos de la campaña desde la base de datos
+                    $campaign = $this->Campaign_model->get_campaign_by_id($campaign_id);
+
+                    // Enviar los correos al grupo con los datos de la campaña
+                    $this->send_email_to_groups_with_template(
+                        [$group_id],
+                        $campaign['subject'],
+                        $campaign['template'],
+                        $campaign['template_data']
+                    );
+                }
+            }
         }
 
         $this->session->set_flashdata('flash_message', get_phrase('campaign_created_and_emails_sent_successfully'));
-        redirect(site_url('user/create_campaign'));
+        redirect(site_url('user/campaigns')); // Redirigir al listado de campañas
+    }
+
+    public function campaigns()
+    {
+        if ($this->session->userdata('user_login') != true) {
+            redirect(site_url('login'), 'refresh');
+        }
+
+        $this->load->model('Campaign_model');
+        $data['campaigns'] = $this->Campaign_model->get_campaigns();
+        $data['page_name'] = 'campaigns';
+        $data['page_title'] = get_phrase('campaigns');
+        $this->load->view('backend/index', $data);
     }
 
     // Enviar correo a un solo usuario
@@ -1100,6 +1146,58 @@ class User extends CI_Controller
 
                 foreach ($emails as $email) {
                     $this->Email_model->send_smtp_mail($content, $subject, $email, $from);
+                }
+            }
+        }
+    }
+
+    private function send_email_with_template($email, $subject, $template, $template_data)
+    {
+        if (!empty($email)) {
+            $this->load->model('Email_model');
+            $from = get_settings('system_email'); // Obtener el correo del sistema
+
+            // Decodificar los datos de la plantilla
+            $data = json_decode($template_data, true);
+
+            // Verificar que los datos se hayan decodificado correctamente
+            if (!$data) {
+                log_message('error', 'Error al decodificar template_data: ' . $template_data);
+                return;
+            }
+
+            // Cargar la plantilla seleccionada con los datos
+            $email_body = $this->load->view('email/campains/' . $template, $data, true);
+
+            // Verificar que el cuerpo del correo se haya generado correctamente
+            if (!$email_body) {
+                log_message('error', 'Error al renderizar la plantilla: ' . $template);
+                return;
+            }
+
+            // Enviar el correo
+            $this->Email_model->send_smtp_mail($email_body, $subject, $email, $from);
+        }
+    }
+
+    private function send_email_to_groups_with_template($group_ids, $subject, $template, $template_data)
+    {
+        if (!empty($group_ids)) {
+            $this->load->model('Campaign_model');
+            $emails = $this->Campaign_model->get_emails_by_group_ids($group_ids);
+
+            if (!empty($emails)) {
+                $this->load->model('Email_model');
+                $from = get_settings('system_email'); // Obtener el correo del sistema
+
+                // Decodificar los datos de la plantilla
+                $data = json_decode($template_data, true);
+
+                // Cargar la plantilla seleccionada con los datos
+                $email_body = $this->load->view('email/campains/' . $template, $data, true);
+
+                foreach ($emails as $email) {
+                    $this->Email_model->send_smtp_mail($email_body, $subject, $email, $from);
                 }
             }
         }
@@ -1239,18 +1337,23 @@ class User extends CI_Controller
 
     public function update_contact()
     {
+        if ($this->session->userdata('user_login') != true) {
+            redirect(site_url('login'), 'refresh');
+        }
+
         $email = $this->input->post('email');
         $name = $this->input->post('name');
         $number = $this->input->post('number');
         $company = $this->input->post('company');
+        $group = $this->input->post('group'); // Nuevo grupo
 
         $this->load->model('Campaign_model');
-        $result = $this->Campaign_model->update_contact($email, $name, $number, $company);
+        $result = $this->Campaign_model->update_contact($email, $name, $number, $company, $group);
 
         if ($result) {
-            echo json_encode(['status' => 'success']);
+            echo json_encode(['status' => 'success', 'message' => get_phrase('contact_updated_successfully')]);
         } else {
-            echo json_encode(['status' => 'error']);
+            echo json_encode(['status' => 'error', 'message' => get_phrase('error_updating_contact')]);
         }
     }
 
@@ -1266,5 +1369,28 @@ class User extends CI_Controller
         } else {
             echo json_encode(['status' => 'error']);
         }
+    }
+
+    public function render_template($template_name)
+    {
+        if ($this->session->userdata('user_login') != true) {
+            redirect(site_url('login'), 'refresh');
+        }
+
+        // Datos de ejemplo para las variables de la plantilla
+        $data = [
+            'email_title' => $this->input->post('email_title') ?? 'Default Title',
+            'main_heading' => $this->input->post('main_heading') ?? 'Default Main Heading',
+            'sub_heading' => $this->input->post('sub_heading') ?? 'Default Sub Heading',
+            'email_body' => $this->input->post('email_body') ?? 'Default Email Body',
+            'button_text' => $this->input->post('button_text') ?? 'Click Here',
+            'button_url' => $this->input->post('button_url') ?? 'https://example.com',
+            'promo_text' => $this->input->post('promo_text') ?? 'Special Offer',
+            'promo_price' => $this->input->post('promo_price') ?? '$9.99',
+            'footer_text' => $this->input->post('footer_text') ?? 'Thank you for choosing us!'
+        ];
+
+        // Renderizar la plantilla seleccionada
+        $this->load->view("email/campains/{$template_name}", $data);
     }
 }

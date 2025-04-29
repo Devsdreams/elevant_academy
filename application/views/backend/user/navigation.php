@@ -205,6 +205,9 @@ $status_wise_courses = $this->crud_model->get_status_wise_courses();
 				<span class="menu-arrow"></span>
 			</a>
 			<ul class="side-nav-second-level" aria-expanded="false">
+				<li class="<?php if ($page_name == 'campaigns') echo 'active'; ?>">
+					<a href="<?php echo site_url('user/campaigns'); ?>"><?php echo get_phrase('campaigns'); ?></a>
+				</li>
 				<li class="<?php if ($page_name == 'contact') echo 'active'; ?>">
 					<a href="<?php echo site_url('user/contact'); ?>"><?php echo get_phrase('contacts'); ?></a>
 				</li>
@@ -212,7 +215,7 @@ $status_wise_courses = $this->crud_model->get_status_wise_courses();
 					<a href="<?php echo site_url('user/create_campaign'); ?>"><?php echo get_phrase('create_campaign'); ?></a>
 				</li>
 				<li class="<?php if ($page_name == 'groups') echo 'active'; ?>">
-					<a href="<?php echo site_url('user/groups'); ?>"><?php echo get_phrase('create_groups'); ?></a>
+					<a href="<?php echo site_url('user/groups'); ?>"><?php echo get_phrase('create_contacts'); ?></a>
 				</li>
 			</ul>
 		</li>

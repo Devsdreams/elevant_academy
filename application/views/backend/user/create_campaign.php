@@ -42,7 +42,7 @@
                                         <div class="card-body text-center">
                                             <h6 class="card-title"><?php echo get_phrase('template_1'); ?></h6>
                                             <p class="card-text"><?php echo get_phrase('basic_email_template'); ?></p>
-                                            <button type="button" class="btn btn-primary select-template" data-template="template_1">
+                                            <button type="button" class="btn btn-primary select-template" data-template="template1">
                                                 <?php echo get_phrase('select'); ?>
                                             </button>
                                         </div>
@@ -93,7 +93,7 @@
                             </div>
                         </div>
                     </div>
-                    <input type="hidden" id="selected_template" name="selected_template" value="">
+                    <input type="hidden" id="selected_template" name="template" value="">
                 </div>
 
                 <!-- Configuration Section -->
@@ -164,6 +164,94 @@
     </form>
 </div>
 
+<!-- Modal para editar la plantilla -->
+<div class="modal fade" id="templateModal" tabindex="-1" role="dialog" aria-labelledby="templateModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document"> <!-- Cambiado a modal-lg para hacerlo más compacto -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="templateModalLabel"><?php echo get_phrase('edit_template'); ?></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <!-- Formulario compacto -->
+                    <div class="col-md-6">
+                        <form id="templateForm">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="email_title"><?php echo get_phrase('email_title'); ?></label>
+                                        <input type="text" class="form-control form-control-sm" id="email_title" name="email_title" placeholder="<?php echo get_phrase('enter_email_title'); ?>">
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="main_heading"><?php echo get_phrase('main_heading'); ?></label>
+                                        <input type="text" class="form-control form-control-sm" id="main_heading" name="main_heading" placeholder="<?php echo get_phrase('enter_main_heading'); ?>">
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="sub_heading"><?php echo get_phrase('sub_heading'); ?></label>
+                                        <input type="text" class="form-control form-control-sm" id="sub_heading" name="sub_heading" placeholder="<?php echo get_phrase('enter_sub_heading'); ?>">
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="email_body"><?php echo get_phrase('email_body'); ?></label>
+                                        <textarea class="form-control form-control-sm" id="email_body" name="email_body" rows="2" placeholder="<?php echo get_phrase('enter_email_body'); ?>"></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="promo_text"><?php echo get_phrase('promo_text'); ?></label>
+                                        <input type="text" class="form-control form-control-sm" id="promo_text" name="promo_text" placeholder="<?php echo get_phrase('enter_promo_text'); ?>">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="promo_price"><?php echo get_phrase('promo_price'); ?></label>
+                                        <input type="text" class="form-control form-control-sm" id="promo_price" name="promo_price" placeholder="<?php echo get_phrase('enter_promo_price'); ?>">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="button_text"><?php echo get_phrase('button_text'); ?></label>
+                                        <input type="text" class="form-control form-control-sm" id="button_text" name="button_text" placeholder="<?php echo get_phrase('enter_button_text'); ?>">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="button_url"><?php echo get_phrase('button_url'); ?></label>
+                                        <input type="url" class="form-control form-control-sm" id="button_url" name="button_url" placeholder="<?php echo get_phrase('enter_button_url'); ?>">
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="footer_text"><?php echo get_phrase('footer_text'); ?></label>
+                                        <textarea class="form-control form-control-sm" id="footer_text" name="footer_text" rows="2" placeholder="<?php echo get_phrase('enter_footer_text'); ?>"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- Vista previa -->
+                    <div class="col-md-6">
+                        <h5><?php echo get_phrase('template_preview'); ?></h5>
+                        <iframe id="templateIframe" src="" frameborder="0" style="width: 100%; height: 400px; border: 1px solid #ddd;"></iframe>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal"><?php echo get_phrase('close'); ?></button>
+                <button type="button" class="btn btn-primary btn-sm" id="saveTemplate"><?php echo get_phrase('save'); ?></button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Librerías necesarias -->
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
@@ -183,6 +271,84 @@
                 senderEmailField.removeAttr('readonly').val('');
             } else {
                 senderEmailField.attr('readonly', true).val('<?php echo $user_details['email']; ?>');
+            }
+        });
+
+        // Manejar la selección de plantilla
+        $('.select-template').on('click', function () {
+            const template = $(this).data('template');
+            $('#selected_template').val(template); // Guardar la plantilla seleccionada
+
+            if (template === 'template1') {
+                // Mostrar el modal
+                $('#templateModal').modal('show');
+
+                // Renderizar la vista previa inicial de la plantilla
+                const iframe = document.getElementById('templateIframe');
+                iframe.src = '<?php echo site_url("user/render_template"); ?>/' + template;
+
+                // Esperar a que el iframe cargue
+                iframe.onload = function () {
+                    console.log('Iframe cargado correctamente');
+                };
+            } else {
+                alert('<?php echo get_phrase("template_selected"); ?>: ' + template);
+            }
+        });
+
+        // Actualizar la vista previa en tiempo real
+        $('#templateForm input, #templateForm textarea').on('input', function () {
+            const iframe = document.getElementById('templateIframe');
+            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+
+            // Obtener el nombre del campo y su valor
+            const fieldName = $(this).attr('name');
+            const fieldValue = $(this).val();
+
+            // Buscar el elemento con el atributo data-variable y actualizar su contenido
+            const targetElement = iframeDoc.querySelector(`*[data-variable="${fieldName}"]`);
+            if (targetElement) {
+                if (targetElement.tagName === 'A') {
+                    // Si es un enlace, actualizamos el texto y el atributo href
+                    targetElement.textContent = fieldValue;
+                    if (fieldName === 'button_url') {
+                        targetElement.setAttribute('href', fieldValue);
+                    }
+                } else {
+                    // Para otros elementos, solo actualizamos el texto
+                    targetElement.textContent = fieldValue;
+                }
+            }
+        });
+
+        // Guardar los valores ingresados en el formulario en localStorage
+        $('#saveTemplate').on('click', function () {
+            const formData = $('#templateForm').serializeArray();
+            const templateData = {};
+
+            formData.forEach(function (field) {
+                templateData[field.name] = field.value;
+            });
+
+            // Guardar los datos en localStorage
+            localStorage.setItem('template_data', JSON.stringify(templateData));
+
+            console.log('Template Data saved to localStorage:', templateData);
+
+            // Cerrar el modal
+            $('#templateModal').modal('hide');
+        });
+
+        // Al enviar el formulario principal, incluir los datos de la plantilla
+        $('form').on('submit', function () {
+            const templateData = localStorage.getItem('template_data');
+            if (templateData) {
+                // Agregar los datos de la plantilla al formulario como un campo oculto
+                $('<input>').attr({
+                    type: 'hidden',
+                    name: 'template_data',
+                    value: templateData
+                }).appendTo(this);
             }
         });
     });
