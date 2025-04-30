@@ -1410,4 +1410,24 @@ class Home extends CI_Controller
              echo '<h6>'.api_phrase('buy_the_course').'</h6>';
         }
     }
+
+    public function affiliate_user_dashboard()
+    {
+        if ($this->session->userdata('user_login') != true) {
+            redirect(site_url('login'), 'refresh');
+        }
+
+        $this->load->model('Affiliate_model');
+        $affiliates_data = $this->Affiliate_model->get_all_affiliates();
+
+        if (empty($affiliates_data)) {
+            $this->session->set_flashdata('error_message', get_phrase('no_affiliate_data_found'));
+            redirect(site_url('home'), 'refresh');
+        }
+
+        $page_data['affiliates_data'] = $affiliates_data;
+        $page_data['page_name'] = 'affiliate_dashboard';
+        $page_data['page_title'] = get_phrase('affiliate_dashboard');
+        $this->load->view('frontend/' . get_frontend_settings('theme') . '/index', $page_data);
+    }
 }

@@ -52,8 +52,6 @@ $user_details = $this->user_model->get_user($this->session->userdata('user_id'))
                 <?php include 'cart_items.php'; ?>
             </div>
 
-
-
             <div class="user-box menu-icon-box">
                 <div class="icon">
                     <a href="javascript:;">
@@ -88,23 +86,12 @@ $user_details = $this->user_model->get_user($this->session->userdata('user_id'))
                         <li class="user-dropdown-menu-item"><a href="<?php echo site_url('home/my_messages'); ?>"><i class="far fa-envelope"></i><?php echo site_phrase('my_messages'); ?></a></li>
                         <li class="user-dropdown-menu-item"><a href="<?php echo site_url('home/purchase_history'); ?>"><i class="fas fa-shopping-cart"></i><?php echo site_phrase('purchase_history'); ?></a></li>
                         <li class="user-dropdown-menu-item"><a href="<?php echo site_url('home/profile/user_profile'); ?>"><i class="fas fa-user"></i><?php echo site_phrase('user_profile'); ?></a></li>
-                        <?php if (addon_status('affiliate_course') ) :
-                            $CI    = &get_instance();
-                            $CI->load->model('addons/affiliate_course_model');
-                            $x = $CI->affiliate_course_model->is_affilator($this->session->userdata('user_id'));
-                            $is_affiliator = $CI->affiliate_course_model->is_affilator($this->session->userdata('user_id'));
-
-                            if ($x == 0 && get_settings('affiliate_addon_active_status') == 1) : ?>
-
-
-                                <li class="user-dropdown-menu-item"><a href="<?php echo site_url('addons/affiliate_course/become_an_affiliator'); ?>"><i class="fas fa-user-plus"></i><?php echo site_phrase('Become_an_Affiliator'); ?></a></li>
-                            <?php else : ?>
-                                <?php if ($is_affiliator == 1) : ?>
-
-
-                                    <li class="user-dropdown-menu-item"><a href="<?php echo site_url('addons/affiliate_course/affiliate_course_history '); ?>"><i class="fa fa-book"></i><?php echo site_phrase('Affiliation History'); ?></a></li>
-                                <?php endif; ?>
-                            <?php endif; ?>
+                        <?php if ($this->db->where(['email' => $user_details['email'], 'status' => 'active'])->get('affiliate')->num_rows() > 0): ?>
+                            <li class="user-dropdown-menu-item">
+                                <a href="<?php echo site_url('home/affiliate_user_dashboard'); ?>">
+                                    <i class="fas fa-chart-line"></i><?php echo site_phrase('affiliate_dashboard'); ?>
+                                </a>
+                            </li>
                         <?php endif; ?>
                         <?php if (addon_status('customer_support')) : ?>
                             <li class="user-dropdown-menu-item"><a href="<?php echo site_url('addons/customer_support/user_tickets'); ?>"><i class="fas fa-life-ring"></i><?php echo site_phrase('support'); ?></a></li>
@@ -115,7 +102,7 @@ $user_details = $this->user_model->get_user($this->session->userdata('user_id'))
                 </div>
             </div>
 
-
+            <?php include 'modal_add_affiliate.php'; ?>
 
             <span class="signin-box-move-desktop-helper"></span>
             <div class="sign-in-box btn-group d-none">

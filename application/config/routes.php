@@ -98,6 +98,8 @@ $route['user/manage_affiliates'] = 'user/manage_affiliates';
 $route['user/create_campaign'] = 'user/create_campaign';
 $route['user/groups'] = 'user/groups';
 $route['user/contact'] = 'user/contact';
+/* $route['user/affiliate_user_dashboard'] = 'user/affiliate_user_dashboard'; */
+$route['home/affiliate_dashboard'] = 'home/affiliate_user_dashboard';
 
 /* $route['affiliate/click/(:num)'] = 'user/track_affiliate_click/$1';  */
 

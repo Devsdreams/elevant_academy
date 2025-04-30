@@ -74,15 +74,41 @@
                                 <div class="row">
                                     <div class="col-12">
                                         <div class="form-group row mb-3">
-                                            <label class="col-md-3 col-form-label" for="payment_method"><?php echo get_phrase('payment_method'); ?></label>
+                                            <label class="col-md-3 col-form-label" for="payment_method"><?php echo get_phrase('payment_method'); ?><span class="required">*</span></label>
                                             <div class="col-md-9">
-                                                <input type="text" class="form-control" id="payment_method" name="payment_method" pattern="^[a-zA-Z\s]+$" title="<?php echo get_phrase('only_letters_and_spaces_allowed'); ?>">
+                                                <select class="form-control" id="payment_method" name="payment_method" required onchange="togglePaymentFields()">
+                                                    <option value=""><?php echo get_phrase('select_payment_method'); ?></option>
+                                                    <option value="paypal"><?php echo get_phrase('paypal'); ?></option>
+                                                    <option value="bank"><?php echo get_phrase('bank_account'); ?></option>
+                                                </select>
                                             </div>
                                         </div>
-                                        <div class="form-group row mb-3">
-                                            <label class="col-md-3 col-form-label" for="payment_identifier"><?php echo get_phrase('payment_identifier'); ?></label>
-                                            <div class="col-md-9">
-                                                <input type="text" class="form-control" id="payment_identifier" name="payment_identifier" maxlength="255">
+                                        <div id="paypal_fields" style="display: none;">
+                                            <div class="form-group row mb-3">
+                                                <label class="col-md-3 col-form-label" for="paypal_email"><?php echo get_phrase('paypal_email'); ?><span class="required">*</span></label>
+                                                <div class="col-md-9">
+                                                    <input type="email" class="form-control" id="paypal_email" name="paypal_email">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="bank_fields" style="display: none;">
+                                            <div class="form-group row mb-3">
+                                                <label class="col-md-3 col-form-label" for="bank_name"><?php echo get_phrase('bank_name'); ?><span class="required">*</span></label>
+                                                <div class="col-md-9">
+                                                    <input type="text" class="form-control" id="bank_name" name="bank_name">
+                                                </div>
+                                            </div>
+                                            <div class="form-group row mb-3">
+                                                <label class="col-md-3 col-form-label" for="account_number"><?php echo get_phrase('account_number'); ?><span class="required">*</span></label>
+                                                <div class="col-md-9">
+                                                    <input type="text" class="form-control" id="account_number" name="account_number">
+                                                </div>
+                                            </div>
+                                            <div class="form-group row mb-3">
+                                                <label class="col-md-3 col-form-label" for="swift_code"><?php echo get_phrase('swift_code'); ?></label>
+                                                <div class="col-md-9">
+                                                    <input type="text" class="form-control" id="swift_code" name="swift_code">
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="form-group row mb-3">
@@ -125,3 +151,10 @@
         </div>
     </div>
 </div>
+<script>
+    function togglePaymentFields() {
+        const paymentMethod = document.getElementById('payment_method').value;
+        document.getElementById('paypal_fields').style.display = paymentMethod === 'paypal' ? 'block' : 'none';
+        document.getElementById('bank_fields').style.display = paymentMethod === 'bank' ? 'block' : 'none';
+    }
+</script>

@@ -40,7 +40,15 @@ class User extends CI_Controller
     {
         // IF THE USER IS NOT AN INSTRUCTOR HE/SHE CAN NEVER ACCESS THE OTHER FUNCTIONS EXCEPT FOR BELOW FUNCTIONS.
         if ($this->session->userdata('is_instructor') != 1) {
-            $unprotected_routes = ['become_an_instructor', 'manage_profile', 'save_course_progress', 'start_quiz', 'submit_quiz_answer', 'finish_quize_submission'];
+            $unprotected_routes = [
+                'become_an_instructor',
+                'manage_profile',
+                'save_course_progress',
+                'start_quiz',
+                'submit_quiz_answer',
+                'finish_quize_submission',
+                'affiliate_user_dashboard' // Agregar esta ruta aquí
+            ];
 
             if (!in_array($method, $unprotected_routes)) {
                 redirect(site_url('user/become_an_instructor'), 'refresh');
@@ -915,45 +923,32 @@ class User extends CI_Controller
     }
 
     public function save_affiliate_manual() {
-        $course_id = $this->input->post('course_id');
-        $courses = $this->crud_model->get_status_wise_courses_for_instructor('active')->result_array();
-        $valid_course_ids = array_column($courses, 'id');
+        $data['full_name'] = $this->input->post('name');
+        $data['email'] = $this->input->post('email');
+        $data['course_id'] = $this->input->post('course_id');
+        $data['payment_method'] = $this->input->post('payment_method');
+        $data['custom_commission'] = $this->input->post('custom_commission');
+        $data['status'] = 'active'; // Establece el estado como activo por defecto
+        $data['unique_code'] = substr(md5(uniqid(rand(), true)), 0, 6); // Genera un código único
 
-        if (!in_array($course_id, $valid_course_ids)) {
-            $this->session->set_flashdata('error_message', get_phrase('invalid_course_selected'));
-            redirect(site_url('user/affiliates_manual'));
+        // Crear un array para los datos específicos del método de pago
+        $payment_details = [];
+        if ($data['payment_method'] === 'paypal') {
+            $payment_details['paypal_email'] = $this->input->post('paypal_email');
+        } elseif ($data['payment_method'] === 'bank') {
+            $payment_details['bank_name'] = $this->input->post('bank_name');
+            $payment_details['account_number'] = $this->input->post('account_number');
+            $payment_details['swift_code'] = $this->input->post('swift_code');
         }
 
-        $this->load->library('form_validation');
+        // Convertir los detalles de pago a JSON y guardarlos en payment_identifier
+        $data['payment_identifier'] = json_encode($payment_details);
 
-        $this->form_validation->set_rules('name', get_phrase('full_name'), 'required|regex_match[/^[a-zA-Z\s]+$/]');
-        $this->form_validation->set_rules('email', get_phrase('email'), 'required|valid_email');
-        $this->form_validation->set_rules('course_id', get_phrase('course_id'), 'required');
-        $this->form_validation->set_rules('payment_method', get_phrase('payment_method'), 'regex_match[/^[a-zA-Z\s]+$/]');
-        $this->form_validation->set_rules('payment_identifier', get_phrase('payment_identifier'), 'max_length[255]');
-        $this->form_validation->set_rules('custom_commission', get_phrase('custom_commission'), 'numeric|greater_than_equal_to[0]|less_than_equal_to[100]');
+        // Guardar en la base de datos
+        $this->load->model('Affiliate_model');
+        $this->Affiliate_model->save_affiliate($data);
 
-        if ($this->form_validation->run() == FALSE) {
-            $this->session->set_flashdata('error_message', validation_errors());
-            redirect(site_url('user/affiliates'));
-        } else {
-            $unique_code = strtoupper(substr(md5(uniqid(rand(), true)), 0, 4)) . strtoupper(substr(md5(uniqid(rand(), true)), 0, 2));
-            $data = [
-                'full_name' => $this->input->post('name'),
-                'email' => $this->input->post('email'),
-                'course_id' => $this->input->post('course_id'),
-                'unique_code' => $unique_code,
-                'payment_method' => $this->input->post('payment_method'),
-                'payment_identifier' => $this->input->post('payment_identifier'),
-                'custom_commission' => $this->input->post('custom_commission'),
-                'status' => 'inactive',
-                'registration_date' => date('Y-m-d H:i:s')
-            ];
-            $this->load->model('Affiliate_model');
-            $this->Affiliate_model->save_affiliate($data);
-            $this->session->set_flashdata('flash_message', get_phrase('affiliate_registered_successfully'));
-            redirect(site_url('user/affiliates'));
-        }
+        redirect('user/affiliates');
     }
 
     public function approve_affiliate($affiliate_id) {
@@ -1392,5 +1387,25 @@ class User extends CI_Controller
 
         // Renderizar la plantilla seleccionada
         $this->load->view("email/campains/{$template_name}", $data);
+    }
+
+    public function affiliate_dashboard()
+    {
+        if ($this->session->userdata('user_login') != true) {
+            redirect(site_url('login'), 'refresh');
+        }
+
+        $this->load->model('Affiliate_model');
+        $affiliate_data = $this->Affiliate_model->get_affiliate_data($this->session->userdata('email'));
+
+        if (!$affiliate_data) {
+            $this->session->set_flashdata('error_message', get_phrase('no_affiliate_data_found'));
+            redirect(site_url('user/dashboard'), 'refresh');
+        }
+
+        $page_data['affiliate_data'] = $affiliate_data;
+        $page_data['page_name'] = 'affiliate_dashboard';
+        $page_data['page_title'] = get_phrase('affiliate_dashboard');
+        $this->load->view('backend/index', $page_data);
     }
 }

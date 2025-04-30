@@ -3,14 +3,46 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Affiliate_model extends CI_Model {
     public function save_affiliate($data) {
-        if (isset($data['registered_manually']) && $data['registered_manually'] == 1) {
-            $data['status'] = 'active';
+        // Asegúrate de que los campos obligatorios estén presentes
+        if (empty($data['full_name']) || empty($data['email']) || empty($data['unique_code'])) {
+            throw new Exception('Faltan campos obligatorios para guardar el afiliado.');
         }
+
+        // Verificar si el correo ya está registrado en la tabla 'users'
+        $user = $this->db->get_where('users', ['email' => $data['email']])->row_array();
+
+        // Cargar el modelo de correo electrónico
+        $this->load->model('Email_model');
+
+        if ($user) {
+            // Si el correo está registrado, enviar notificación
+            $email_subject = 'Notificación de Afiliado';
+            $email_body = $this->load->view('email/template', [
+                'receiver_name' => $user['first_name'] . ' ' . $user['last_name'],
+                'message_body' => 'Has sido registrado como afiliado en nuestra plataforma. ¡Gracias por unirte!'
+            ], true);
+            $this->Email_model->send_smtp_mail($email_body, $email_subject, $data['email'], get_settings('system_email'));
+        } else {
+            // Si el correo no está registrado, enviar invitación
+            $email_subject = 'Invitación a la Plataforma';
+            $email_body = $this->load->view('email/template', [
+                'receiver_name' => $data['full_name'],
+                'message_body' => 'Te invitamos a unirte a nuestra plataforma como afiliado. ¡Regístrate ahora!'
+            ], true);
+            $this->Email_model->send_smtp_mail($email_body, $email_subject, $data['email'], get_settings('system_email'));
+        }
+
+        // Inserta los datos en la tabla 'affiliate'
         $this->db->insert('affiliate', $data);
         $affiliate_id = $this->db->insert_id();
 
-        // Generar el enlace de afiliado con el curso seleccionado
-        if (isset($data['course_id'])) {
+        // Verifica si la inserción fue exitosa
+        if (!$affiliate_id) {
+            throw new Exception('Error al insertar el afiliado en la base de datos.');
+        }
+
+        // Generar el enlace de afiliado si se seleccionó un curso
+        if (isset($data['course_id']) && !empty($data['course_id'])) {
             $this->generate_affiliate_link($affiliate_id, $data['course_id']);
         }
     }
@@ -64,7 +96,7 @@ class Affiliate_model extends CI_Model {
         return $this->db->get()->result_array();
     }
 
-    public function get_all_affiliates($instructor_id) {
+    public function get_all_affiliates($instructor_id = null) {
         $this->db->select('
             a.affiliate_id,
             a.full_name,
@@ -72,12 +104,14 @@ class Affiliate_model extends CI_Model {
             a.unique_code,
             a.status,
             al.generated_url,
-            c.title as course_title
+            c.title as course_name
         ');
         $this->db->from('affiliate a');
         $this->db->join('affiliate_link al', 'a.affiliate_id = al.affiliate_id', 'inner'); // Relación con los enlaces de afiliados
         $this->db->join('course c', 'al.course_id = c.id', 'inner'); // Relación con los cursos
-        $this->db->where('c.user_id', $instructor_id); // Filtrar por cursos creados por el instructor logueado
+        if ($instructor_id !== null) {
+            $this->db->where('c.user_id', $instructor_id); // Filtrar por cursos creados por el instructor logueado
+        }
         $this->db->group_by('a.affiliate_id'); // Agrupar por afiliado
         return $this->db->get()->result_array();
     }
@@ -168,6 +202,49 @@ class Affiliate_model extends CI_Model {
         $this->db->join('course c', 'al.course_id = c.id', 'left');
         $this->db->where('c.user_id', $instructor_id);
         $this->db->group_by('a.affiliate_id');
+        return $this->db->get()->result_array();
+    }
+
+    public function get_affiliate_data($email) {
+        return $this->db->get_where('affiliate', ['email' => $email, 'status' => 'active'])->row_array();
+    }
+
+    public function get_all_affiliates_list() {
+        return $this->db->get('affiliate')->result_array();
+    }
+
+    public function get_affiliate_with_links($email) {
+        $this->db->select('a.*, al.link_id, al.course_id, al.referral_code, al.generated_url, al.creation_date, al.status as link_status');
+        $this->db->from('affiliate a');
+        $this->db->join('affiliate_link al', 'a.affiliate_id = al.affiliate_id', 'left');
+        $this->db->where('a.email', $email);
+        return $this->db->get()->result_array();
+    }
+
+    public function get_affiliate_dashboard_data($email) {
+        $this->db->select('
+            a.affiliate_id,
+            a.full_name,
+            a.email,
+            a.custom_commission,
+            al.link_id,
+            al.course_id,
+            al.referral_code,
+            al.generated_url,
+            al.creation_date,
+            al.status as link_status,
+            c.title as course_title,
+            COUNT(DISTINCT cl.click_id) as total_clicks,
+            COUNT(DISTINCT cv.conversion_id) as total_conversions,
+            SUM(cv.total_amount) as total_sales
+        ');
+        $this->db->from('affiliate a');
+        $this->db->join('affiliate_link al', 'a.affiliate_id = al.affiliate_id', 'left');
+        $this->db->join('course c', 'al.course_id = c.id', 'left');
+        $this->db->join('click cl', 'al.link_id = cl.link_id', 'left');
+        $this->db->join('conversion cv', 'al.link_id = cv.link_id', 'left');
+        $this->db->where('a.email', $email);
+        $this->db->group_by('al.link_id');
         return $this->db->get()->result_array();
     }
 }

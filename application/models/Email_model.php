@@ -453,16 +453,23 @@ class Email_model extends CI_Model
 		$this->send_smtp_mail($email_template, $email_data['subject'], $email_data['to'], $email_data['from']);
 	}
 
-
-
-
-
 	//course_addon end
 
+	public function send_email_with_template($to, $subject, $template, $data) {
+		// Renderizar la plantilla con los datos proporcionados
+		$email_body = $this->load->view("email/{$template}", $data, true);
 
+		// Configurar y enviar el correo
+		$this->load->library('email');
+		$this->email->from(get_settings('system_email'), get_settings('system_name'));
+		$this->email->to($to);
+		$this->email->subject($subject);
+		$this->email->message($email_body);
 
-
-
+		if (!$this->email->send()) {
+			log_message('error', 'Error al enviar el correo: ' . $this->email->print_debugger());
+		}
+	}
 
 	public function send_smtp_mail($msg = NULL, $sub = NULL, $to = NULL, $from = NULL, $email_type = NULL, $verification_code = null)
 	{
