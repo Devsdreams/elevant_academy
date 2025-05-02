@@ -293,6 +293,31 @@ $instructor_details = $this->user_model->get_all_user($course_details['user_id']
                   <div class="description ">
                     <?php echo ellipsis(strip_tags($instructor['biography']), 180); ?>
                   </div>
+                  <div class="text-center mt-3">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#affiliateModal">
+                      <?php echo site_phrase('quiero_ser_afiliado'); ?>
+                    </button>
+                  </div>
+                  <!-- Modal -->
+                  <div class="modal fade" id="affiliateModal" tabindex="-1" aria-labelledby="affiliateModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="affiliateModalLabel"><?php echo site_phrase('quiero_ser_afiliado'); ?></h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          <?php echo site_phrase('para_ser_afiliado,_por_favor_contacta_al_administrador_o_sigue_los_pasos_en_el_siguiente_enlace'); ?>:
+                          <a href="<?php echo site_url('affiliate/become_affiliate'); ?>" class="text-primary">
+                            <?php echo site_phrase('más_información'); ?>
+                          </a>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo site_phrase('cerrar'); ?></button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             <?php endforeach; ?>
@@ -331,6 +356,31 @@ $instructor_details = $this->user_model->get_all_user($course_details['user_id']
 
                 <div class="description">
                   <?php echo ellipsis(strip_tags($instructor_details['biography']), 180); ?>
+                </div>
+                <div class="text-center mt-3">
+                  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#affiliateModal">
+                    <?php echo site_phrase('quiero_ser_afiliado'); ?>
+                  </button>
+                </div>
+                <!-- Modal -->
+                <div class="modal fade" id="affiliateModal" tabindex="-1" aria-labelledby="affiliateModalLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="affiliateModalLabel"><?php echo site_phrase('quiero_ser_afiliado'); ?></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <?php echo site_phrase('para_ser_afiliado,_por_favor_contacta_al_administrador_o_sigue_los_pasos_en_el_siguiente_enlace'); ?>:
+                        <a href="<?php echo site_url('affiliate/become_affiliate'); ?>" class="text-primary">
+                          <?php echo site_phrase('más_información'); ?>
+                        </a>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo site_phrase('cerrar'); ?></button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

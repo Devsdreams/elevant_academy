@@ -826,4 +826,44 @@ class User_model extends CI_Model
         $this->db->update('users', $data);
     }*/
 
+    public function register_click($affiliate_id, $link_id) {
+        // Verificar si el enlace existe y pertenece al afiliado
+        $link = $this->db->get_where('affiliate_link', [
+            'affiliate_id' => $affiliate_id,
+            'link_id' => $link_id
+        ])->row_array();
+
+        if ($link) {
+            // Obtener la IP del usuario
+            $ip_address = $this->input->ip_address();
+
+            // Obtener el país basado en la IP (puedes usar una API externa o una librería)
+            $country = $this->get_country_by_ip($ip_address);
+
+            // Registrar el clic en la tabla de clics
+            $data = [
+                'affiliate_id' => $affiliate_id,
+                'link_id' => $link_id,
+                'user_ip' => $ip_address,
+                'user_agent' => $this->input->user_agent(),
+                'click_date' => date('Y-m-d H:i:s'),
+                'country' => $country,
+                'converted' => 0 // Inicialmente no convertido
+            ];
+            $this->db->insert('click', $data);
+        }
+    }
+
+    private function get_country_by_ip($ip_address) {
+        // Ejemplo usando una API gratuita para obtener el país
+        $api_url = "http://ip-api.com/json/{$ip_address}";
+        $response = @file_get_contents($api_url);
+        $data = json_decode($response, true);
+
+        if (isset($data['country'])) {
+            return $data['country'];
+        }
+        return 'Unknown'; // Retorna 'Unknown' si no se puede determinar el país
+    }
+
 }

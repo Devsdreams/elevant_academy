@@ -972,10 +972,25 @@ class User extends CI_Controller
         redirect(site_url('user/affiliates'));
     }
 
-    public function track_affiliate_click($affiliate_id, $link_id) {
-        $this->load->model('User_model');
-        $this->User_model->register_click($affiliate_id, $link_id);
-        redirect(base_url()); // Redirige al usuario después de registrar el clic
+    public function track_affiliate_click() {
+        $referral_code = $this->input->get('ref');
+        if (!$referral_code) {
+            redirect(base_url()); // Redirige si no hay código de referencia
+            return;
+        }
+
+        // Buscar el enlace asociado al código de referencia
+        $this->load->model('Affiliate_model');
+        $link = $this->db->get_where('affiliate_link', ['referral_code' => $referral_code])->row_array();
+
+        if ($link) {
+            // Registrar el clic
+            $this->load->model('User_model');
+            $this->User_model->register_click($link['affiliate_id'], $link['link_id']);
+        }
+
+        // Redirigir al curso correspondiente
+        redirect(base_url("home/course/{$link['course_id']}"));
     }
 
     public function manage_affiliates() {
@@ -1407,5 +1422,32 @@ class User extends CI_Controller
         $page_data['page_name'] = 'affiliate_dashboard';
         $page_data['page_title'] = get_phrase('affiliate_dashboard');
         $this->load->view('backend/index', $page_data);
+    }
+
+    public function get_affiliate_links() {
+        if (!$this->session->userdata('user_login')) {
+            echo get_phrase('unauthorized_access');
+            return;
+        }
+
+        $affiliate_id = $this->input->post('affiliate_id');
+        $this->load->model('Affiliate_model');
+        $links = $this->Affiliate_model->get_links_by_affiliate_id($affiliate_id);
+
+        if (!empty($links)) {
+            foreach ($links as $link) {
+                echo '<div class="list-group-item d-flex justify-content-between align-items-center">';
+                echo '<div>';
+                echo '<h5 class="mb-1">' . $link['course_title'] . '</h5>';
+                echo '<p class="mb-0 text-muted">' . get_phrase('share_this_link') . '</p>';
+                echo '</div>';
+                echo '<button class="btn btn-outline-primary btn-sm" onclick="copyToClipboard(\'' . $link['generated_url'] . '\')">';
+                echo '<i class="mdi mdi-content-copy"></i> ' . get_phrase('copy_link');
+                echo '</button>';
+                echo '</div>';
+            }
+        } else {
+            echo '<p class="text-center text-muted">' . get_phrase('no_links_found') . '</p>';
+        }
     }
 }

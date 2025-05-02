@@ -43,27 +43,29 @@
                                         <?php 
                                         $link = $this->db->get_where('affiliate_link', ['affiliate_id' => $affiliate['affiliate_id']])->row_array();
                                         if ($link) {
-                                            echo '<button class="btn btn-sm btn-outline-primary" onclick="copyToClipboard(\'' . $link['generated_url'] . '\')">' . get_phrase('copy_link') . '</button>';
+                                            echo $link['referral_code'];
                                         } else {
-                                            echo get_phrase('no_link');
+                                            echo get_phrase('no_referral_code');
                                         }
                                         ?>
                                     </td>
-                                    <td>
-                                        <?php echo $affiliate['unique_code']; ?>
-                                    </td>
+                                    <td><?php echo $affiliate['unique_code']; ?></td>
                                     <td>
                                         <span class="badge badge-<?php echo $affiliate['status'] == 'active' ? 'success' : 'warning'; ?>">
                                             <?php echo ucfirst($affiliate['status']); ?>
                                         </span>
                                     </td>
-                                    
                                     <td>
                                         <div class="dropright dropright">
                                             <button type="button" class="btn btn-sm btn-outline-primary btn-rounded btn-icon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                 <i class="mdi mdi-dots-vertical"></i>
                                             </button>
                                             <ul class="dropdown-menu">
+                                                <li>
+                                                    <a class="dropdown-item" href="javascript:;" onclick="viewAffiliateLinks(<?php echo $affiliate['affiliate_id']; ?>);">
+                                                        <?php echo get_phrase('show'); ?>
+                                                    </a>
+                                                </li>
                                                 <li>
                                                     <a class="dropdown-item" href="javascript:;" onclick="confirm_modal('<?php echo site_url('user/affiliates/delete/' . $affiliate['affiliate_id']); ?>');">
                                                         <?php echo get_phrase('delete'); ?>
@@ -103,6 +105,28 @@
     </div>
 </div>
 
+<!-- Modal para ver enlaces de afiliados -->
+<div class="modal fade" id="viewAffiliateLinksModal" tabindex="-1" role="dialog" aria-labelledby="viewAffiliateLinksModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="viewAffiliateLinksModalLabel"><?php echo get_phrase('affiliate_links'); ?></h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="affiliateLinksContent" class="list-group">
+                    <!-- Aquí se cargarán dinámicamente los enlaces de afiliados -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal"><?php echo get_phrase('close'); ?></button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     function confirm_modal(delete_url) {
         $('#deleteLink').attr('href', delete_url);
@@ -117,5 +141,20 @@
         document.execCommand('copy');
         document.body.removeChild(tempInput);
         alert('<?php echo get_phrase('link_copied_to_clipboard'); ?>');
+    }
+
+    function viewAffiliateLinks(affiliateId) {
+        $.ajax({
+            url: '<?php echo site_url('user/get_affiliate_links'); ?>',
+            type: 'POST',
+            data: { affiliate_id: affiliateId },
+            success: function(response) {
+                $('#affiliateLinksContent').html(response);
+                $('#viewAffiliateLinksModal').modal('show');
+            },
+            error: function() {
+                alert('<?php echo get_phrase('error_loading_affiliate_links'); ?>');
+            }
+        });
     }
 </script>

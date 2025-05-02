@@ -7,9 +7,6 @@ $affiliate_data = $this->Affiliate_model->get_affiliate_dashboard_data($user_det
 $total_clicks = array_sum(array_column($affiliate_data, 'total_clicks'));
 $total_conversions = array_sum(array_column($affiliate_data, 'total_conversions'));
 $total_sales = array_sum(array_column($affiliate_data, 'total_sales'));
-
-// Obtén el enlace principal del afiliado
-$main_affiliate_link = !empty($affiliate_data) ? $affiliate_data[0]['generated_url'] : null;
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -24,6 +21,8 @@ $main_affiliate_link = !empty($affiliate_data) ? $affiliate_data[0]['generated_u
     <link rel="stylesheet" href="<?php echo base_url('assets/frontend/default/css/fontawesome-all.min.css'); ?>">
     <link rel="stylesheet" href="<?php echo base_url('assets/frontend/default/css/custom.css'); ?>"> <!-- Si existe -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Librería para gráficos -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
 </head>
 <body>
     <section class="affiliate-dashboard-area" style="background-color: #f7f8fa; padding: 50px 0;">
@@ -39,17 +38,48 @@ $main_affiliate_link = !empty($affiliate_data) ? $affiliate_data[0]['generated_u
                 </div>
             </div>
             <div class="row mb-4">
-                <div class="col text-center">
-                    <h5 class="mb-3"><?php echo site_phrase('your_affiliate_link'); ?></h5>
-                    <?php if ($main_affiliate_link): ?>
-                        <div class="input-group">
-                            <input type="text" class="form-control text-center" value="<?php echo $main_affiliate_link; ?>" readonly>
-                            <button class="btn btn-primary" onclick="navigator.clipboard.writeText('<?php echo $main_affiliate_link; ?>')">
-                                <?php echo site_phrase('copy_link'); ?>
-                            </button>
+                <div class="col">
+                    <h5 class="mb-3 text-center"><?php echo site_phrase('your_affiliate_links'); ?></h5>
+                    <?php if (!empty($affiliate_data)): ?>
+                        <div class="table-responsive">
+                            <table id="affiliateLinksTable" class="table table-bordered table-striped">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th><input type="checkbox" id="selectAll"></th>
+                                        <th><?php echo site_phrase('course'); ?></th>
+                                        <th><?php echo site_phrase('affiliate_link'); ?></th>
+                                        <th><?php echo site_phrase('clicks'); ?></th>
+                                        <th><?php echo site_phrase('conversions'); ?></th>
+                                        <th><?php echo site_phrase('sales'); ?></th>
+                                        <th><?php echo site_phrase('actions'); ?></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($affiliate_data as $affiliate): ?>
+                                        <tr>
+                                            <td><input type="checkbox" class="link-checkbox" value="<?php echo $affiliate['generated_url']; ?>"></td>
+                                            <td><?php echo $affiliate['course_title']; ?></td>
+                                            <td>
+                                                <input type="text" class="form-control" value="<?php echo $affiliate['generated_url']; ?>" readonly>
+                                            </td>
+                                            <td><?php echo $affiliate['total_clicks']; ?></td>
+                                            <td><?php echo $affiliate['total_conversions']; ?></td>
+                                            <td><?php echo currency($affiliate['total_sales']); ?></td>
+                                            <td>
+                                                <button class="btn btn-primary btn-sm" onclick="navigator.clipboard.writeText('<?php echo $affiliate['generated_url']; ?>')">
+                                                    <?php echo site_phrase('copy_link'); ?>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="mt-3 text-center">
+                            <button class="btn btn-success" id="shareSelectedLinks"><?php echo site_phrase('share_selected_links'); ?></button>
                         </div>
                     <?php else: ?>
-                        <p class="text-muted"><?php echo site_phrase('no_affiliate_link_found'); ?></p>
+                        <p class="text-muted text-center"><?php echo site_phrase('no_affiliate_links_found'); ?></p>
                     <?php endif; ?>
                 </div>
             </div>
@@ -110,7 +140,42 @@ $main_affiliate_link = !empty($affiliate_data) ? $affiliate_data[0]['generated_u
     <!-- Archivos JS comunes -->
     <script src="<?php echo base_url('assets/frontend/default/js/jquery-3.6.0.min.js'); ?>"></script>
     <script src="<?php echo base_url('assets/frontend/default/js/bootstrap.bundle.min.js'); ?>"></script>
+    <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
     <script>
+        $(document).ready(function() {
+            $('#affiliateLinksTable').DataTable({
+                dom: 'Bfrtip',
+                buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+                language: {
+                    url: "//cdn.datatables.net/plug-ins/1.13.5/i18n/es-ES.json"
+                }
+            });
+
+            // Seleccionar/Deseleccionar todos los enlaces
+            $('#selectAll').on('click', function() {
+                $('.link-checkbox').prop('checked', this.checked);
+            });
+
+            // Compartir enlaces seleccionados
+            $('#shareSelectedLinks').on('click', function() {
+                const selectedLinks = [];
+                $('.link-checkbox:checked').each(function() {
+                    selectedLinks.push($(this).val());
+                });
+
+                if (selectedLinks.length > 0) {
+                    const linksText = selectedLinks.join('\n');
+                    navigator.clipboard.writeText(linksText).then(() => {
+                        alert('<?php echo site_phrase('links_copied_to_clipboard'); ?>');
+                    });
+                } else {
+                    alert('<?php echo site_phrase('no_links_selected'); ?>');
+                }
+            });
+        });
+
         // Datos para el gráfico de clics vs conversiones
         const clicksConversionsData = {
             labels: ['<?php echo site_phrase('clicks'); ?>', '<?php echo site_phrase('conversions'); ?>'],

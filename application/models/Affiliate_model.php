@@ -3,71 +3,81 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Affiliate_model extends CI_Model {
     public function save_affiliate($data) {
-        // Asegúrate de que los campos obligatorios estén presentes
-        if (empty($data['full_name']) || empty($data['email']) || empty($data['unique_code'])) {
-            throw new Exception('Faltan campos obligatorios para guardar el afiliado.');
-        }
+        // Verificar si ya existe un registro con el mismo correo
+        $existing_affiliate = $this->db->get_where('affiliate', ['email' => $data['email']])->row_array();
 
-        // Verificar si el correo ya está registrado en la tabla 'users'
-        $user = $this->db->get_where('users', ['email' => $data['email']])->row_array();
-
-        // Cargar el modelo de correo electrónico
-        $this->load->model('Email_model');
-
-        if ($user) {
-            // Si el correo está registrado, enviar notificación
-            $email_subject = 'Notificación de Afiliado';
-            $email_body = $this->load->view('email/template', [
-                'receiver_name' => $user['first_name'] . ' ' . $user['last_name'],
-                'message_body' => 'Has sido registrado como afiliado en nuestra plataforma. ¡Gracias por unirte!'
-            ], true);
-            $this->Email_model->send_smtp_mail($email_body, $email_subject, $data['email'], get_settings('system_email'));
+        if ($existing_affiliate) {
+            // Reutilizar el unique_code del afiliado existente
+            $affiliate_id = $existing_affiliate['affiliate_id'];
+            $data['unique_code'] = $existing_affiliate['unique_code'];
         } else {
-            // Si el correo no está registrado, enviar invitación
-            $email_subject = 'Invitación a la Plataforma';
-            $email_body = $this->load->view('email/template', [
-                'receiver_name' => $data['full_name'],
-                'message_body' => 'Te invitamos a unirte a nuestra plataforma como afiliado. ¡Regístrate ahora!'
-            ], true);
-            $this->Email_model->send_smtp_mail($email_body, $email_subject, $data['email'], get_settings('system_email'));
+            // Crear un nuevo registro de afiliado
+            $affiliate_data = [
+                'full_name' => $data['full_name'],
+                'email' => $data['email'],
+                'unique_code' => substr(md5(uniqid(rand(), true)), 0, 6),
+                'status' => 'active',
+                'registration_date' => date('Y-m-d H:i:s'),
+                'payment_method' => $data['payment_method'],
+                'payment_identifier' => $data['payment_identifier'],
+                'custom_commission' => $data['custom_commission'],
+                'link_count' => 0 // Inicializar el contador de enlaces
+            ];
+
+            $this->db->insert('affiliate', $affiliate_data);
+            $affiliate_id = $this->db->insert_id();
         }
 
-        // Inserta los datos en la tabla 'affiliate'
-        $this->db->insert('affiliate', $data);
-        $affiliate_id = $this->db->insert_id();
+        // Verificar si ya existe un enlace para el mismo curso y afiliado
+        $existing_link = $this->db->get_where('affiliate_link', [
+            'affiliate_id' => $affiliate_id,
+            'course_id' => $data['course_id']
+        ])->row_array();
 
-        // Verifica si la inserción fue exitosa
-        if (!$affiliate_id) {
-            throw new Exception('Error al insertar el afiliado en la base de datos.');
+        if ($existing_link) {
+            // Si ya existe un enlace para este curso, no se crea uno nuevo
+            throw new Exception('El afiliado ya tiene un enlace para este curso.');
         }
 
-        // Generar el enlace de afiliado si se seleccionó un curso
-        if (isset($data['course_id']) && !empty($data['course_id'])) {
-            $this->generate_affiliate_link($affiliate_id, $data['course_id']);
-        }
+        // Generar el enlace de afiliado para el curso
+        $this->generate_affiliate_link($affiliate_id, $data['course_id']);
+
+        // Incrementar el contador de enlaces
+        $this->db->where('affiliate_id', $affiliate_id);
+        $this->db->set('link_count', 'link_count + 1', FALSE);
+        $this->db->update('affiliate');
     }
 
     public function generate_affiliate_link($affiliate_id, $course_id) {
         // Obtener los datos del afiliado
         $affiliate = $this->db->get_where('affiliate', ['affiliate_id' => $affiliate_id])->row_array();
-        $full_name = isset($affiliate['full_name']) ? $affiliate['full_name'] : 'user' . $affiliate_id;
+        $base_referral_code = strtolower(str_replace(' ', '_', $affiliate['full_name']));
 
-        // Formatear el nombre para que sea válido en la URL
-        $formatted_name = strtolower(str_replace(' ', '_', $full_name));
+        // Generar un referral_code único basado en el curso
+        $referral_code = $base_referral_code . '_' . $course_id;
+        $counter = 1;
+
+        // Validar solo la parte base del código (antes del guion bajo y número)
+        while ($this->db->where('referral_code', $referral_code)->get('affiliate_link')->num_rows() > 0) {
+            $referral_code = $base_referral_code . '_' . $course_id . '_' . $counter;
+            $counter++;
+        }
 
         // Obtener los detalles del curso
         $course = $this->db->get_where('course', ['id' => $course_id])->row_array();
         $course_slug = isset($course['title']) ? slugify($course['title']) : 'course';
 
-        // Generar el enlace con el parámetro ?ref=nombre_afiliado
-        $generated_url = base_url("home/course/$course_slug/$course_id?ref=$formatted_name");
+        // Generar el enlace ignorando el sufijo numérico
+        $clean_referral_code = explode('_', $referral_code)[0]; // Solo toma la parte base del código
+        $generated_url = base_url("home/course/$course_slug/$course_id?ref=$clean_referral_code");
 
         // Guardar los datos en la tabla affiliate_link
         $link_data = [
             'affiliate_id' => $affiliate_id,
             'course_id' => $course_id,
-            'referral_code' => $formatted_name, // Usar el nombre formateado como código de referencia
-            'generated_url' => $generated_url,
+            'referral_code' => $referral_code, // Se guarda completo en la base de datos
+            'generated_url' => $generated_url, // El enlace ignora el sufijo numérico
+            'creation_date' => date('Y-m-d H:i:s'),
             'status' => 'active'
         ];
 
@@ -245,6 +255,22 @@ class Affiliate_model extends CI_Model {
         $this->db->join('conversion cv', 'al.link_id = cv.link_id', 'left');
         $this->db->where('a.email', $email);
         $this->db->group_by('al.link_id');
+        return $this->db->get()->result_array();
+    }
+
+    public function get_affiliates_with_links() {
+        $this->db->select('a.*, COUNT(al.link_id) as link_count');
+        $this->db->from('affiliate a');
+        $this->db->join('affiliate_link al', 'a.affiliate_id = al.affiliate_id', 'left');
+        $this->db->group_by('a.affiliate_id');
+        return $this->db->get()->result_array();
+    }
+
+    public function get_links_by_affiliate_id($affiliate_id) {
+        $this->db->select('al.referral_code, al.generated_url, c.title as course_title');
+        $this->db->from('affiliate_link al');
+        $this->db->join('course c', 'al.course_id = c.id', 'left');
+        $this->db->where('al.affiliate_id', $affiliate_id);
         return $this->db->get()->result_array();
     }
 }
