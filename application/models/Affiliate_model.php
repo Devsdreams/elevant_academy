@@ -119,13 +119,13 @@ class Affiliate_model extends CI_Model {
     public function generate_affiliate_link($affiliate_id, $course_id) {
         // Obtener los datos del afiliado
         $affiliate = $this->db->get_where('affiliate', ['affiliate_id' => $affiliate_id])->row_array();
-        $base_referral_code = strtolower(str_replace(' ', '_', $affiliate['full_name']));
+        $base_referral_code = strtolower(str_replace(' ', '_', $affiliate['full_name'])); // Usar el nombre completo
 
         // Generar un referral_code único basado en el curso
         $referral_code = $base_referral_code . '_' . $course_id;
         $counter = 1;
 
-        // Validar solo la parte base del código (antes del guion bajo y número)
+        // Validar que el código de referencia sea único
         while ($this->db->where('referral_code', $referral_code)->get('affiliate_link')->num_rows() > 0) {
             $referral_code = $base_referral_code . '_' . $course_id . '_' . $counter;
             $counter++;
@@ -135,16 +135,15 @@ class Affiliate_model extends CI_Model {
         $course = $this->db->get_where('course', ['id' => $course_id])->row_array();
         $course_slug = isset($course['title']) ? slugify($course['title']) : 'course';
 
-        // Generar el enlace ignorando el sufijo numérico
-        $clean_referral_code = explode('_', $referral_code)[0]; // Solo toma la parte base del código
-        $generated_url = base_url("home/course/$course_slug/$course_id?ref=$clean_referral_code");
+        // Generar el enlace con el código de referencia completo
+        $generated_url = base_url("home/course/$course_slug/$course_id?ref=$base_referral_code");
 
         // Guardar los datos en la tabla affiliate_link
         $link_data = [
             'affiliate_id' => $affiliate_id,
             'course_id' => $course_id,
-            'referral_code' => $referral_code, // Se guarda completo en la base de datos
-            'generated_url' => $generated_url, // El enlace ignora el sufijo numérico
+            'referral_code' => $referral_code, // Código completo con el curso
+            'generated_url' => $generated_url, // Enlace con el nombre completo
             'creation_date' => date('Y-m-d H:i:s'),
             'status' => 'active'
         ];
@@ -230,10 +229,8 @@ class Affiliate_model extends CI_Model {
         $this->db->where('affiliate_id', $affiliate_id);
         $this->db->update('affiliate', ['status' => $status]);
 
-        // Generar el enlace de afiliado si el estado es 'active'
-        if ($status === 'active') {
-            $this->generate_affiliate_link_if_not_exists($affiliate_id);
-        }
+        // Verificar si la actualización fue exitosa
+        return $this->db->affected_rows() > 0;
     }
 
     private function generate_affiliate_link_if_not_exists($affiliate_id) {
@@ -335,6 +332,15 @@ class Affiliate_model extends CI_Model {
     }
 
     public function get_links_by_affiliate_id($affiliate_id) {
+        return $this->db->get_where('affiliate_link', ['affiliate_id' => $affiliate_id])->result_array();
+    }
+
+    public function register_click($data) {
+        $this->db->insert('click', $data);
+        return $this->db->insert_id();
+    }
+
+    public function get_affiliate_links($affiliate_id) {
         $this->db->select('al.referral_code, al.generated_url, c.title as course_title');
         $this->db->from('affiliate_link al');
         $this->db->join('course c', 'al.course_id = c.id', 'left');

@@ -1144,5 +1144,14 @@
     "update_your_payment_details_below": "Update your payment details below",
     "update_payment_info": "Update payment info",
     "update_affiliate_directly": "Update affiliate directly",
-    "update_affiliate": "Update affiliate"
+    "update_affiliate": "Update affiliate",
+    "edit_affiliate": "Edit affiliate",
+    "error_loading_affiliate_details": "Error loading affiliate details",
+    "are_you_sure_you_want_to_approve_this_affiliate": "Are you sure you want to approve this affiliate",
+    "error_parsing_affiliate_details": "Error parsing affiliate details",
+    "affiliate_updated_successfully": "Affiliate updated successfully",
+    "click_registered_successfully": "Click registered successfully",
+    "error_registering_click": "Error registering click",
+    "student_name": "Student name",
+    "amount_to_pay": "Amount to pay"
 }

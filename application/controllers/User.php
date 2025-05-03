@@ -951,11 +951,24 @@ class User extends CI_Controller
         redirect('user/affiliates');
     }
 
-    public function approve_affiliate($affiliate_id) {
+    public function approve_affiliate() {
+        $affiliate_id = $this->input->post('affiliate_id');
+
+        // Validar que el ID del afiliado sea proporcionado
+        if (empty($affiliate_id)) {
+            echo json_encode(['status' => 'error', 'message' => get_phrase('affiliate_id_is_required')]);
+            return;
+        }
+
+        // Actualizar el estado del afiliado a 'active'
         $this->load->model('Affiliate_model');
-        $this->Affiliate_model->update_affiliate_status($affiliate_id, 'active');
-        $this->session->set_flashdata('flash_message', get_phrase('affiliate_approved_successfully'));
-        redirect(site_url('user/affiliates'));
+        $update_status = $this->Affiliate_model->update_affiliate_status($affiliate_id, 'active');
+
+        if ($update_status) {
+            echo json_encode(['status' => 'success', 'message' => get_phrase('affiliate_approved_successfully')]);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => get_phrase('an_error_occurred')]);
+        }
     }
 
     public function reject_affiliate($affiliate_id) {
@@ -985,8 +998,16 @@ class User extends CI_Controller
 
         if ($link) {
             // Registrar el clic
-            $this->load->model('User_model');
-            $this->User_model->register_click($link['affiliate_id'], $link['link_id']);
+            $data = [
+                'affiliate_id' => $link['affiliate_id'],
+                'link_id' => $link['link_id'],
+                'user_ip' => $this->input->ip_address(),
+                'user_agent' => $this->input->user_agent(),
+                'click_date' => date('Y-m-d H:i:s'),
+                'country' => $this->get_user_country($this->input->ip_address()),
+                'converted' => 0
+            ];
+            $this->db->insert('click', $data);
         }
 
         // Redirigir al curso correspondiente
@@ -1482,5 +1503,60 @@ class User extends CI_Controller
         }
 
         redirect(site_url('user/affiliates'));
+    }
+
+    public function get_affiliate_details() {
+        $affiliate_id = $this->input->post('affiliate_id');
+        $affiliate = $this->db->get_where('affiliate', ['affiliate_id' => $affiliate_id])->row_array();
+
+        if ($affiliate) {
+            $affiliate['payment_identifier'] = json_decode($affiliate['payment_identifier'], true);
+            echo json_encode($affiliate);
+        } else {
+            echo json_encode(['error' => 'Affiliate not found']);
+        }
+    }
+
+    public function update_affiliate() {
+        $affiliate_id = $this->input->post('affiliate_id');
+        $full_name = $this->input->post('full_name');
+        $email = $this->input->post('email');
+        $custom_commission = $this->input->post('custom_commission');
+        $payment_method = $this->input->post('payment_method');
+        $payment_identifier = [];
+
+        // Validar que el ID del afiliado sea proporcionado
+        if (empty($affiliate_id)) {
+            echo json_encode(['status' => 'error', 'message' => get_phrase('affiliate_id_is_required')]);
+            return;
+        }
+
+        // Construir el identificador de pago según el método seleccionado
+        if ($payment_method === 'paypal') {
+            $payment_identifier['paypal_email'] = $this->input->post('paypal_email');
+        } elseif ($payment_method === 'bank') {
+            $payment_identifier['bank_name'] = $this->input->post('bank_name');
+            $payment_identifier['account_number'] = $this->input->post('account_number');
+            $payment_identifier['swift_code'] = $this->input->post('swift_code');
+        }
+
+        // Preparar los datos para la actualización
+        $data = [
+            'full_name' => $full_name,
+            'email' => $email,
+            'custom_commission' => $custom_commission,
+            'payment_method' => $payment_method,
+            'payment_identifier' => json_encode($payment_identifier)
+        ];
+
+        // Actualizar en la base de datos
+        $this->db->where('affiliate_id', $affiliate_id);
+        $this->db->update('affiliate', $data);
+
+        if ($this->db->affected_rows() > 0) {
+            echo json_encode(['status' => 'success', 'message' => get_phrase('affiliate_updated_successfully')]);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => get_phrase('no_changes_were_made_or_affiliate_not_found')]);
+        }
     }
 }
