@@ -3,49 +3,117 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Affiliate_model extends CI_Model {
     public function save_affiliate($data) {
-        // Verificar si ya existe un registro con el mismo correo
-        $existing_affiliate = $this->db->get_where('affiliate', ['email' => $data['email']])->row_array();
+        try {
+            // Verificar si el course_id no es NULL
+            if (empty($data['course_id'])) {
+                throw new Exception(get_phrase('missing_required_data') . ': course_id');
+            }
 
-        if ($existing_affiliate) {
-            // Reutilizar el unique_code del afiliado existente
-            $affiliate_id = $existing_affiliate['affiliate_id'];
-            $data['unique_code'] = $existing_affiliate['unique_code'];
-        } else {
-            // Crear un nuevo registro de afiliado
-            $affiliate_data = [
-                'full_name' => $data['full_name'],
-                'email' => $data['email'],
-                'unique_code' => substr(md5(uniqid(rand(), true)), 0, 6),
-                'status' => 'active',
-                'registration_date' => date('Y-m-d H:i:s'),
-                'payment_method' => $data['payment_method'],
-                'payment_identifier' => $data['payment_identifier'],
-                'custom_commission' => $data['custom_commission'],
-                'link_count' => 0 // Inicializar el contador de enlaces
-            ];
+            // Verificar si ya existe un registro con el mismo correo
+            $existing_affiliate = $this->db->get_where('affiliate', ['email' => $data['email']])->row_array();
 
-            $this->db->insert('affiliate', $affiliate_data);
-            $affiliate_id = $this->db->insert_id();
+            if ($existing_affiliate) {
+                // Reutilizar el unique_code del afiliado existente
+                $affiliate_id = $existing_affiliate['affiliate_id'];
+                $data['unique_code'] = $existing_affiliate['unique_code'];
+            } else {
+                // Crear un nuevo registro de afiliado
+                $affiliate_data = [
+                    'full_name' => $data['full_name'],
+                    'email' => $data['email'],
+                    'course_id' => $data['course_id'], // Asegúrate de que no sea NULL
+                    'unique_code' => substr(md5(uniqid(rand(), true)), 0, 6), // Generar un código único
+                    'status' => $data['status'],
+                    'registration_date' => $data['registration_date'],
+                    'link_count' => 0 // Inicializar el contador de enlaces
+                ];
+
+                $this->db->insert('affiliate', $affiliate_data);
+                $affiliate_id = $this->db->insert_id();
+            }
+
+            // Verificar si ya existe un enlace para el mismo curso y afiliado
+            $existing_link = $this->db->get_where('affiliate_link', [
+                'affiliate_id' => $affiliate_id,
+                'course_id' => $data['course_id']
+            ])->row_array();
+
+            if ($existing_link) {
+                throw new Exception(get_phrase('affiliate_already_has_a_link_for_this_course'));
+            }
+
+            // Generar el enlace de afiliado para el curso
+            $this->generate_affiliate_link($affiliate_id, $data['course_id']);
+
+            // Incrementar el contador de enlaces
+            $this->db->where('affiliate_id', $affiliate_id);
+            $this->db->set('link_count', 'link_count + 1', FALSE);
+            $this->db->update('affiliate');
+        } catch (Exception $e) {
+            log_message('error', 'Error en save_affiliate: ' . $e->getMessage());
+            throw $e;
         }
+    }
 
-        // Verificar si ya existe un enlace para el mismo curso y afiliado
-        $existing_link = $this->db->get_where('affiliate_link', [
-            'affiliate_id' => $affiliate_id,
-            'course_id' => $data['course_id']
-        ])->row_array();
+    public function save_affiliate_from_home($data) {
+        try {
+            // Registrar log de inicio del proceso
+            log_message('debug', 'Iniciando proceso de registro de afiliado desde Home: ' . json_encode($data));
 
-        if ($existing_link) {
-            // Si ya existe un enlace para este curso, no se crea uno nuevo
-            throw new Exception('El afiliado ya tiene un enlace para este curso.');
+            // Verificar si el course_id no es NULL
+            if (empty($data['course_id'])) {
+                throw new Exception(get_phrase('missing_required_data') . ': ' . get_phrase('course_id'));
+            }
+
+            // Verificar si ya existe un registro con el mismo correo
+            $existing_affiliate = $this->db->get_where('affiliate', ['email' => $data['email']])->row_array();
+            log_message('debug', 'Afiliado existente: ' . json_encode($existing_affiliate));
+
+            if ($existing_affiliate) {
+                // Reutilizar el unique_code del afiliado existente
+                $affiliate_id = $existing_affiliate['affiliate_id'];
+                $data['unique_code'] = $existing_affiliate['unique_code'];
+            } else {
+                // Crear un nuevo registro de afiliado
+                $affiliate_data = [
+                    'full_name' => $data['full_name'],
+                    'email' => $data['email'],
+                    'course_id' => $data['course_id'], // Asegúrate de que no sea NULL
+                    'unique_code' => substr(md5(uniqid(rand(), true)), 0, 6), // Generar un código único
+                    'status' => $data['status'],
+                    'registration_date' => date('Y-m-d H:i:s'), // Fecha de registro automática
+                    'link_count' => 0 // Inicializar el contador de enlaces
+                ];
+
+                $this->db->insert('affiliate', $affiliate_data);
+                $affiliate_id = $this->db->insert_id();
+                log_message('debug', 'Nuevo afiliado creado con ID: ' . $affiliate_id);
+            }
+
+            // Verificar si ya existe un enlace para el mismo curso y afiliado
+            $existing_link = $this->db->get_where('affiliate_link', [
+                'affiliate_id' => $affiliate_id,
+                'course_id' => $data['course_id']
+            ])->row_array();
+            log_message('debug', 'Enlace existente: ' . json_encode($existing_link));
+
+            if ($existing_link) {
+                throw new Exception(get_phrase('affiliate_already_has_a_link_for_this_course'));
+            }
+
+            // Generar el enlace de afiliado para el curso
+            $this->generate_affiliate_link($affiliate_id, $data['course_id']);
+            log_message('debug', 'Enlace de afiliado generado para el curso ID: ' . $data['course_id']);
+
+            // Incrementar el contador de enlaces
+            $this->db->where('affiliate_id', $affiliate_id);
+            $this->db->set('link_count', 'link_count + 1', FALSE);
+            $this->db->update('affiliate');
+            log_message('debug', 'Contador de enlaces incrementado para el afiliado ID: ' . $affiliate_id);
+        } catch (Exception $e) {
+            log_message('error', 'Error en save_affiliate_from_home: ' . $e->getMessage());
+            throw new Exception(get_phrase('an_error_occurred') . ': ' . $e->getMessage());
         }
-
-        // Generar el enlace de afiliado para el curso
-        $this->generate_affiliate_link($affiliate_id, $data['course_id']);
-
-        // Incrementar el contador de enlaces
-        $this->db->where('affiliate_id', $affiliate_id);
-        $this->db->set('link_count', 'link_count + 1', FALSE);
-        $this->db->update('affiliate');
     }
 
     public function generate_affiliate_link($affiliate_id, $course_id) {
@@ -272,5 +340,31 @@ class Affiliate_model extends CI_Model {
         $this->db->join('course c', 'al.course_id = c.id', 'left');
         $this->db->where('al.affiliate_id', $affiliate_id);
         return $this->db->get()->result_array();
+    }
+
+    public function update_affiliate_directly() {
+        $affiliate_id = 32; // ID del usuario a actualizar
+        $data = [
+            'full_name' => 'Jesus Estudiante',
+            'email' => 'jeguezu11@gmail.com',
+            'course_id' => 5,
+            'unique_code' => '08561d',
+            'status' => 'active',
+            'registration_date' => '2025-05-03 03:00:44',
+            'payment_method' => 'paypal',
+            'payment_identifier' => json_encode(['paypal_email' => 'jesusestudiante@gmail.com']),
+            'custom_commission' => 2
+        ];
+
+        $this->db->where('affiliate_id', $affiliate_id);
+        $this->db->update('affiliate', $data);
+
+        if ($this->db->affected_rows() > 0) {
+            log_message('info', 'Datos actualizados correctamente para el usuario con affiliate_id: ' . $affiliate_id);
+            return true;
+        } else {
+            log_message('error', 'No se pudo actualizar los datos para el usuario con affiliate_id: ' . $affiliate_id);
+            return false;
+        }
     }
 }

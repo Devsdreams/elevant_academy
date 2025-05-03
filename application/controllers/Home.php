@@ -1430,4 +1430,88 @@ class Home extends CI_Controller
         $page_data['page_title'] = get_phrase('affiliate_dashboard');
         $this->load->view('frontend/' . get_frontend_settings('theme') . '/index', $page_data);
     }
+
+    public function register_affiliate() {
+        // Cargar el modelo de afiliados
+        $this->load->model('Affiliate_model');
+
+        // Capturar los datos del formulario
+        $data = [
+            'full_name' => $this->input->post('name'),
+            'email' => $this->input->post('email'),
+            'course_id' => intval($this->input->post('course_id')), // Convertir a entero
+            'status' => 'inactive', // Estado inicial como inactivo
+        ];
+
+        // Registrar log de los datos recibidos
+        log_message('debug', 'Datos recibidos para registro de afiliado: ' . json_encode($data));
+
+        // Verificar si el curso existe
+        $course = $this->db->get_where('course', ['id' => $data['course_id']])->row_array();
+        if (!$course) {
+            log_message('error', 'El curso con ID ' . $data['course_id'] . ' no existe.');
+            $this->session->set_flashdata('error_message', get_phrase('an_error_occurred_while_registering_as_an_affiliate'));
+            redirect(site_url('home/course/' . $this->input->post('course_slug') . '/' . $data['course_id']));
+            return;
+        }
+
+        // Guardar el afiliado y generar el enlace
+        try {
+            $this->Affiliate_model->save_affiliate_from_home($data);
+            $this->session->set_flashdata('flash_message', get_phrase('affiliate_registered_successfully'));
+            echo 'success';
+        } catch (Exception $e) {
+            /* log_message('error', 'Error al registrar afiliado desde Home: ' . $e->getMessage());
+            $this->session->set_flashdata('error_message', get_phrase('an_error_occurred_while_registering_as_an_affiliate'));
+            echo 'error'; */
+        }
+
+        // Redirigir a la página del curso
+        redirect(site_url('home/course/' . $this->input->post('course_slug') . '/' . $data['course_id']));
+    }
+
+    public function update_affiliate() {
+        $affiliate_id = $this->input->post('affiliate_id');
+        $full_name = $this->input->post('full_name');
+        $email = $this->input->post('email');
+        $custom_commission = $this->input->post('custom_commission');
+        $payment_method = $this->input->post('payment_method');
+        $payment_identifier = [];
+
+        // Validar que el ID del afiliado sea proporcionado
+        if (empty($affiliate_id)) {
+            echo json_encode(['status' => 'error', 'message' => 'Affiliate ID is required']);
+            return;
+        }
+
+        // Construir el identificador de pago según el método seleccionado
+        if ($payment_method === 'paypal') {
+            $payment_identifier['paypal_email'] = $this->input->post('paypal_email');
+        } elseif ($payment_method === 'bank') {
+            $payment_identifier['bank_name'] = $this->input->post('bank_name');
+            $payment_identifier['account_number'] = $this->input->post('account_number');
+            $payment_identifier['swift_code'] = $this->input->post('swift_code');
+        }
+
+        // Preparar los datos para la actualización
+        $data = [
+            'full_name' => $full_name,
+            'email' => $email,
+            'custom_commission' => $custom_commission,
+            'payment_method' => $payment_method,
+            'payment_identifier' => json_encode($payment_identifier)
+        ];
+
+        // Actualizar en la base de datos
+        $this->db->where('affiliate_id', $affiliate_id);
+        $this->db->update('affiliate', $data);
+
+        if ($this->db->affected_rows() > 0) {
+            echo json_encode(['status' => 'success', 'message' => 'Affiliate updated successfully']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'No changes were made or affiliate not found']);
+        }
+    }
 }
+
+

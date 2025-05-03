@@ -1450,4 +1450,37 @@ class User extends CI_Controller
             echo '<p class="text-center text-muted">' . get_phrase('no_links_found') . '</p>';
         }
     }
+
+    public function update_affiliate_payment() {
+        $this->load->model('Affiliate_model');
+
+        $affiliate_id = $this->input->post('affiliate_id');
+        $payment_method = $this->input->post('payment_method');
+        $paypal_email = $this->input->post('paypal_email');
+        $bank_details = [
+            'bank_name' => $this->input->post('bank_name'),
+            'account_number' => $this->input->post('account_number'),
+            'swift_code' => $this->input->post('swift_code')
+        ];
+
+        if ($payment_method === 'paypal' && empty($paypal_email)) {
+            $this->session->set_flashdata('error_message', get_phrase('please_provide_paypal_email'));
+            redirect(site_url('user/affiliates'));
+        } elseif ($payment_method === 'bank' && (empty($bank_details['bank_name']) || empty($bank_details['account_number']))) {
+            $this->session->set_flashdata('error_message', get_phrase('please_provide_bank_details'));
+            redirect(site_url('user/affiliates'));
+        }
+
+        $payment_identifier = $payment_method === 'paypal' ? $paypal_email : json_encode($bank_details);
+
+        $update_status = $this->Affiliate_model->update_affiliate_payment($affiliate_id, $payment_method, $payment_identifier);
+
+        if ($update_status) {
+            $this->session->set_flashdata('flash_message', get_phrase('payment_information_updated_successfully'));
+        } else {
+            $this->session->set_flashdata('error_message', get_phrase('an_error_occurred'));
+        }
+
+        redirect(site_url('user/affiliates'));
+    }
 }

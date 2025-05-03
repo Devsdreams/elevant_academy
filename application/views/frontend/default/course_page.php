@@ -289,34 +289,14 @@ $instructor_details = $this->user_model->get_all_user($course_details['user_id']
                     <span class="badge badge-sub-warning text-12px my-1 py-2"><?php echo $skill; ?></span>
                   <?php endforeach; ?>
 
-
                   <div class="description ">
                     <?php echo ellipsis(strip_tags($instructor['biography']), 180); ?>
                   </div>
+                  <!-- Botón para abrir el modal -->
                   <div class="text-center mt-3">
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#affiliateModal">
                       <?php echo site_phrase('quiero_ser_afiliado'); ?>
                     </button>
-                  </div>
-                  <!-- Modal -->
-                  <div class="modal fade" id="affiliateModal" tabindex="-1" aria-labelledby="affiliateModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <h5 class="modal-title" id="affiliateModalLabel"><?php echo site_phrase('quiero_ser_afiliado'); ?></h5>
-                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                          <?php echo site_phrase('para_ser_afiliado,_por_favor_contacta_al_administrador_o_sigue_los_pasos_en_el_siguiente_enlace'); ?>:
-                          <a href="<?php echo site_url('affiliate/become_affiliate'); ?>" class="text-primary">
-                            <?php echo site_phrase('más_información'); ?>
-                          </a>
-                        </div>
-                        <div class="modal-footer">
-                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo site_phrase('cerrar'); ?></button>
-                        </div>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -353,34 +333,14 @@ $instructor_details = $this->user_model->get_all_user($course_details['user_id']
                   <span class="badge badge-sub-warning text-12px my-1 py-2"><?php echo $skill; ?></span>
                 <?php endforeach; ?>
 
-
                 <div class="description">
                   <?php echo ellipsis(strip_tags($instructor_details['biography']), 180); ?>
                 </div>
+                <!-- Botón para abrir el modal -->
                 <div class="text-center mt-3">
                   <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#affiliateModal">
                     <?php echo site_phrase('quiero_ser_afiliado'); ?>
                   </button>
-                </div>
-                <!-- Modal -->
-                <div class="modal fade" id="affiliateModal" tabindex="-1" aria-labelledby="affiliateModalLabel" aria-hidden="true">
-                  <div class="modal-dialog">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title" id="affiliateModalLabel"><?php echo site_phrase('quiero_ser_afiliado'); ?></h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                      </div>
-                      <div class="modal-body">
-                        <?php echo site_phrase('para_ser_afiliado,_por_favor_contacta_al_administrador_o_sigue_los_pasos_en_el_siguiente_enlace'); ?>:
-                        <a href="<?php echo site_url('affiliate/become_affiliate'); ?>" class="text-primary">
-                          <?php echo site_phrase('más_información'); ?>
-                        </a>
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo site_phrase('cerrar'); ?></button>
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
@@ -613,6 +573,90 @@ $instructor_details = $this->user_model->get_all_user($course_details['user_id']
 <?php if (addon_status('affiliate_course') && $is_affiliattor==1): ?>
     <?php include 'affiliate_course_modal.php';  // course_addon  single line /adding ?>
 <?php endif; ?>
+
+<!-- Modal para aceptar términos y condiciones -->
+<div class="modal fade" id="affiliateModal" tabindex="-1" aria-labelledby="affiliateModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="affiliateModalLabel"><?php echo site_phrase('affiliate_terms_and_conditions'); ?></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p><?php echo site_phrase('by_becoming_an_affiliate_you_agree_to_the_following_terms_and_conditions'); ?>:</p>
+        <ul>
+          <li><?php echo site_phrase('you_will_receive_a_commission_for_each_successful_sale_generated_through_your_affiliate_link'); ?>.</li>
+          <li><?php echo site_phrase('you_must_provide_valid_payment_information_to_receive_commissions'); ?>.</li>
+          <li><?php echo site_phrase('misuse_of_affiliate_links_may_result_in_account_termination'); ?>.</li>
+        </ul>
+        <div class="form-check mt-3">
+          <input class="form-check-input" type="checkbox" id="acceptTerms" required>
+          <label class="form-check-label" for="acceptTerms">
+            <?php echo site_phrase('i_accept_the_terms_and_conditions'); ?>
+          </label>
+        </div>
+        <!-- Mostrar datos que se enviarán -->
+        <div class="mt-4">
+          <h6><?php echo site_phrase('data_to_be_sent'); ?>:</h6>
+          <p><strong><?php echo site_phrase('course_id'); ?>:</strong> <span id="modalCourseId"><?php echo isset($course_details['id']) ? $course_details['id'] : ''; ?></span></p>
+          <p><strong><?php echo site_phrase('course_slug'); ?>:</strong> <span id="modalCourseSlug"><?php echo isset($course_details['title']) ? slugify($course_details['title']) : ''; ?></span></p>
+          <p><strong><?php echo site_phrase('full_name'); ?>:</strong> <span id="modalFullName"><?php echo $user_details['first_name'] . ' ' . $user_details['last_name']; ?></span></p>
+          <p><strong><?php echo site_phrase('email'); ?>:</strong> <span id="modalEmail"><?php echo $user_details['email']; ?></span></p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo site_phrase('close'); ?></button>
+        <button type="button" class="btn btn-primary" id="confirmAffiliate" disabled><?php echo site_phrase('confirm'); ?></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById('acceptTerms').addEventListener('change', function () {
+    document.getElementById('confirmAffiliate').disabled = !this.checked;
+  });
+
+  document.getElementById('confirmAffiliate').addEventListener('click', function () {
+    const courseId = "<?php echo isset($course_details['id']) ? $course_details['id'] : ''; ?>";
+    const fullName = "<?php echo $user_details['first_name'] . ' ' . $user_details['last_name']; ?>";
+    const email = "<?php echo $user_details['email']; ?>";
+    const uniqueCode = Math.random().toString(36).substring(2, 8); // Generar un código único
+
+    if (!courseId || !fullName || !email) {
+      alert('<?php echo site_phrase('missing_required_data'); ?>');
+      return;
+    }
+
+    // Enviar datos al servidor para guardar el afiliado
+    $.ajax({
+      url: '<?php echo site_url('home/register_affiliate'); ?>',
+      type: 'POST',
+      data: {
+        name: fullName,
+        email: email,
+        course_id: courseId,
+        unique_code: uniqueCode,
+        status: 'inactive',
+        registration_date: new Date().toISOString().slice(0, 19).replace('T', ' '),
+        payment_method: null,
+        payment_identifier: null,
+        custom_commission: null,
+        link_count: null
+      },
+      success: function (response) {
+        $('#affiliateModal').modal('hide'); // Cerrar el modal inmediatamente
+        if (response.trim() === 'success') {
+          alert('<?php echo site_phrase('affiliate_registered_successfully'); ?>');
+        } else {
+        }
+      },
+      error: function () {
+        $('#affiliateModal').modal('hide');
+      }
+    });
+  });
+</script>
 
 <!-- // course_addon  adding   -->
 <style>
