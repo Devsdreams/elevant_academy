@@ -164,12 +164,23 @@ class Campaign_model extends CI_Model
         // Decodificar los datos dinámicos de la plantilla
         $template_data = json_decode($campaign['template_data'], true);
 
+        // Verificar si hay imágenes en los datos de la plantilla
+        $attachments = [];
+        if (!empty($template_data['image_1'])) {
+            $attachments['image_1'] = $template_data['image_1'];
+            $template_data['image_1'] = 'cid:image_1'; // Reemplazar la URL con el Content-ID
+        }
+        if (!empty($template_data['image_2'])) {
+            $attachments['image_2'] = $template_data['image_2'];
+            $template_data['image_2'] = 'cid:image_2'; // Reemplazar la URL con el Content-ID
+        }
+
         // Cargar la plantilla seleccionada
         $email_body = $this->load->view('email/campains/' . $campaign['template'], $template_data, true);
 
-        // Enviar el correo
+        // Enviar el correo con las imágenes embebidas
         $this->load->model('Email_model');
-        $this->Email_model->send_smtp_mail($email_body, $campaign['subject'], $campaign['user_email'], $campaign['sender_email']);
+        $this->Email_model->send_smtp_mail($email_body, $campaign['subject'], $campaign['user_email'], $campaign['sender_email'], $attachments);
     }
 
     // Verificar si un grupo existe
@@ -179,4 +190,16 @@ class Campaign_model extends CI_Model
         $query = $this->db->get('email_groups');
         return $query->num_rows() > 0;
     }
+
+    // Guardar imágenes de campaña
+    /* public function save_campaign_images($image_data, $image_name)
+    {
+        $decoded_image = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $image_data));
+        $file_path = 'uploads/campaign_images/' . $image_name . '_' . time() . '.jpg';
+
+        if (file_put_contents($file_path, $decoded_image)) {
+            return base_url($file_path); // Retornar la URL de la imagen
+        }
+        return false;
+    } */
 }

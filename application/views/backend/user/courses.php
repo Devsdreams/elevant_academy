@@ -160,16 +160,22 @@
                                 <th><?php echo get_phrase('enrolled_student'); ?></th>
                                 <th><?php echo get_phrase('status'); ?></th>
                                 <th><?php echo get_phrase('price'); ?></th>
+                                <th><?php echo get_phrase('instructor_earning'); ?></th>
                                 <th><?php echo get_phrase('actions'); ?></th>
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($courses as $key => $course):
+                            <?php 
+                            $instructor_revenue_percentage = $this->db->get_where('settings', ['key' => 'instructor_revenue'])->row()->value;
+                            foreach ($courses as $key => $course):
                                 $instructor_details = $this->user_model->get_all_user($course['user_id'])->row_array();
                                 $category_details = $this->crud_model->get_category_details_by_id($course['sub_category_id'])->row_array();
                                 $sections = $this->crud_model->get_section('course', $course['id']);
                                 $lessons = $this->crud_model->get_lessons('course', $course['id']);
                                 $enroll_history = $this->crud_model->enrol_history($course['id']);
+
+                                $course_price = $course['is_free_course'] == 1 ? 0 : ($course['discount_flag'] == 1 ? $course['discounted_price'] : $course['price']);
+                                $instructor_earning = ($course_price * $instructor_revenue_percentage) / 100;
                             ?>
                                 <tr>
                                     <td><?php echo ++$key; ?></td>
@@ -210,6 +216,9 @@
                                         <?php elseif ($course['is_free_course'] == 1):?>
                                             <span class="badge badge-success-lighten"><?php echo get_phrase('free'); ?></span>
                                         <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-primary-lighten"><?php echo currency($instructor_earning); ?></span>
                                     </td>
                                     <td>
                                         <div class="dropright dropright">

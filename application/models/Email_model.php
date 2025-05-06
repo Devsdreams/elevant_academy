@@ -471,41 +471,47 @@ class Email_model extends CI_Model
 		}
 	}
 
-	public function send_smtp_mail($msg = NULL, $sub = NULL, $to = NULL, $from = NULL, $email_type = NULL, $verification_code = null)
+	public function send_smtp_mail($msg = NULL, $sub = NULL, $to = NULL, $from = NULL, $attachments = [])
 	{
-		//Load email library
+		// Cargar la librería de correo
 		$this->load->library('email');
 
-		if ($from == NULL)
-			$from		=	$this->db->get_where('settings', array('key' => 'system_email'))->row()->value;
+		if ($from == NULL) {
+			$from = $this->db->get_where('settings', array('key' => 'system_email'))->row()->value;
+		}
 
-		//SMTP & mail configuration
+		// Configuración SMTP
 		$config = array(
 			'protocol'  => get_settings('protocol'),
 			'smtp_host' => get_settings('smtp_host'),
 			'smtp_port' => get_settings('smtp_port'),
 			'smtp_user' => get_settings('smtp_user'),
 			'smtp_pass' => get_settings('smtp_pass'),
-			'smtp_crypto' => get_settings('smtp_crypto'), //can be 'ssl' or 'tls' for example
+			'smtp_crypto' => get_settings('smtp_crypto'), // Puede ser 'ssl' o 'tls'
 			'mailtype'  => 'html',
 			'newline'   => "\r\n",
 			'charset'   => 'utf-8',
-			'smtp_timeout' => '10', //in seconds
+			'smtp_timeout' => '10', // En segundos
 		);
-		$this->email->set_header('MIME-Version', 1.0);
-		$this->email->set_header('Content-type', 'text/html');
-		$this->email->set_header('charset', 'UTF-8');
 
 		$this->email->initialize($config);
 
-		$this->email->to($to);
 		$this->email->from($from, get_settings('system_name'));
+		$this->email->to($to);
 		$this->email->subject($sub);
 		$this->email->message($msg);
 
-		//Send email
-		$this->email->send();
-		// echo $this->email->print_debugger();
-		// die();
+		// Adjuntar imágenes embebidas
+		foreach ($attachments as $cid => $file_path) {
+			$this->email->attach($file_path, 'inline', basename($file_path), '', $cid);
+		}
+
+		// Enviar el correo
+		if (!$this->email->send()) {
+			log_message('error', 'Error al enviar el correo: ' . $this->email->print_debugger());
+			return false;
+		}
+
+		return true;
 	}
 }

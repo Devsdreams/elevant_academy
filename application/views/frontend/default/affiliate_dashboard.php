@@ -54,46 +54,46 @@ foreach ($affiliate_data as $affiliate) {
                 </div>
                 <div class="row">
                     <div class="col-md-8 offset-md-2">
-                        <form id="updateAffiliateForm">
+                        <form id="updateAffiliateForm" class="p-4 border rounded shadow-sm bg-white">
                             <input type="hidden" name="affiliate_id" value="<?php echo $affiliate_data[0]['affiliate_id']; ?>">
                             <div class="form-group">
-                                <label for="full_name"><?php echo site_phrase('full_name'); ?></label>
+                                <label for="full_name" class="form-label"><?php echo site_phrase('full_name'); ?></label>
                                 <input type="text" class="form-control" id="full_name" name="full_name" value="<?php echo $affiliate_data[0]['full_name']; ?>" readonly>
                             </div>
                             <div class="form-group">
-                                <label for="email"><?php echo site_phrase('email'); ?></label>
+                                <label for="email" class="form-label"><?php echo site_phrase('email'); ?></label>
                                 <input type="email" class="form-control" id="email" name="email" value="<?php echo $affiliate_data[0]['email']; ?>" readonly>
                             </div>
                             <div class="form-group">
-                                <label for="payment_method"><?php echo site_phrase('payment_method'); ?></label>
-                                <select class="form-control" id="payment_method" name="payment_method" onchange="togglePaymentFields()" required>
+                                <label for="payment_method" class="form-label"><?php echo site_phrase('payment_method'); ?></label>
+                                <select class="form-select" id="payment_method" name="payment_method" onchange="togglePaymentFields()" required>
                                     <option value=""><?php echo site_phrase('select_payment_method'); ?></option>
                                     <option value="paypal" <?php echo $payment_method === 'paypal' ? 'selected' : ''; ?>><?php echo site_phrase('paypal'); ?></option>
                                     <option value="bank" <?php echo $payment_method === 'bank' ? 'selected' : ''; ?>><?php echo site_phrase('bank_account'); ?></option>
                                 </select>
                             </div>
-                            <div id="paypal_fields" style="display: <?php echo $payment_method === 'paypal' ? 'block' : 'none'; ?>;">
+                            <div id="paypal_fields" class="mt-3" style="display: <?php echo $payment_method === 'paypal' ? 'block' : 'none'; ?>;">
                                 <div class="form-group">
-                                    <label for="paypal_email"><?php echo site_phrase('paypal_email'); ?></label>
+                                    <label for="paypal_email" class="form-label"><?php echo site_phrase('paypal_email'); ?></label>
                                     <input type="email" class="form-control" id="paypal_email" name="paypal_email" value="<?php echo $payment_identifier['paypal_email'] ?? ''; ?>">
                                 </div>
                             </div>
-                            <div id="bank_fields" style="display: <?php echo $payment_method === 'bank' ? 'block' : 'none'; ?>;">
+                            <div id="bank_fields" class="mt-3" style="display: <?php echo $payment_method === 'bank' ? 'block' : 'none'; ?>;">
                                 <div class="form-group">
-                                    <label for="bank_name"><?php echo site_phrase('bank_name'); ?></label>
+                                    <label for="bank_name" class="form-label"><?php echo site_phrase('bank_name'); ?></label>
                                     <input type="text" class="form-control" id="bank_name" name="bank_name" value="<?php echo $payment_identifier['bank_name'] ?? ''; ?>">
                                 </div>
                                 <div class="form-group">
-                                    <label for="account_number"><?php echo site_phrase('account_number'); ?></label>
+                                    <label for="account_number" class="form-label"><?php echo site_phrase('account_number'); ?></label>
                                     <input type="text" class="form-control" id="account_number" name="account_number" value="<?php echo $payment_identifier['account_number'] ?? ''; ?>">
                                 </div>
                                 <div class="form-group">
-                                    <label for="swift_code"><?php echo site_phrase('swift_code'); ?></label>
+                                    <label for="swift_code" class="form-label"><?php echo site_phrase('swift_code'); ?></label>
                                     <input type="text" class="form-control" id="swift_code" name="swift_code" value="<?php echo $payment_identifier['swift_code'] ?? ''; ?>">
                                 </div>
                             </div>
-                            <div class="text-center">
-                                <button type="button" class="btn btn-primary" onclick="updateAffiliate()">
+                            <div class="text-center mt-4">
+                                <button type="button" class="btn btn-primary btn-lg" onclick="updateAffiliate()">
                                     <?php echo site_phrase('update'); ?>
                                 </button>
                             </div>

@@ -70,7 +70,7 @@ a[x-apple-data-detectors],
                   <td class="es-m-p0r bc" valign="top" align="center" style="padding:0;Margin:0;width:360px">
                    <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
                      <tr>
-                      <td align="center" style="padding:0;Margin:0;padding-top:30px;font-size:0px"><img class="adapt-img" src="https://zgrgis.stripocdn.email/content/guids/CABINET_4d2a354dbf178901f2ec9dafb9a3630d86d5c0808115a92c45a029a6c62eac85/images/captura_de_pantalla_20250426_111632.png" alt="" style="display:block;font-size:14px;border:0;outline:none;text-decoration:none" width="197" height="33"></td>
+                      <td align="center" style="padding:0;Margin:0;padding-top:30px;font-size:0px"><img class="adapt-img" src="<?= isset($image_1) ? $image_1 : 'https://placehold.org/167x28/808080/FFFFFF?text=Logo+Placeholder'; ?>" alt="Logo" style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;width:167px;height:28px;" width="167" height="28" data-variable="image_1"></td>
                      </tr>
                    </table></td>
                  </tr>
@@ -100,7 +100,7 @@ a[x-apple-data-detectors],
                   <td align="center" valign="top" style="padding:0;Margin:0;width:560px">
                    <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
                      <tr>
-                      <td align="left" style="padding:0;Margin:0"><p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:63px;letter-spacing:0;color:#333333;font-size:42px" data-variable="main_heading"><?= $main_heading; ?></p></td>
+                      <td align="left" style="padding:0;Margin:0"><p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:63px;letter-spacing:0;color:#333333;font-size:42px" data-variable="main_heading"><?= isset($main_heading) ? $main_heading : 'Default Main Heading'; ?></p></td>
                      </tr>
                    </table></td>
                  </tr>
@@ -113,7 +113,7 @@ a[x-apple-data-detectors],
                   <td align="center" valign="top" style="padding:0;Margin:0;width:560px">
                    <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
                      <tr>
-                      <td align="left" style="padding:0;Margin:0"><p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px" data-variable="sub_heading"><?= $sub_heading; ?></p></td>
+                      <td align="left" style="padding:0;Margin:0"><p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px" data-variable="sub_heading"><?= isset($sub_heading) ? $sub_heading : 'Default Sub Heading'; ?></p></td>
                      </tr>
                    </table></td>
                  </tr>
@@ -126,7 +126,7 @@ a[x-apple-data-detectors],
                   <td align="center" valign="top" style="padding:0;Margin:0;width:560px">
                    <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
                      <tr>
-                      <td style="padding:0;Margin:0"><p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:28px;letter-spacing:0;color:#333333;font-size:14px;text-align:justify" data-variable="email_body"><?= $email_body; ?></p></td>
+                      <td style="padding:0;Margin:0"><p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:28px;letter-spacing:0;color:#333333;font-size:14px;text-align:justify" data-variable="email_body"><?= isset($email_body) ? $email_body : 'Default Email Body'; ?></p></td>
                      </tr>
                    </table></td>
                  </tr>
@@ -149,7 +149,7 @@ a[x-apple-data-detectors],
                   <td align="left" style="padding:0;Margin:0;width:354px">
                    <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
                      <tr>
-                      <td align="center" style="padding:0;Margin:0;padding-top:15px"><span class="r" style="border-style:solid;border-color:#2cb543;background:#000f2d;border-width:0px;display:inline-block;border-radius:90px;width:auto"><a href="<?= $button_url; ?>" data-variable="button_text" class="n" target="_blank" style="mso-style-priority:100 !important;text-decoration:none !important;mso-line-height-rule:exactly;color:#FFFFFF;font-size:14px;padding:10px 20px;display:inline-block;background:#000f2d;border-radius:90px;font-family:arial, 'helvetica neue', helvetica, sans-serif;font-weight:normal;font-style:normal;line-height:16.8px;width:auto;text-align:center;letter-spacing:0;mso-padding-alt:0;mso-border-alt:10px solid #000f2d"><?= $button_text; ?></a></span></td>
+                      <td align="center" style="padding:0;Margin:0;padding-top:15px"><span class="r" style="border-style:solid;border-color:#2cb543;background:#000f2d;border-width:0px;display:inline-block;border-radius:90px;width:auto"><a href="<?= isset($button_url) ? $button_url : '#'; ?>" data-variable="button_text" class="n" target="_blank" style="mso-style-priority:100 !important;text-decoration:none !important;mso-line-height-rule:exactly;color:#FFFFFF;font-size:14px;padding:10px 20px;display:inline-block;background:#000f2d;border-radius:90px;font-family:arial, 'helvetica neue', helvetica, sans-serif;font-weight:normal;font-style:normal;line-height:16.8px;width:auto;text-align:center;letter-spacing:0;mso-padding-alt:0;mso-border-alt:10px solid #000f2d"><?= isset($button_text) ? $button_text : 'Click Here'; ?></a></span></td>
                      </tr>
                    </table></td>
                  </tr>
@@ -162,7 +162,7 @@ a[x-apple-data-detectors],
                   <td align="center" valign="top" style="padding:0;Margin:0;width:600px">
                    <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
                      <tr>
-                      <td align="center" style="padding:0;Margin:0;font-size:0px"><img class="adapt-img" src="https://zgrgis.stripocdn.email/content/guids/CABINET_4d2a354dbf178901f2ec9dafb9a3630d86d5c0808115a92c45a029a6c62eac85/images/captura_de_pantalla_20250426_111612.png" alt="" style="display:block;font-size:14px;border:0;outline:none;text-decoration:none" width="413" height="350"></td>
+                      <td align="center" style="padding:0;Margin:0;font-size:0px"><img class="adapt-img" src="<?= isset($image_2) ? $image_2 : 'https://placehold.org/600x300/808080/FFFFFF?text=Main+Image+Placeholder'; ?>" alt="Main Image" style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic" width="600" data-variable="image_2"></td>
                      </tr>
                    </table></td>
                  </tr>
@@ -175,14 +175,14 @@ a[x-apple-data-detectors],
                   <td align="center" valign="top" style="padding:0;Margin:0;width:560px">
                    <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
                      <tr>
-                      <td align="center" style="padding:0;Margin:0"><p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px" data-variable="footer_text"><?= $footer_text; ?></p></td>
+                      <td align="center" style="padding:0;Margin:0"><p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px" data-variable="footer_text"><?= isset($footer_text) ? $footer_text : 'Thank you for choosing us!'; ?></p></td>
                      </tr>
                      <tr>
                           <td align="center" style="padding:20px;Margin:0">
                             <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
                               <tr>
                                 <td align="center" style="padding:0;Margin:0">
-                                  <a href="<?= $button_url; ?>" class="n" target="_blank" style="mso-style-priority:100 !important;text-decoration:none !important;mso-line-height-rule:exactly;color:#FFFFFF;font-size:14px;padding:10px 20px;display:inline-block;background:#000f2d;border-radius:90px;font-family:arial, 'helvetica neue', helvetica, sans-serif;font-weight:normal;font-style:normal;line-height:16.8px;width:auto;text-align:center;letter-spacing:0;mso-padding-alt:0;mso-border-alt:10px solid #000f2d" data-variable="main_heading"><?= $button_text; ?></a>
+                                  <a href="<?= isset($button_url) ? $button_url : '#'; ?>" class="n" target="_blank" style="mso-style-priority:100 !important;text-decoration:none !important;mso-line-height-rule:exactly;color:#FFFFFF;font-size:14px;padding:10px 20px;display:inline-block;background:#000f2d;border-radius:90px;font-family:arial, 'helvetica neue', helvetica, sans-serif;font-weight:normal;font-style:normal;line-height:16.8px;width:auto;text-align:center;letter-spacing:0;mso-padding-alt:0;mso-border-alt:10px solid #000f2d" data-variable="main_heading"><?= isset($button_text) ? $button_text : 'Click Here'; ?></a>
                                 </td>
                               </tr>
                             </table>

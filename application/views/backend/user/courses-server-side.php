@@ -160,9 +160,54 @@
                                 <th><?php echo get_phrase('enrolled_student'); ?></th>
                                 <th><?php echo get_phrase('status'); ?></th>
                                 <th><?php echo get_phrase('price'); ?></th>
+                                <th><?php echo get_phrase('instructor_earning'); ?></th> <!-- Nueva columna -->
                                 <th><?php echo get_phrase('actions'); ?></th>
                             </tr>
                         </thead>
+                        <tbody>
+                            <?php 
+                            $instructor_revenue_percentage = $this->db->get_where('settings', ['key' => 'instructor_revenue'])->row()->value; // Obtener el porcentaje de ganancia
+                            foreach ($courses as $key => $course):
+                                $course_price = $course['is_free_course'] == 1 ? 0 : ($course['discount_flag'] == 1 ? $course['discounted_price'] : $course['price']);
+                                $instructor_earning = ($course_price * $instructor_revenue_percentage) / 100; // Calcular ganancia
+
+                                // Generar acciones
+                                $view_course_on_frontend_url = site_url('home/course/' . rawurlencode(slugify($course['title'])) . '/' . $course['id']);
+                                $edit_course_url = site_url('user/course_form/course_edit/' . $course['id']);
+                                $delete_course_url = "confirm_modal('" . site_url('user/course_actions/delete/' . $course['id']) . "')";
+                                $publish_course_url = "confirm_modal('" . site_url('user/course_actions/publish/' . $course['id']) . "')";
+                                $draft_course_url = "confirm_modal('" . site_url('user/course_actions/draft/' . $course['id']) . "')";
+
+                                $actions = '
+                                <div class="dropright dropright">
+                                    <button type="button" class="btn btn-sm btn-outline-primary btn-rounded btn-icon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="mdi mdi-dots-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="' . $view_course_on_frontend_url . '" target="_blank">' . get_phrase('view_course_on_frontend') . '</a></li>
+                                        <li><a class="dropdown-item" href="' . $edit_course_url . '">' . get_phrase('edit_this_course') . '</a></li>';
+                                if ($course['status'] == 'active' || $course['status'] == 'pending') {
+                                    $actions .= '<li><a class="dropdown-item" href="javascript:;" onclick="' . $draft_course_url . '">' . get_phrase('mark_as_drafted') . '</a></li>';
+                                } else {
+                                    $actions .= '<li><a class="dropdown-item" href="javascript:;" onclick="' . $publish_course_url . '">' . get_phrase('publish_this_course') . '</a></li>';
+                                }
+                                $actions .= '<li><a class="dropdown-item" href="javascript:;" onclick="' . $delete_course_url . '">' . get_phrase('delete_this_course') . '</a></li>
+                                    </ul>
+                                </div>';
+                            ?>
+                                <tr>
+                                    <td><?php echo ++$key; ?></td>
+                                    <td><?php echo $course['title']; ?></td>
+                                    <td><?php echo $course['category']; ?></td>
+                                    <td><?php echo $course['lesson_and_section']; ?></td>
+                                    <td><?php echo $course['enrolled_student']; ?></td>
+                                    <td><?php echo $course['status']; ?></td>
+                                    <td><?php echo currency($course_price); ?></td>
+                                    <td><?php echo currency($instructor_earning); ?></td>
+                                    <td><?php echo $actions; ?></td> <!-- Mostrar acciones -->
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
                     </table>
                 <?php endif; ?>
                 <?php if (count($courses) == 0): ?>

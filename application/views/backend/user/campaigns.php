@@ -3,6 +3,11 @@
         <div class="col-md-6">
             <h3><?php echo get_phrase('campaigns'); ?></h3>
         </div>
+        <div class="col-md-6 text-right">
+            <a href="<?php echo site_url('user/create_campaign'); ?>" class="btn btn-primary btn-sm">
+                <?php echo get_phrase('create_campaign'); ?>
+            </a>
+        </div>
     </div>
     <div class="row">
         <div class="col-xl-12">

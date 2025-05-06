@@ -166,7 +166,7 @@
 
 <!-- Modal para editar la plantilla -->
 <div class="modal fade" id="templateModal" tabindex="-1" role="dialog" aria-labelledby="templateModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document"> <!-- Cambiado a modal-lg para hacerlo más compacto -->
+    <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="templateModalLabel"><?php echo get_phrase('edit_template'); ?></h5>
@@ -176,71 +176,65 @@
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <!-- Formulario compacto -->
-                    <div class="col-md-6">
+                    <!-- Formulario mejorado -->
+                    <div class="col-md-4">
                         <form id="templateForm">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label for="email_title"><?php echo get_phrase('email_title'); ?></label>
-                                        <input type="text" class="form-control form-control-sm" id="email_title" name="email_title" placeholder="<?php echo get_phrase('enter_email_title'); ?>">
-                                    </div>
+                            <div class="form-group">
+                                <label for="email_title"><?php echo get_phrase('email_title'); ?></label>
+                                <input type="text" class="form-control form-control-sm" id="email_title" name="email_title" placeholder="<?php echo get_phrase('enter_email_title'); ?>">
+                            </div>
+                            <div class="form-group">
+                                <label for="main_heading"><?php echo get_phrase('main_heading'); ?></label>
+                                <input type="text" class="form-control form-control-sm" id="main_heading" name="main_heading" placeholder="<?php echo get_phrase('enter_main_heading'); ?>">
+                            </div>
+                            <div class="form-group">
+                                <label for="sub_heading"><?php echo get_phrase('sub_heading'); ?></label>
+                                <input type="text" class="form-control form-control-sm" id="sub_heading" name="sub_heading" placeholder="<?php echo get_phrase('enter_sub_heading'); ?>">
+                            </div>
+                            <div class="form-group">
+                                <label for="email_body"><?php echo get_phrase('email_body'); ?></label>
+                                <textarea class="form-control form-control-sm" id="email_body" name="email_body" rows="3" placeholder="<?php echo get_phrase('enter_email_body'); ?>"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="promo_text"><?php echo get_phrase('promo_text'); ?></label>
+                                <input type="text" class="form-control form-control-sm" id="promo_text" name="promo_text" placeholder="<?php echo get_phrase('enter_promo_text'); ?>">
+                            </div>
+                            <div class="form-group">
+                                <label for="promo_price"><?php echo get_phrase('promo_price'); ?></label>
+                                <input type="text" class="form-control form-control-sm" id="promo_price" name="promo_price" placeholder="<?php echo get_phrase('enter_promo_price'); ?>">
+                            </div>
+                            <div class="form-group">
+                                <label for="button_text"><?php echo get_phrase('button_text'); ?></label>
+                                <input type="text" class="form-control form-control-sm" id="button_text" name="button_text" placeholder="<?php echo get_phrase('enter_button_text'); ?>">
+                            </div>
+                            <div class="form-group">
+                                <label for="button_url"><?php echo get_phrase('button_url'); ?></label>
+                                <input type="url" class="form-control form-control-sm" id="button_url" name="button_url" placeholder="<?php echo get_phrase('enter_button_url'); ?>">
+                            </div>
+                            <div class="form-group">
+                                <label for="footer_text"><?php echo get_phrase('footer_text'); ?></label>
+                                <textarea class="form-control form-control-sm" id="footer_text" name="footer_text" rows="2" placeholder="<?php echo get_phrase('enter_footer_text'); ?>"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="image_1"><?php echo get_phrase('logo_image'); ?></label>
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" id="image_1" name="image_1" accept="image/*" data-variable="image_1">
+                                    <label class="custom-file-label" for="image_1"><?php echo get_phrase('choose_file'); ?></label>
                                 </div>
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label for="main_heading"><?php echo get_phrase('main_heading'); ?></label>
-                                        <input type="text" class="form-control form-control-sm" id="main_heading" name="main_heading" placeholder="<?php echo get_phrase('enter_main_heading'); ?>">
-                                    </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label for="sub_heading"><?php echo get_phrase('sub_heading'); ?></label>
-                                        <input type="text" class="form-control form-control-sm" id="sub_heading" name="sub_heading" placeholder="<?php echo get_phrase('enter_sub_heading'); ?>">
-                                    </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label for="email_body"><?php echo get_phrase('email_body'); ?></label>
-                                        <textarea class="form-control form-control-sm" id="email_body" name="email_body" rows="2" placeholder="<?php echo get_phrase('enter_email_body'); ?>"></textarea>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="promo_text"><?php echo get_phrase('promo_text'); ?></label>
-                                        <input type="text" class="form-control form-control-sm" id="promo_text" name="promo_text" placeholder="<?php echo get_phrase('enter_promo_text'); ?>">
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="promo_price"><?php echo get_phrase('promo_price'); ?></label>
-                                        <input type="text" class="form-control form-control-sm" id="promo_price" name="promo_price" placeholder="<?php echo get_phrase('enter_promo_price'); ?>">
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="button_text"><?php echo get_phrase('button_text'); ?></label>
-                                        <input type="text" class="form-control form-control-sm" id="button_text" name="button_text" placeholder="<?php echo get_phrase('enter_button_text'); ?>">
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="button_url"><?php echo get_phrase('button_url'); ?></label>
-                                        <input type="url" class="form-control form-control-sm" id="button_url" name="button_url" placeholder="<?php echo get_phrase('enter_button_url'); ?>">
-                                    </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label for="footer_text"><?php echo get_phrase('footer_text'); ?></label>
-                                        <textarea class="form-control form-control-sm" id="footer_text" name="footer_text" rows="2" placeholder="<?php echo get_phrase('enter_footer_text'); ?>"></textarea>
-                                    </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="image_2"><?php echo get_phrase('main_image'); ?></label>
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" id="image_2" name="image_2" accept="image/*" data-variable="image_2">
+                                    <label class="custom-file-label" for="image_2"><?php echo get_phrase('choose_file'); ?></label>
                                 </div>
                             </div>
                         </form>
                     </div>
                     <!-- Vista previa -->
-                    <div class="col-md-6">
+                    <div class="col-md-8">
                         <h5><?php echo get_phrase('template_preview'); ?></h5>
-                        <iframe id="templateIframe" src="" frameborder="0" style="width: 100%; height: 400px; border: 1px solid #ddd;"></iframe>
+                        <iframe id="templateIframe" src="" frameborder="0" style="width: 100%; height: 800px; border: 1px solid #ddd; max-width: 1200px;"></iframe>
                     </div>
                 </div>
             </div>
@@ -251,10 +245,6 @@
         </div>
     </div>
 </div>
-
-<!-- Librerías necesarias -->
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
 
 <script>
     $(document).ready(function () {
@@ -287,9 +277,18 @@
                 const iframe = document.getElementById('templateIframe');
                 iframe.src = '<?php echo site_url("user/render_template"); ?>/' + template;
 
-                // Esperar a que el iframe cargue
+                // Establecer imágenes temporales si no hay imágenes seleccionadas
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
                 iframe.onload = function () {
-                    console.log('Iframe cargado correctamente');
+                    const logoImage = iframeDoc.querySelector('img[data-variable="image_1"]');
+                    const mainImage = iframeDoc.querySelector('img[data-variable="image_2"]');
+
+                    if (logoImage && !logoImage.src) {
+                        logoImage.src = 'https://placehold.org/150x50/808080/FFFFFF?text=Logo+Placeholder';
+                    }
+                    if (mainImage && !mainImage.src) {
+                        mainImage.src = 'https://placehold.org/600x300/808080/FFFFFF?text=Main+Image+Placeholder';
+                    }
                 };
             } else {
                 alert('<?php echo get_phrase("template_selected"); ?>: ' + template);
@@ -321,19 +320,69 @@
             }
         });
 
+        // Actualizar la vista previa en tiempo real para imágenes
+        $('#image_1, #image_2').on('change', function (event) {
+            const file = event.target.files[0];
+            const fieldId = $(this).attr('id');
+
+            // Crear un objeto FormData para enviar el archivo
+            const formData = new FormData();
+            formData.append('image_file', file);
+            formData.append('image_id', fieldId); // Enviar el identificador de la imagen
+
+            // Enviar la imagen al servidor
+            $.ajax({
+                url: '<?php echo site_url("user/upload_user_image"); ?>',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    console.log('Imagen guardada en:', response);
+
+                    // Actualizar la vista previa en el iframe
+                    const iframe = document.getElementById('templateIframe');
+                    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                    const targetElement = iframeDoc.querySelector(`img[data-variable="${fieldId}"]`);
+
+                    if (targetElement) {
+                        targetElement.src = response; // Actualizar la vista previa con la URL de la imagen
+                        if (fieldId === 'image_1') {
+                            targetElement.style.width = '167px';
+                            targetElement.style.height = '28px';
+                        }
+                    }
+
+                    // Guardar la URL correcta en el localStorage
+                    const templateData = JSON.parse(localStorage.getItem('template_data')) || {};
+                    templateData[fieldId] = response; // Guardar la URL de la imagen
+                    localStorage.setItem('template_data', JSON.stringify(templateData));
+                    console.log('Template Data actualizado en localStorage:', templateData);
+                },
+                error: function () {
+                    console.error('Error al guardar la imagen.');
+                }
+            });
+        });
+
         // Guardar los valores ingresados en el formulario en localStorage
         $('#saveTemplate').on('click', function () {
-            const formData = $('#templateForm').serializeArray();
-            const templateData = {};
+            const templateData = JSON.parse(localStorage.getItem('template_data')) || {};
 
-            formData.forEach(function (field) {
-                templateData[field.name] = field.value;
+            // Procesar campos de texto y textarea
+            $('#templateForm input, #templateForm textarea').each(function () {
+                const fieldName = $(this).attr('name');
+                const fieldValue = $(this).val();
+
+                // Solo actualizar los campos que no sean imágenes
+                if (!fieldName.startsWith('image_')) {
+                    templateData[fieldName] = fieldValue;
+                }
             });
 
-            // Guardar los datos en localStorage
+            // Guardar los datos actualizados en localStorage
             localStorage.setItem('template_data', JSON.stringify(templateData));
-
-            console.log('Template Data saved to localStorage:', templateData);
+            console.log('Template Data guardado en localStorage:', templateData);
 
             // Cerrar el modal
             $('#templateModal').modal('hide');
@@ -350,6 +399,12 @@
                     value: templateData
                 }).appendTo(this);
             }
+        });
+
+        // Mostrar nombre del archivo seleccionado
+        $('.custom-file-input').on('change', function () {
+            const fileName = $(this).val().split('\\').pop();
+            $(this).siblings('.custom-file-label').addClass('selected').html(fileName);
         });
     });
 </script>

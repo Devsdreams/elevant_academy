@@ -157,8 +157,7 @@ $month_wise_affiliate_earnings = array_fill(0, 12, rand(50, 200)); // Datos fict
                                     </td>
                                     <td><?php echo $affiliate['access_count']; ?></td>
                                     <td><?php echo $affiliate['checkout_count']; ?></td>
-                                    <!-- <td><?php echo currency($affiliate['total_sales'] ?? 0); ?></td> -->
-                                    <td><?php echo currency($affiliate['custom_commission'] ?? 0); ?></td>
+                                    <td><?php echo isset($affiliate['custom_commission']) ? intval($affiliate['custom_commission']) . '%' : '0%'; ?></td> <!-- Mostrar como porcentaje entero -->
                                     <td><?php echo ucfirst($affiliate['status']); ?></td>
                                 </tr>
                             <?php endforeach; ?>

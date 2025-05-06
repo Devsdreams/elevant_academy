@@ -1559,4 +1559,77 @@ class User extends CI_Controller
             echo json_encode(['status' => 'error', 'message' => get_phrase('no_changes_were_made_or_affiliate_not_found')]);
         }
     }
+
+    public function upload_user_image()
+    {
+        if ($this->session->userdata('user_login') != true) {
+            redirect(site_url('login'), 'refresh');
+        }
+
+        // Verificar si se subió un archivo
+        if (!isset($_FILES['image_file']) || $_FILES['image_file']['error'] != UPLOAD_ERR_OK) {
+            http_response_code(400);
+            echo 'Error al subir la imagen.';
+            return;
+        }
+
+        // Obtener el identificador de la imagen (image_1 o image_2)
+        $image_id = $this->input->post('image_id');
+        if (!$image_id) {
+            http_response_code(400);
+            echo 'Identificador de imagen no proporcionado.';
+            return;
+        }
+
+        // Crear carpetas si no existen
+        $upload_path = 'uploads/campaign_images/';
+        $optimized_path = 'uploads/campaign_images/optimized/';
+        if (!file_exists($upload_path)) {
+            mkdir($upload_path, 0777, true);
+        }
+        if (!file_exists($optimized_path)) {
+            mkdir($optimized_path, 0777, true);
+        }
+
+        // Generar un nombre único para la imagen
+        $file_name = uniqid('campaign_', true) . '.' . pathinfo($_FILES['image_file']['name'], PATHINFO_EXTENSION);
+        $file_path = $upload_path . $file_name;
+
+        // Mover el archivo a la carpeta de destino
+        if (move_uploaded_file($_FILES['image_file']['tmp_name'], $file_path)) {
+            if ($image_id === 'image_1') {
+                // Redimensionar la imagen 1 y guardarla en la carpeta optimizada
+                $optimized_file_path = $optimized_path . $file_name;
+                $this->resize_image($file_path, $optimized_file_path, 167, 28);
+                echo base_url($optimized_file_path); // Retornar la URL de la imagen optimizada
+            } else {
+                // Para la imagen 2, retornar la URL sin optimizar
+                echo base_url($file_path);
+            }
+        } else {
+            http_response_code(500);
+            echo 'Error al guardar la imagen.';
+        }
+    }
+
+    // Método para redimensionar imágenes
+    private function resize_image($source_path, $destination_path, $width, $height)
+    {
+        $this->load->library('image_lib');
+
+        $config['image_library'] = 'gd2';
+        $config['source_image'] = $source_path;
+        $config['new_image'] = $destination_path;
+        $config['maintain_ratio'] = true;
+        $config['width'] = $width;
+        $config['height'] = $height;
+
+        $this->image_lib->initialize($config);
+
+        if (!$this->image_lib->resize()) {
+            log_message('error', $this->image_lib->display_errors());
+        }
+
+        $this->image_lib->clear();
+    }
 }
