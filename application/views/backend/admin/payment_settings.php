@@ -1,9 +1,14 @@
 <?php
 $paypal_settings = $this->db->get_where('settings', array('key' => 'paypal'))->row()->value;
 $paypal = json_decode($paypal_settings);
+
 $stripe_settings = $this->db->get_where('settings', array('key' => 'stripe_keys'))->row()->value;
 $stripe = json_decode($stripe_settings);
+
 $razorpay = json_decode(get_settings('razorpay_keys'));
+
+$epayco_settings = $this->db->get_where('settings', array('key' => 'epayco_keys'))->row()->value;
+$epayco = json_decode($epayco_settings);
 ?>
 <!-- start page title -->
 <div class="row ">
@@ -245,6 +250,73 @@ $razorpay = json_decode(get_settings('razorpay_keys'));
                 <div class="row justify-content-md-center">
                     <div class="form-group col-md-6">
                         <button class="btn btn-block btn-primary" type="submit"><?php echo get_phrase('update_razorpay_keys'); ?></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ePayco Payment Gateway Settings -->
+<div class="col-md-12">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="header-title"><p><?php echo get_phrase('setup_epayco_settings'); ?></p></h4>
+            <form class="" action="<?php echo site_url('admin/payment_settings/epayco_settings'); ?>" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label><?php echo get_phrase('active'); ?></label>
+                    <select class="form-control select2" data-toggle="select2" id="epayco_active" name="epayco_active">
+                        <option value="0" <?php if ($epayco[0]->active == 0) echo 'selected';?>> <?php echo get_phrase('no');?></option>
+                        <option value="1" <?php if ($epayco[0]->active == 1) echo 'selected';?>> <?php echo get_phrase('yes');?></option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label><?php echo get_phrase('test_mode'); ?></label>
+                    <select class="form-control select2" data-toggle="select2" id="epayco_test_mode" name="epayco_test_mode">
+                        <option value="sandbox" <?php if ($epayco[0]->test_mode == 'sandbox') echo 'selected';?>> <?php echo get_phrase('sandbox');?></option>
+                        <option value="production" <?php if ($epayco[0]->test_mode == 'production') echo 'selected';?>> <?php echo get_phrase('production');?></option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label><?php echo get_phrase('epayco_currency'); ?></label>
+                    <select class="form-control select2" data-toggle="select2" id="epayco_currency" name="epayco_currency" required>
+                        <option value=""><?php echo get_phrase('select_epayco_currency'); ?></option>
+                        <?php
+                        $currencies = $this->crud_model->get_currencies();
+                        foreach ($currencies as $currency): ?>
+                            <option value="<?php echo $currency['code']; ?>"
+                                <?php if (get_settings('epayco_currency') == $currency['code']) echo 'selected'; ?>>
+                                <?php echo $currency['code']; ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label><?php echo get_phrase('public_key'); ?></label>
+                    <input type="text" name="epayco_public_key" class="form-control" value="<?php echo $epayco[0]->public_key; ?>" required />
+                </div>
+
+                <div class="form-group">
+                    <label><?php echo get_phrase('private_key'); ?></label>
+                    <input type="text" name="epayco_private_key" class="form-control" value="<?php echo $epayco[0]->private_key; ?>" required />
+                </div>
+
+                <div class="form-group">
+                    <label><?php echo get_phrase('p_cust_id_cliente'); ?></label>
+                    <input type="text" name="epayco_p_cust_id_cliente" class="form-control" value="<?php echo $epayco[0]->p_cust_id_cliente; ?>" required />
+                </div>
+
+                <div class="form-group">
+                    <label><?php echo get_phrase('p_key'); ?></label>
+                    <input type="text" name="epayco_p_key" class="form-control" value="<?php echo $epayco[0]->p_key; ?>" required />
+                </div>
+
+                <div class="row justify-content-md-center">
+                    <div class="form-group col-md-6">
+                        <button class="btn btn-block btn-primary" type="submit"><?php echo get_phrase('update_epayco_keys'); ?></button>
                     </div>
                 </div>
             </form>

@@ -1,6 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 require_once(APPPATH."libraries/razorpay-php/Razorpay.php");
+require_once(APPPATH . '../vendor/autoload.php');
 use Razorpay\Api\Api;
 use Razorpay\Api\Errors\SignatureVerificationError;
 
@@ -260,23 +261,44 @@ class Payment_model extends CI_Model {
     }
   }
 
+  // VALIDATE EPAYCO PAYMENT
+  public function epayco_payment($payment_data) {
+      // Obtener configuración de ePayco desde la base de datos
+      $epayco_settings = $this->db->get_where('settings', array('key' => 'epayco_keys'))->row()->value;
+      $epayco = json_decode($epayco_settings);
 
+      // Inicializar ePayco
+      $epayco_client = new Epayco\Epayco(array(
+          "apiKey" => $epayco[0]->public_key,
+          "privateKey" => $epayco[0]->private_key,
+          "lang" => "ES",
+          "test" => $epayco[0]->test_mode === "sandbox" ? true : false
+      ));
 
+      try {
+          // Crear el pago
+          $response = $epayco_client->charge->create($payment_data);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+          // Verificar si el pago fue exitoso
+          if ($response->status === "success") {
+              return array(
+                  "status" => "success",
+                  "message" => "Pago realizado con éxito",
+                  "data" => $response
+              );
+          } else {
+              return array(
+                  "status" => "error",
+                  "message" => $response->message
+              );
+          }
+      } catch (Exception $e) {
+          return array(
+              "status" => "error",
+              "message" => $e->getMessage()
+          );
+      }
+  }
 
 }
 

@@ -1216,5 +1216,16 @@
     "instructor_settings_updated": "Instructor settings updated",
     "pricesss": "Pricesss",
     "instructor_earning": "Instructor earning",
-    "delete_this_course": "Delete this course"
+    "delete_this_course": "Delete this course",
+    "setup_epayco_settings": "Setup epayco settings",
+    "public_key": "Public key",
+    "private_key": "Private key",
+    "update_epayco_keys": "Update epayco keys",
+    "p_cust_id_cliente": "P cust id cliente",
+    "p_key": "P key",
+    "pay_by_epayco": "Pay by epayco",
+    "pay": "Pay",
+    "purchase_description": "Purchase description",
+    "epayco_currency": "Epayco currency",
+    "select_epayco_currency": "Select epayco currency"
 }

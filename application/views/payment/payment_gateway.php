@@ -146,7 +146,8 @@
 	.paypal-form,
 	.stripe-form,
 	.razorpay-form,
-	.payu_latam-form {
+	.payu_latam-form,
+	.epayco-form {
 		display: none;
 	}
 
@@ -158,7 +159,8 @@
 		.paystack,
 		.payumoney,
 		.razorpay,
-		.payu_latam {
+		.payu_latam,
+		.epayco {
 			margin-left: 5px;
 			width: 70%;
 		}
@@ -169,6 +171,7 @@
 $paypal = json_decode(get_settings('paypal'));
 $stripe = json_decode(get_settings('stripe_keys'));
 $razorpay = json_decode(get_settings('razorpay_keys'));
+$epayco = json_decode(get_settings('epayco_keys'));
 $total_price_of_checking_out = $this->session->userdata('total_price_of_checking_out');
 ?>
 
@@ -213,6 +216,15 @@ $total_price_of_checking_out = $this->session->userdata('total_price_of_checking
 							<div class="col-12 py-3px">
 								<img class="tick-icon razorpay-icon" src="<?php echo base_url('assets/payment/tick.png'); ?>">
 								<img class="payment-gateway-icon" src="<?php echo base_url('assets/payment/razorpay.png'); ?>">
+							</div>
+						</div>
+					<?php endif; ?>
+
+					<?php if ($epayco[0]->active != 0) : ?>
+						<div class="row payment-gateway epayco" onclick="selectedPaymentGateway('epayco')">
+							<div class="col-12">
+								<img class="tick-icon epayco-icon" src="<?php echo base_url('assets/payment/tick.png'); ?>">
+								<img class="payment-gateway-icon" src="<?php echo base_url('assets/payment/epayco.png'); ?>">
 							</div>
 						</div>
 					<?php endif; ?>
@@ -412,6 +424,12 @@ $total_price_of_checking_out = $this->session->userdata('total_price_of_checking
 							include "payu_latam/payu_latam_payment_gateway_form.php";
 						endif;
 						?>
+
+						<form action="<?php echo site_url('home/epayco_checkout'); ?>" method="post" class="epayco-form form">
+							<hr class="border mb-4">
+							<input type="hidden" name="total_price_of_checking_out" value="<?php echo $total_price_of_checking_out; ?>">
+							<button type="submit" class="payment-button float-end"><?php echo get_phrase('pay_by_epayco'); ?></button>
+						</form>
 					</div>
 				</div>
 			</div>
@@ -457,6 +475,15 @@ $total_price_of_checking_out = $this->session->userdata('total_price_of_checking
 			$(".payu_latam").css("border", "2px solid #00D04F");
 			$('.payu_latam-icon').show();
 			$('.payu_latam-form').show();
+		}else if (gateway == 'epayco') {
+
+			$(".payment-gateway").css("border", "2px solid #D3DCDD");
+			$('.tick-icon').hide();
+			$('.form').hide();
+
+			$(".epayco").css("border", "2px solid #00D04F");
+			$('.epayco-icon').show();
+			$('.epayco-form').show();
 		}
 	}
 </script>

@@ -460,6 +460,28 @@ class Crud_model extends CI_Model
         $this->db->update('settings', $data);
     }
 
+    public function update_epayco_settings() {
+        $epayco_info = array();
+        $epayco['active'] = $this->input->post('epayco_active');
+        $epayco['test_mode'] = $this->input->post('epayco_test_mode');
+        $epayco['public_key'] = $this->input->post('epayco_public_key');
+        $epayco['private_key'] = $this->input->post('epayco_private_key');
+        $epayco['p_cust_id_cliente'] = $this->input->post('epayco_p_cust_id_cliente');
+        $epayco['p_key'] = $this->input->post('epayco_p_key');
+
+        array_push($epayco_info, $epayco);
+
+        // Guardar las claves de ePayco
+        $data['value'] = json_encode($epayco_info);
+        $this->db->where('key', 'epayco_keys');
+        $this->db->update('settings', $data);
+
+        // Guardar la moneda de ePayco
+        $data['value'] = $this->input->post('epayco_currency');
+        $this->db->where('key', 'epayco_currency');
+        $this->db->update('settings', $data);
+    }
+
     public function update_system_currency()
     {
         $data['value'] = html_escape($this->input->post('system_currency'));

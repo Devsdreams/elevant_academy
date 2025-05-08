@@ -485,9 +485,12 @@ class Admin extends CI_Controller
             $this->crud_model->update_stripe_settings();
             redirect(site_url('admin/payment_settings'), 'refresh');
         }
-
         if ($param1 == 'razorpay_settings') {
             $this->crud_model->update_razorpay_settings();
+            redirect(site_url('admin/payment_settings'), 'refresh');
+        }
+        if ($param1 == 'epayco_settings') {
+            $this->crud_model->update_epayco_settings();
             redirect(site_url('admin/payment_settings'), 'refresh');
         }
 

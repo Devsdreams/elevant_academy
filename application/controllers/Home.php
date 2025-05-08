@@ -706,6 +706,56 @@ class Home extends CI_Controller
         }
     }
 
+    public function epayco_checkout($payment_request = "only_for_mobile") {
+        if ($this->session->userdata('user_login') != 1 && $payment_request != 'true') {
+            redirect('home', 'refresh');
+        }
+
+        // Verificar el precio total del carrito
+        $total_price_of_checking_out = $this->session->userdata('total_price_of_checking_out');
+        $page_data['payment_request'] = $payment_request;
+        $page_data['user_details'] = $this->user_model->get_user($this->session->userdata('user_id'))->row_array();
+        $page_data['amount_to_pay'] = $total_price_of_checking_out;
+        $this->load->view('payment/epayco/epayco_checkout', $page_data);
+    }
+
+    public function epayco_response() {
+        $data = $this->input->post();
+
+        // Verificar si el pago fue exitoso
+        if ($data['x_cod_response'] == 1) {
+            $user_id = $this->session->userdata('user_id');
+            $amount_paid = $data['x_amount'];
+            $transaction_id = $data['x_ref_payco'];
+
+            // Registrar la compra y matricular al estudiante
+            $this->crud_model->enrol_student($user_id);
+            $this->crud_model->course_purchase($user_id, 'epayco', $amount_paid, $transaction_id);
+            $this->email_model->course_purchase_notification($user_id, 'epayco', $amount_paid);
+
+            $this->session->set_flashdata('flash_message', site_phrase('payment_successfully_done'));
+            $this->session->set_userdata('cart_items', array());
+            redirect('home/my_courses', 'refresh');
+        } else {
+            $this->session->set_flashdata('error_message', site_phrase('payment_failed') . '! ' . site_phrase('something_is_wrong'));
+            redirect('home/shopping_cart', 'refresh');
+        }
+    }
+
+    public function epayco_confirmation() {
+        $data = $this->input->post();
+
+        // Verificar si el pago fue exitoso
+        if ($data['x_cod_response'] == 1) {
+            $user_id = $this->session->userdata('user_id');
+            $amount_paid = $data['x_amount'];
+            $transaction_id = $data['x_ref_payco'];
+
+            // Registrar la compra y matricular al estudiante si no se ha hecho ya
+            $this->crud_model->enrol_student($user_id);
+            $this->crud_model->course_purchase($user_id, 'epayco', $amount_paid, $transaction_id);
+        }
+    }
 
     public function lesson($slug = "", $course_id = "", $lesson_id = "")
     {
