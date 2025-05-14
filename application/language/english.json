@@ -1288,5 +1288,15 @@
     "total_conversions": "Total conversions",
     "clicks_vs_conversions": "Clicks vs conversions",
     "sales_by_course": "Sales by course",
-    "your_affiliate_link": "Your affiliate link"
+    "your_affiliate_link": "Your affiliate link",
+    "comencemos_a_crear_tu_primer_curso": "Comencemos a crear tu primer curso",
+    "unlock_menu_options": "Unlock menu options",
+    "to_unlock_all_menu_options_create_your_first_course": "To unlock all menu options create your first course",
+    "go_to_course_manager": "Go to course manager",
+    "go_to_add_course": "Go to add course",
+    "no_secret_key_found": "No secret key found",
+    "create_your_first_course_to_unlock_this_menu": "Create your first course to unlock this menu",
+    "ebook": "Ebook",
+    "reports": "Reports",
+    "create_your_first_course": "Create your first course"
 }

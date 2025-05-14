@@ -4,12 +4,12 @@
     $number_of_enrolment_result = $this->crud_model->instructor_wise_enrolment($instructor_id);
     if ($number_of_enrolment_result) {
         $number_of_enrolment = $number_of_enrolment_result->num_rows();
-    }else{
+    } else {
         $number_of_enrolment = 0;
     }
     $total_pending_amount = $this->crud_model->get_total_pending_amount($instructor_id);
     $requested_withdrawal_amount = $this->crud_model->get_requested_withdrawal_amount($instructor_id);
- ?>
+?>
 
 <div class="row">
     <div class="col-xl-12">
@@ -118,3 +118,76 @@
         </div>
     </div>
 </div>
+
+<div id="firstCoursePopup" class="popup-overlay" style="display: none;">
+    <div class="popup-content">
+        <h5 class="popup-title">¡Bienvenido a Elevant!</h5>
+        <p>¡Es genial tenerte aquí! Elevant está diseñado para ayudarte a compartir tu conocimiento y transformar vidas. Comencemos creando tu primer curso de forma rápida y sencilla.</p>
+        <div class="popup-buttons">
+            <a href="<?php echo site_url('user/course_form/add_course'); ?>" class="btn btn-primary">Crear curso</a>
+            <button id="closePopup" class="btn btn-secondary">Más tarde</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Estilos para el popup */
+    .popup-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: flex-start; /* Alinea el popup en la parte superior */
+        z-index: 9999;
+        padding-top: 20px; /* Espaciado desde la parte superior */
+    }
+
+    .popup-content {
+        background: #fff;
+        padding: 40px;
+        border-radius: 8px;
+        text-align: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        max-width: 400px;
+        width: 90%;
+        position: relative;
+    }
+
+    .popup-title {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 15px;
+    }
+
+    .popup-buttons {
+        position: absolute;
+        bottom: 10px; /* Espaciado desde la parte inferior */
+        right: 10px; /* Espaciado desde la parte derecha */
+        display: flex;
+        gap: 10px; /* Espaciado entre los botones */
+    }
+
+    .popup-buttons .btn {
+        margin: 0;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Mostrar el popup si el número de cursos es 0
+        var numberOfCourses = <?php echo $number_of_courses; ?>;
+        if (numberOfCourses === 0) {
+            var popup = document.getElementById('firstCoursePopup');
+            popup.style.display = 'flex';
+
+            // Cerrar el popup al hacer clic en "Más tarde"
+            document.getElementById('closePopup').addEventListener('click', function () {
+                popup.style.display = 'none';
+            });
+        }
+    });
+</script>

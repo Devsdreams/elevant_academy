@@ -1227,5 +1227,10 @@
     "pay": "Pay",
     "purchase_description": "Purchase description",
     "epayco_currency": "Epayco currency",
-    "select_epayco_currency": "Select epayco currency"
+    "select_epayco_currency": "Select epayco currency",
+    "choose_your_login_type": "Choose your login type",
+    "login_as_user": "Login as user",
+    "login_as_instructor": "Login as instructor",
+    "register_as_instructor": "Register as instructor",
+    "reports": "Reports"
 }

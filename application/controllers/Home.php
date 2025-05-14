@@ -1144,6 +1144,18 @@ class Home extends CI_Controller
         $this->load->view('frontend/' . get_frontend_settings('theme') . '/index', $page_data);
     }
 
+    public function sign_up_instructor()
+    {
+        if ($this->session->userdata('admin_login')) {
+            redirect(site_url('admin'), 'refresh');
+        } elseif ($this->session->userdata('user_login')) {
+            redirect(site_url('user'), 'refresh');
+        }
+        $page_data['page_name'] = 'sign_up_instructor';
+        $page_data['page_title'] = site_phrase('register_as_instructor');
+        $this->load->view('frontend/' . get_frontend_settings('theme') . '/index', $page_data);
+    }
+
     public function submit_quiz($from = "")
     {
         $submitted_quiz_info = array();
@@ -1561,6 +1573,43 @@ class Home extends CI_Controller
         } else {
             echo json_encode(['status' => 'error', 'message' => 'No changes were made or affiliate not found']);
         }
+    }
+
+    public function register_instructor()
+    {
+        $data['first_name'] = html_escape($this->input->post('first_name'));
+        $data['last_name'] = html_escape($this->input->post('last_name'));
+        $data['email'] = html_escape($this->input->post('email'));
+        $data['password'] = sha1(html_escape($this->input->post('password')));
+        $data['biography'] = html_escape($this->input->post('biography'));
+        $data['is_instructor'] = 0; // No será instructor hasta que sea aprobado
+        $data['role_id'] = 2; // Usuario normal
+        $data['date_added'] = strtotime(date("Y-m-d H:i:s"));
+
+        // Verificar duplicación de correo
+        $existing_user = $this->db->get_where('users', ['email' => $data['email']])->num_rows();
+        if ($existing_user > 0) {
+            $this->session->set_flashdata('error_message', site_phrase('email_already_exists'));
+            redirect(site_url('home/sign_up_instructor'), 'refresh');
+        }
+
+        // Insertar usuario en la tabla de usuarios
+        $this->db->insert('users', $data);
+        $user_id = $this->db->insert_id();
+
+        // Insertar solicitud en la tabla de aplicaciones
+        $application_data = [
+            'user_id' => $user_id,
+            'address' => html_escape($this->input->post('address')),
+            'phone' => html_escape($this->input->post('phone')),
+            'message' => html_escape($this->input->post('message')),
+            'document' => '', // Puedes agregar lógica para cargar documentos si es necesario
+            'status' => 0, // Estado pendiente
+        ];
+        $this->db->insert('applications', $application_data);
+
+        $this->session->set_flashdata('flash_message', site_phrase('registration_successful'));
+        redirect(site_url('home/login'), 'refresh');
     }
 }
 

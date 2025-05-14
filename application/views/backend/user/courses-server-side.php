@@ -1,14 +1,72 @@
-<div class="row ">
+<?php
+    $instructor_id = $this->session->userdata('user_id');
+    $number_of_courses = $this->crud_model->get_instructor_wise_courses($instructor_id)->num_rows();
+?>
+
+<div class="row">
     <div class="col-xl-12">
         <div class="card">
             <div class="card-body">
-                <h4 class="page-title"> <i class="mdi mdi-apple-keyboard-command title_icon"></i> <?php echo get_phrase('courses'); ?>
-                    <a href="<?php echo site_url('user/course_form/add_course'); ?>" class="btn btn-outline-primary btn-rounded alignToTitle"><i class="mdi mdi-plus"></i><?php echo get_phrase('add_new_course'); ?></a>
+                <h4 class="page-title d-flex align-items-center">
+                    <i class="mdi mdi-apple-keyboard-command title_icon"></i> 
+                    <?php echo get_phrase('courses'); ?>
                 </h4>
+                <div class="d-flex justify-content-end align-items-center mt-3 position-relative">
+                    <?php if ($number_of_courses == 0): ?>
+                        <div class="floating-notification d-flex align-items-center" id="floating-notification">
+                            <?php echo get_phrase('comencemos_a_crear_tu_primer_curso'); ?>
+                            <div class="arrow"></div>
+                        </div>
+                    <?php endif; ?>
+                    <a href="<?php echo site_url('user/course_form/add_course'); ?>" class="btn btn-outline-primary btn-rounded alignToTitle ml-3" id="add-course-button">
+                        <i class="mdi mdi-plus"></i><?php echo get_phrase('add_new_course'); ?>
+                    </a>
+                </div>
             </div> <!-- end card body-->
         </div> <!-- end card -->
     </div><!-- end col-->
 </div>
+
+<style>
+    /* Estilo para la notificación flotante */
+    .floating-notification {
+        background-color: #727cf5;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 5px;
+        font-size: 14px;
+        font-weight: bold;
+        margin-right: 0px; /* Sin margen derecho */
+        margin-top: 35px; /* Ajuste vertical */
+        z-index: 1000;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        animation: bounce 1.5s infinite;
+    }
+
+    /* Flecha que apunta al botón */
+    .floating-notification .arrow {
+        position: absolute;
+        top: 50%;
+        right: -10px;
+        transform: translateY(-50%);
+        width: 0;
+        height: 0;
+        border-left: 10px solid #727cf5;
+        border-top: 10px solid transparent;
+        border-bottom: 10px solid transparent;
+    }
+
+    /* Animación de rebote */
+    @keyframes bounce {
+        0%, 100% {
+            transform: translateY(-50%) translateX(0);
+        }
+        50% {
+            transform: translateY(-50%) translateX(-5px);
+        }
+    }
+</style>
+
 <div class="row">
     <div class="col-12">
         <div class="card widget-inline">

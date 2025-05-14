@@ -105,4 +105,6 @@ $route['home/affiliate_dashboard'] = 'home/affiliate_user_dashboard';
 
 $route['home/course/(:any)/(:num)'] = 'home/course/$1/$2';
 
+$route['sign_up_instructor'] = 'home/sign_up_instructor';
+
 $route['translate_uri_dashes'] = FALSE;

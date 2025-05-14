@@ -41,7 +41,7 @@ class Login extends CI_Controller
     }
 
 
-    public function validate_login($from = "")
+    public function validate_login()
     {
         if ($this->crud_model->check_recaptcha() == false && get_frontend_settings('recaptcha_status') == true) {
             $this->session->set_flashdata('error_message', get_phrase('recaptcha_verification_failed'));
@@ -50,50 +50,81 @@ class Login extends CI_Controller
 
         $email = $this->input->post('email');
         $password = $this->input->post('password');
+        $localStorageRef = $this->input->post('localStorageRef'); // Obtener el estado de localStorage
+
         $credential = array('email' => $email, 'password' => sha1($password), 'status' => 1);
 
-        // Checking login credential for admin
+        // Checking login credentials
         $query = $this->db->get_where('users', $credential);
 
         if ($query->num_rows() > 0) {
             $row = $query->row();
+
+            // Validar el tipo de usuario según el valor de localStorage
+            if ($localStorageRef == "instructor" && $row->is_instructor != 1) {
+                $this->session->set_flashdata('error_message', get_phrase('invalid_login_for_instructor'));
+                redirect(site_url('login'), 'refresh');
+            } elseif ($localStorageRef != "instructor" && $row->is_instructor == 1) {
+                $this->session->set_flashdata('error_message', get_phrase('invalid_login_for_user'));
+                redirect(site_url('login'), 'refresh');
+            }
+
+            // Guardar el tipo de usuario en la sesión
+            $this->session->set_userdata('login_user_type', $localStorageRef);
+
+            // Track login and set session data
             $this->user_model->new_device_login_tracker($row->id);
             $this->user_model->set_login_userdata($row->id);
+
+            // Redirigir a la confirmación de nuevo dispositivo
+            redirect(site_url('login/new_login_confirmation'), 'refresh');
         } else {
             $this->session->set_flashdata('error_message', get_phrase('invalid_login_credentials'));
             redirect(site_url('login'), 'refresh');
         }
     }
 
-    function new_login_confirmation($param1 = ""){
+    function new_login_confirmation($param1 = "")
+    {
         $new_device_code_expiration_time = $this->session->userdata('new_device_code_expiration_time');
-        if(!$new_device_code_expiration_time || $new_device_code_expiration_time < (time())){
-            $this->session->set_flashdata('error_message', get_phrase('time_over').'! '.site_phrase('please_try_again'));
+        if (!$new_device_code_expiration_time || $new_device_code_expiration_time < time()) {
+            $this->session->set_flashdata('error_message', get_phrase('time_over') . '! ' . site_phrase('please_try_again'));
             redirect(site_url('login'), 'refresh');
         }
 
-        if($param1 == 'submit'){
+        if ($param1 == 'submit') {
             $new_device_verification_code = $this->input->post('new_device_verification_code');
-            if($new_device_verification_code != $this->session->userdata('new_device_verification_code')){
+            if ($new_device_verification_code != $this->session->userdata('new_device_verification_code')) {
                 $this->session->set_flashdata('error_message', get_phrase('verification_code_is_wrong'));
                 redirect(site_url('login/new_login_confirmation'), 'refresh');
             }
 
-            // Checking login credential for admin
+            // Checking login credential for the user
             $query = $this->db->get_where('users', array('id' => $this->session->userdata('new_device_user_id')));
-
             if ($query->num_rows() > 0) {
                 $row = $query->row();
 
                 // For device login tracker
                 $this->user_model->new_device_login_tracker($row->id, true);
                 $this->user_model->set_login_userdata($row->id);
+
+                // Redirect based on user type
+                $ref = $this->session->userdata('login_user_type'); // Obtener el tipo de usuario desde la sesión
+                if ($ref == "instructor" && $row->is_instructor == 1) {
+                    redirect(site_url('user'), 'refresh'); // Redirigir a los instructores
+                } elseif ($ref == "user" && $row->is_instructor == 0) {
+                    redirect(site_url('home'), 'refresh'); // Redirigir a los usuarios normales
+                } else {
+                    $this->session->set_flashdata('error_message', get_phrase('invalid_user_type'));
+                    redirect(site_url('login'), 'refresh');
+                }
             }
-            $this->session->set_flashdata('error_message', get_phrase('something_is_wrong').'! '.site_phrase('please_try_again'));
-            redirect(site_url('home'), 'refresh');
+
+            $this->session->set_flashdata('error_message', get_phrase('something_is_wrong') . '! ' . site_phrase('please_try_again'));
+            redirect(site_url('login'), 'refresh');
         }
 
-        if($param1 == 'resend'){
+        if ($param1 == 'resend') {
             $this->email_model->new_device_login_alert();
             return;
         }

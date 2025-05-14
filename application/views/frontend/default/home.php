@@ -1,3 +1,10 @@
+<!-- Loading Overlay -->
+<div id="loading-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; z-index: 9999; display: flex; justify-content: center; align-items: center;">
+    <div class="spinner-border text-dark" role="status" style="width: 3rem; height: 3rem;">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
+
 <section class="home-banner-area" id="home-banner-area" style="background-image: url('<?= base_url("uploads/system/" . get_frontend_settings('banner_image')); ?>'); background-position: right; background-repeat: no-repeat; background-size: 50%; padding: 100px 0px; color: #fff;">
     <div class="container-xl">
         <div class="row">
@@ -683,6 +690,29 @@
             $(".top-istructor-slick").slick({
                 dots: false
             });
+        }
+    });
+</script>
+<script>
+    // Verificar si el usuario tiene el rol de instructor en localStorage
+    document.addEventListener('DOMContentLoaded', function () {
+        const userType = localStorage.getItem('login_user_type');
+        const loadingOverlay = document.getElementById('loading-overlay');
+
+        if (userType === 'instructor') {
+            // Mostrar el overlay de loading solo para instructores
+            loadingOverlay.style.display = 'flex';
+
+            // Borrar el localStorage antes de redirigir
+            localStorage.removeItem('login_user_type');
+
+            // Redirigir a /user
+            setTimeout(() => {
+                window.location.replace('<?php echo site_url('user'); ?>'); // Usar replace para evitar volver a /home con el botón "Atrás"
+            }, 500); // Esperar 500ms para mostrar el efecto de loading
+        } else {
+            // Asegurarse de que el overlay esté oculto para usuarios normales
+            loadingOverlay.style.display = 'none';
         }
     });
 </script>
