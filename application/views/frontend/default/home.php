@@ -694,24 +694,25 @@
     });
 </script>
 <script>
-    // Verificar si el usuario tiene el rol de instructor en localStorage
     document.addEventListener('DOMContentLoaded', function () {
         const userType = localStorage.getItem('login_user_type');
+        const isNewElevant = localStorage.getItem('newElevant');
         const loadingOverlay = document.getElementById('loading-overlay');
 
-        if (userType === 'instructor') {
-            // Mostrar el overlay de loading solo para instructores
+        if (userType === 'instructor' && isNewElevant === 'true') {
+            // Mostrar el overlay de carga
             loadingOverlay.style.display = 'flex';
 
-            // Borrar el localStorage antes de redirigir
+            // Borrar las claves de localStorage antes de redirigir
             localStorage.removeItem('login_user_type');
+            localStorage.removeItem('newElevant');
 
-            // Redirigir a /user
+            // Redirigir a `user/elevant_user/courses`
             setTimeout(() => {
-                window.location.replace('<?php echo site_url('user'); ?>'); // Usar replace para evitar volver a /home con el botón "Atrás"
-            }, 500); // Esperar 500ms para mostrar el efecto de loading
+                window.location.replace('<?php echo site_url('user/elevant/courses'); ?>');
+            }, 500); // Esperar 500ms para mostrar el efecto de carga
         } else {
-            // Asegurarse de que el overlay esté oculto para usuarios normales
+            // Asegurarse de que el overlay esté oculto para otros usuarios
             loadingOverlay.style.display = 'none';
         }
     });

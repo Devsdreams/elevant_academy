@@ -107,4 +107,16 @@ $route['home/course/(:any)/(:num)'] = 'home/course/$1/$2';
 
 $route['sign_up_instructor'] = 'home/sign_up_instructor';
 
+$route['elevant/login'] = 'home/elevant_login';
+$route['elevant/register'] = 'home/elevant_register';
+$route['elevant/multi_step_register'] = 'home/elevant_multi_step_register';
+
+$route['elevant/courses'] = 'user/elevant_user_courses';
+$route['user/elevant/courses'] = 'user/elevant_user_courses';
+$route['user/elevant/course_add'] = 'user/elevant_course_add';
+$route['user/elevant/course_add_submit'] = 'user/elevant_course_add_submit';
+$route['user/elevant/course_manager'] = 'user/elevant_course_manager';
+$route['user/elevant/course_config/(:num)'] = 'user/elevant_course_config/$1';
+$route['user/elevant/section_add/(:num)'] = 'user/elevant_section_add/$1';
+$route['elevant/home'] = 'home/elevant_home';
 $route['translate_uri_dashes'] = FALSE;

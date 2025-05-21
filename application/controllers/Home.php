@@ -1550,6 +1550,7 @@ class Home extends CI_Controller
         if ($payment_method === 'paypal') {
             $payment_identifier['paypal_email'] = $this->input->post('paypal_email');
         } elseif ($payment_method === 'bank') {
+
             $payment_identifier['bank_name'] = $this->input->post('bank_name');
             $payment_identifier['account_number'] = $this->input->post('account_number');
             $payment_identifier['swift_code'] = $this->input->post('swift_code');
@@ -1611,6 +1612,32 @@ class Home extends CI_Controller
         $this->session->set_flashdata('flash_message', site_phrase('registration_successful'));
         redirect(site_url('home/login'), 'refresh');
     }
+
+    // Elevant comienza aquí
+    
+    public function elevant_login()
+    {
+        $this->load->view('frontend/default/elevant/login');
+    }
+
+    public function elevant_register()
+    {
+        $this->load->view('frontend/default/elevant/register');
+    }
+
+    public function elevant_multi_step_register()
+    {
+        $this->load->view('frontend/default/elevant/multi_step_register');
+    }
+
+    // Elevant Home personalizado
+    public function elevant_home()
+    {
+        $this->load->view('frontend/default/elevant/home');
+    }
 }
+
+
+
 
 

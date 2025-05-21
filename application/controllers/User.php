@@ -9,6 +9,7 @@ class User extends CI_Controller
 
         $this->load->database();
         $this->load->library('session');
+        $this->load->helper('url');
         /*cache control*/
         $this->output->set_header('Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0');
         $this->output->set_header('Pragma: no-cache');
@@ -1631,5 +1632,196 @@ class User extends CI_Controller
         }
 
         $this->image_lib->clear();
+    }
+
+    public function elevant_user_courses()
+    {
+        if (!$this->session->userdata('user_login')) {
+            redirect(site_url('elevant/login'), 'refresh');
+        }
+
+        $page_data['page_name'] = 'elevant_user_courses';
+        $page_data['page_title'] = 'Cursos';
+        $this->load->view('backend/user/elevant_user/courses', $page_data);
+    }
+
+    public function elevant_course_add()
+    {
+        if (!$this->session->userdata('user_login')) {
+            redirect(site_url('elevant/login'), 'refresh');
+        }
+        // Puedes cargar aquí otros datos si los necesitas en el formulario
+        $page_data['categories'] = $this->crud_model->get_categories();
+        $page_data['languages'] = $this->crud_model->get_all_languages();
+        $page_data['page_name'] = 'elevant_course_add';
+        $page_data['page_title'] = 'Crear nuevo curso';
+        $this->load->view('backend/user/elevant_user/course_add', $page_data);
+    }
+
+    // Guardar curso desde el formulario elevant y redirigir a courses
+    public function elevant_course_add_submit() 
+    {
+        if (!$this->session->userdata('user_login')) {
+            redirect(site_url('login'), 'refresh');
+        }
+
+        // Procesar datos del formulario
+        $data = [
+            'title' => $this->input->post('title'),
+            'short_description' => $this->input->post('short_description'),
+            'description' => $this->input->post('description'),
+            'category_id' => $this->input->post('category'),
+            'sub_category_id' => null, // O puedes obtenerlo si lo tienes
+            'outcomes' => $this->input->post('outcomes'),
+            'language' => $this->input->post('language_made_in'),
+            'level' => $this->input->post('level'),
+            'requirements' => $this->input->post('requirements'),
+            'is_free_course' => $this->input->post('is_free_course') ? 1 : null,
+            'price' => $this->input->post('price'),
+            'discount_flag' => 0,
+            'discounted_price' => null,
+            'user_id' => (int)$this->session->userdata('user_id'),
+            'date_added' => time(),
+            'last_modified' => time(),
+            'status' => 'pending',
+            'enable_drip_content' => $this->input->post('enable_drip_content') ? 1 : 0,
+            'course_type' => 'general'
+        ];
+
+        // Procesar imagen
+        if (isset($_FILES['course_image']) && $_FILES['course_image']['name'] != "") {
+            $image_name = uniqid('course_img_') . '.' . pathinfo($_FILES['course_image']['name'], PATHINFO_EXTENSION);
+            $image_path = 'uploads/course_images/' . $image_name;
+            if (!file_exists('uploads/course_images')) {
+                mkdir('uploads/course_images', 0777, true);
+            }
+            move_uploaded_file($_FILES['course_image']['tmp_name'], $image_path);
+            $data['thumbnail'] = $image_name;
+        }
+
+        // Procesar video (opcional)
+        if (isset($_FILES['course_video']) && $_FILES['course_video']['name'] != "") {
+            $video_name = uniqid('course_vid_') . '.' . pathinfo($_FILES['course_video']['name'], PATHINFO_EXTENSION);
+            $video_path = 'uploads/course_videos/' . $video_name;
+            if (!file_exists('uploads/course_videos')) {
+                mkdir('uploads/course_videos', 0777, true);
+            }
+            move_uploaded_file($_FILES['course_video']['tmp_name'], $video_path);
+            $data['video_url'] = $video_name;
+        } elseif ($this->input->post('video_url')) {
+            $data['video_url'] = $this->input->post('video_url');
+        }
+
+        // Guardar en la base de datos
+        $this->db->insert('course', $data);
+
+        // Redirigir a la lista de cursos
+        redirect(site_url('user/elevant/courses'), 'refresh');
+    }
+
+    public function elevant_course_manager()
+    {
+        if (!$this->session->userdata('user_login')) {
+            redirect(site_url('elevant/login'), 'refresh');
+        }
+        $page_data['page_name'] = 'elevant_course_manager';
+        $page_data['page_title'] = 'Gestión de cursos';
+        $this->load->view('backend/user/elevant_user/course_manager', $page_data);
+    }
+
+    public function elevant_course_config($course_id = null)
+    {
+        if (!$this->session->userdata('user_login')) {
+            redirect(site_url('elevant/login'), 'refresh');
+        }
+        if (!$course_id) {
+            redirect(site_url('user/elevant/course_manager'), 'refresh');
+        }
+        $course = $this->crud_model->get_course_by_id($course_id)->row_array();
+        if (!$course || $course['user_id'] != $this->session->userdata('user_id')) {
+            redirect(site_url('user/elevant/course_manager'), 'refresh');
+        }
+
+        // Procesar actualización si hay POST
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $update = [
+                'title' => $this->input->post('title'),
+                'description' => $this->input->post('description'),
+                'sub_category_id' => $this->input->post('sub_category_id'),
+                'level' => $this->input->post('level'),
+                'last_modified' => time()
+            ];
+
+            // Actualizar la categoría principal automáticamente según la subcategoría
+            if ($update['sub_category_id']) {
+                $subcat = $this->db->get_where('category', ['id' => $update['sub_category_id']])->row_array();
+                $update['category_id'] = $subcat ? $subcat['parent'] : null;
+            }
+
+            // Procesar imagen si se sube una nueva
+            if (isset($_FILES['thumbnail']) && $_FILES['thumbnail']['name'] != "") {
+                $image_name = uniqid('course_img_') . '.' . pathinfo($_FILES['thumbnail']['name'], PATHINFO_EXTENSION);
+                $image_path = 'uploads/course_images/' . $image_name;
+                if (!file_exists('uploads/course_images')) {
+                    mkdir('uploads/course_images', 0777, true);
+                }
+                move_uploaded_file($_FILES['thumbnail']['tmp_name'], $image_path);
+                $update['thumbnail'] = $image_name;
+            }
+
+            // Guardar cambios
+            $this->db->where('id', $course_id);
+            $this->db->update('course', $update);
+
+            // Si se presionó publicar, cambia el estado
+            if ($this->input->post('publish')) {
+                $this->db->where('id', $course_id);
+                $this->db->update('course', ['status' => 'pending']);
+            }
+
+            // Recargar datos actualizados
+            $course = $this->crud_model->get_course_by_id($course_id)->row_array();
+            $this->session->set_flashdata('flash_message', 'Curso actualizado correctamente.');
+        }
+
+        $page_data['course'] = $course;
+        $page_data['page_name'] = 'elevant_course_config';
+        $page_data['page_title'] = 'Configurar curso';
+        $this->load->view('backend/user/elevant_user/course_config', $page_data);
+    }
+
+    public function elevant_section_add($course_id = null)
+    {
+        if (!$this->session->userdata('user_login')) {
+            redirect(site_url('elevant/login'), 'refresh');
+        }
+        if (!$course_id) {
+            redirect(site_url('user/elevant/course_manager'), 'refresh');
+        }
+        // Verifica que el curso pertenezca al usuario
+        $course = $this->crud_model->get_course_by_id($course_id)->row_array();
+        if (!$course || $course['user_id'] != $this->session->userdata('user_id')) {
+            redirect(site_url('user/elevant/course_manager'), 'refresh');
+        }
+
+        // Si es POST, guardar la sección
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $section_title = $this->input->post('section-title');
+            if ($section_title) {
+                $data = [
+                    'title' => $section_title,
+                    'course_id' => $course_id,
+                    'date_added' => time()
+                ];
+                $this->db->insert('section', $data);
+                $this->session->set_flashdata('flash_message', 'Sección agregada correctamente.');
+                redirect(site_url('user/elevant/section_add/' . $course_id), 'refresh');
+            }
+        }
+
+        $page_data['course'] = $course;
+        $page_data['page_name'] = 'elevant_section_add';
+        $page_data['page_title'] = 'Agregar sección';
+        $this->load->view('backend/user/elevant_user/section_add', $page_data);
     }
 }

@@ -45,12 +45,13 @@ class Login extends CI_Controller
     {
         if ($this->crud_model->check_recaptcha() == false && get_frontend_settings('recaptcha_status') == true) {
             $this->session->set_flashdata('error_message', get_phrase('recaptcha_verification_failed'));
-            redirect(site_url('login'), 'refresh');
+            redirect(site_url('elevant/login'), 'refresh'); // Redirigir a elevant/login
         }
 
         $email = $this->input->post('email');
         $password = $this->input->post('password');
         $localStorageRef = $this->input->post('localStorageRef'); // Obtener el estado de localStorage
+        $is_elevant_login = $this->input->post('is_elevant_login'); // Verificar si es login de elevant
 
         $credential = array('email' => $email, 'password' => sha1($password), 'status' => 1);
 
@@ -63,10 +64,10 @@ class Login extends CI_Controller
             // Validar el tipo de usuario según el valor de localStorage
             if ($localStorageRef == "instructor" && $row->is_instructor != 1) {
                 $this->session->set_flashdata('error_message', get_phrase('invalid_login_for_instructor'));
-                redirect(site_url('login'), 'refresh');
+                redirect(site_url('elevant/login'), 'refresh'); // Redirigir a elevant/login
             } elseif ($localStorageRef != "instructor" && $row->is_instructor == 1) {
                 $this->session->set_flashdata('error_message', get_phrase('invalid_login_for_user'));
-                redirect(site_url('login'), 'refresh');
+                redirect(site_url('elevant/login'), 'refresh'); // Redirigir a elevant/login
             }
 
             // Guardar el tipo de usuario en la sesión
@@ -76,11 +77,16 @@ class Login extends CI_Controller
             $this->user_model->new_device_login_tracker($row->id);
             $this->user_model->set_login_userdata($row->id);
 
+            // Redirigir a la página de cursos de elevant si es login de elevant
+            if ($is_elevant_login) {
+                redirect(site_url('user/elevant_courses'), 'refresh'); // Redirigir a user/elevant_courses
+            }
+
             // Redirigir a la confirmación de nuevo dispositivo
             redirect(site_url('login/new_login_confirmation'), 'refresh');
         } else {
             $this->session->set_flashdata('error_message', get_phrase('invalid_login_credentials'));
-            redirect(site_url('login'), 'refresh');
+            redirect(site_url('elevant/login'), 'refresh'); // Redirigir a elevant/login
         }
     }
 
@@ -138,12 +144,70 @@ class Login extends CI_Controller
         $this->social_login_modal->fb_validate_login($access_token, $fb_user_id);
     }
 
+    public function send_verification_code() {
+        $email = $this->input->post('email');
 
+        // Verificar si el usuario ya existe
+        $user = $this->db->get_where('users', ['email' => $email])->row();
+        if ($user) {
+            if (empty($user->password)) {
+                // Si el usuario no tiene contraseña, redirigir al registro multi-step
+                echo json_encode(['success' => true, 'redirect' => site_url('elevant/multi_step_register?email=' . urlencode($email))]);
+                return;
+            } else {
+                // Si el usuario ya tiene contraseña, mostrar mensaje de error
+                echo json_encode(['success' => false, 'message' => 'El correo ya está registrado.']);
+                return;
+            }
+        }
 
+        // Generar el código de verificación
+        $random_code = rand(100000, 999999);
+        $verification_code = base64_encode($email . '_Uh6#@#6hU_' . $random_code);
 
+        // Crear un nuevo usuario en estado "pendiente"
+        $data = [
+            'email' => $email,
+            'verification_code' => $verification_code,
+            'status' => 0, // Usuario pendiente de verificación
+            'date_added' => time()
+        ];
+        $this->db->insert('users', $data);
 
+        // Enviar el código al correo (solo la última parte del código decodificado)
+        $this->email_model->send_email_verification_mail($email, $random_code);
 
+        // Respuesta JSON con el correo electrónico
+        echo json_encode(['success' => true, 'email' => $email, 'message' => 'Código enviado correctamente.']);
+    }
 
+    public function validate_verification_code() {
+        $email = $this->input->post('email');
+        $input_code = $this->input->post('verification_code');
+
+        // Obtener el usuario por correo
+        $user = $this->db->get_where('users', ['email' => $email])->row();
+
+        if ($user) {
+            // Decodificar el código de verificación almacenado
+            $decoded_code = base64_decode($user->verification_code);
+            $parts = explode('_Uh6#@#6hU_', $decoded_code);
+            $stored_code = end($parts); // Obtener la última parte (el código)
+
+            // Validar el código ingresado
+            if (trim($input_code) === trim($stored_code)) {
+                // Actualizar el estado del usuario a "activo"
+                $this->db->where('email', $email);
+                $this->db->update('users', ['status' => 1]);
+
+                // Redirigir al registro multi-step con el correo como parámetro
+                echo json_encode(['success' => true, 'redirect' => site_url('elevant/multi_step_register?email=' . urlencode($email))]);
+                return;
+            }
+        }
+
+        echo json_encode(['success' => false, 'message' => 'Código de verificación incorrecto.']);
+    }
 
     public function register()
     {
@@ -212,6 +276,21 @@ class Login extends CI_Controller
             $this->session->set_flashdata('error_message', get_phrase('you_have_already_registered'));
             redirect(site_url('login'), 'refresh');
         }
+    }
+
+    public function register_user() {
+        $data['email'] = $this->input->post('email');
+        $data['first_name'] = $this->input->post('first_name');
+        $data['last_name'] = $this->input->post('last_name');
+        $data['password'] = sha1($this->input->post('password'));
+        $data['role_id'] = 2; // Asegurar que el role_id sea 2 para todos los usuarios
+        $data['date_added'] = time();
+
+        $this->db->where('email', $data['email']);
+        $this->db->update('users', $data);
+
+        $this->session->set_flashdata('flash_message', 'Registro completado exitosamente.');
+        redirect(site_url('elevant/login'));
     }
 
     public function logout($from = "")
