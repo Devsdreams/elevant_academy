@@ -1551,6 +1551,8 @@ class Home extends CI_Controller
             $payment_identifier['paypal_email'] = $this->input->post('paypal_email');
         } elseif ($payment_method === 'bank') {
 
+
+
             $payment_identifier['bank_name'] = $this->input->post('bank_name');
             $payment_identifier['account_number'] = $this->input->post('account_number');
             $payment_identifier['swift_code'] = $this->input->post('swift_code');
@@ -1622,7 +1624,45 @@ class Home extends CI_Controller
 
     public function elevant_register()
     {
-        $this->load->view('frontend/default/elevant/register');
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Procesar el registro de instructor
+            $data['first_name'] = html_escape($this->input->post('first_name'));
+            $data['last_name'] = html_escape($this->input->post('last_name'));
+            $data['email'] = html_escape($this->input->post('email'));
+            $data['password'] = sha1(html_escape($this->input->post('password')));
+            $data['is_instructor'] = 1; // Marcar como instructor (entero)
+            $data['role_id'] = 2;
+            $data['date_added'] = strtotime(date("Y-m-d H:i:s"));
+
+            $data['is_instructor'] = (int) $data['is_instructor'];
+            $data['role_id'] = (int) $data['role_id'];
+
+            // Verificar duplicación de correo
+            $existing_user = $this->db->get_where('users', ['email' => $data['email']])->num_rows();
+            if ($existing_user > 0) {
+                $this->session->set_flashdata('error_message', site_phrase('email_already_exists'));
+                redirect(site_url('elevant/register'), 'refresh');
+            }
+
+            $this->db->insert('users', $data);
+            $user_id = $this->db->insert_id();
+
+            // Refuerza el is_instructor a 1 por si acaso
+            $this->db->where('id', $user_id);
+            $this->db->update('users', ['is_instructor' => 1]);
+
+            // Inicia sesión automáticamente
+            $this->session->set_userdata('user_login', '1');
+            $this->session->set_userdata('user_id', $user_id);
+            $this->session->set_userdata('role_id', 2);
+            $this->session->set_userdata('role', 'user');
+            $this->session->set_userdata('is_instructor', 1);
+
+            // Redirige a la página de cursos de instructor
+            redirect(site_url('user/elevant/courses'), 'refresh');
+        } else {
+            $this->load->view('frontend/default/elevant/register');
+        }
     }
 
     public function elevant_multi_step_register()

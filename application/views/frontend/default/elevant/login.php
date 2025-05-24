@@ -141,7 +141,7 @@
                 <button type="submit">INICIAR SESIÓN</button>
             </form>
             <div class="register">
-                ¿No tienes cuenta? <a href="<?php echo site_url('sign_up_instructor'); ?>">Regístrate como Instructor</a>
+                ¿No tienes cuenta? <a href="<?php echo site_url('elevant/register?instructor=1'); ?>">Regístrate como Instructor</a>
             </div>
         </div>
     </div>

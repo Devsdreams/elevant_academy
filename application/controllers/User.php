@@ -1819,7 +1819,11 @@ class User extends CI_Controller
             }
         }
 
+        // Obtener secciones existentes para este curso
+        $sections = $this->db->get_where('section', ['course_id' => $course_id])->result_array();
+
         $page_data['course'] = $course;
+        $page_data['sections'] = $sections;
         $page_data['page_name'] = 'elevant_section_add';
         $page_data['page_title'] = 'Agregar sección';
         $this->load->view('backend/user/elevant_user/section_add', $page_data);

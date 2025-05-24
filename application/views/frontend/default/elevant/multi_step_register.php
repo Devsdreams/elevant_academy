@@ -148,8 +148,7 @@
             <h1>Queremos saber más de ti, <br> ¿Cómo te llamas?</h1>
             <p>Queremos saber más sobre ti</p>
             <form>
-                <input type="text" id="first_name" placeholder="Escribe tu primer nombre..." required>
-                <input type="text" id="last_name" placeholder="Escribe tu apellido..." required>
+                <input type="text" id="full_name" placeholder="Escribe tu nombre completo..." required>
                 <button class="next-button" type="button" onclick="nextStep()">Siguiente</button>
             </form>
         </div>
@@ -178,6 +177,8 @@
             <p>Verifica tu información y crea una contraseña segura.</p>
             <form id="final-form" action="<?php echo site_url('login/register_user'); ?>" method="post">
                 <input type="hidden" name="role" id="role">
+                <!-- Campo oculto para is_instructor -->
+                <input type="hidden" name="is_instructor" id="is_instructor" value="0">
                 
                 <!-- Información recopilada del usuario -->
                 <input type="text" name="first_name" id="final_first_name" placeholder="Primer nombre" readonly>
@@ -202,6 +203,8 @@
         function selectOption(option) {
             selectedOption = option;
             document.getElementById('role').value = option;
+            // Si selecciona Instructor, marca is_instructor=1, si no, 0
+            document.getElementById('is_instructor').value = (option === 'Instructor') ? '1' : '0';
             const buttons = document.querySelectorAll('.option-buttons button');
             buttons.forEach(btn => {
                 btn.style.backgroundColor = '#fff';
@@ -224,11 +227,19 @@
             }
 
             if (currentStep === 2) {
-                const firstName = document.getElementById('first_name').value;
-                const lastName = document.getElementById('last_name').value;
-                if (!firstName || !lastName) {
-                    alert('Por favor ingresa tu nombre y apellido.');
+                const fullName = document.getElementById('full_name').value.trim();
+                if (!fullName) {
+                    alert('Por favor ingresa tu nombre completo.');
                     return;
+                }
+                // Expresión regular: toma el primer "palabra" como nombre, el resto como apellido
+                // Si solo hay una palabra, apellido queda vacío
+                const nameParts = fullName.match(/^([^\s]+)\s*(.*)$/);
+                let firstName = '';
+                let lastName = '';
+                if (nameParts) {
+                    firstName = nameParts[1];
+                    lastName = nameParts[2] ? nameParts[2].trim() : '';
                 }
                 document.getElementById('final_first_name').value = firstName;
                 document.getElementById('final_last_name').value = lastName;

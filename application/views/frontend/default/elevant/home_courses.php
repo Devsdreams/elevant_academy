@@ -12,6 +12,7 @@
       --gray: #f6f6f6;
       --border: #e6e6e6;
       --white: #FFFFFF;       /* blanco */
+      --gold: #FFD600;
     }
     body {
       margin: 0;
@@ -95,7 +96,7 @@
       box-shadow: 0 2px 8px #b5935918;
     }
     .nav-links .inicio {
-      color: var(--yellow);
+      color: var(--black);
     }
     /* HERO */
     .hero {
@@ -365,12 +366,12 @@
     }
     .course-card img {
       width: 100%;
-      height: 100%;
-      max-height: 440px;
-      object-fit: contain;
+      height: 220px;
+      object-fit: cover;
       background: #eee;
       display: block;
-      flex: 1;
+      flex-shrink: 0;
+      border-radius: 12px 12px 0 0;
     }
     .course-card-content {
       padding: 0;
@@ -805,6 +806,171 @@
       color: #181818;
       display: inline-block;
     }
+
+    /* Reseña Historica Section */
+    .resena-section {
+      background: #fff;
+      padding: 48px 0 20px 0;
+      text-align: center;
+    }
+    .resena-section h2 {
+      font-size: 65px;
+      font-weight: bold;
+      margin: 0 0 10px 0;
+    }
+    .resena-section .resena-sub {
+      color: #222;
+      font-size: 30px;
+      margin-bottom: 32px;
+    }
+    .resena-section .resena-desc {
+      max-width: 860px;
+      margin: 0 auto 32px auto;
+      color: #222;
+      font-size: 1rem;
+      line-height: 1.6;
+      text-align: left;
+    }
+    .resena-section .resena-btn {
+      background: #111;
+      color: #fff;
+      border: none;
+      border-radius: 13px;
+      padding: 13px 38px;
+      font-size: 1.04rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.18s, color 0.18s;
+    }
+    .resena-section .resena-btn:hover {
+      background: var(--yellow);
+      color: #fff;
+    }
+
+    /* Top Choice for Creators Section */
+    .top-choice-black-section {
+      background: #000;
+      color: #fff;
+      padding: 52px 0 58px 0;
+    }
+    .top-choice-black-section .top-choice-container {
+      max-width: 1050px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 36px 0;
+    }
+    .top-choice-black-section .top-choice-title {
+      font-size: 65px;
+      font-weight: bold;
+      margin: 0 0 20px 0;
+      letter-spacing: -1.3px;
+    }
+    .top-choice-black-section .top-choice-desc {
+      color: #e0e0e0;
+      font-size: 1.09rem;
+      margin-bottom: 8px;
+    }
+    .top-choice-black-section .top-choice-btn {
+      margin-top: 10px;
+      background: var(--yellow); /* dorado base */
+      color: #181818;
+      border: none;
+      border-radius: 14px;
+      font-weight: 600;
+      font-size: 1rem;
+      padding: 8px 22px;
+      cursor: pointer;
+      transition: background 0.18s, color 0.18s;
+    }
+    .top-choice-black-section .top-choice-btn:hover {
+      background: #fff;
+      color: #181818;
+    }
+    .top-choice-black-section .top-choice-grid {
+      max-width: 1050px;
+      margin: 40px auto 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      gap: 22px;
+    }
+    .top-choice-black-section .top-choice-card {
+      background: #fff;
+      color: #181818;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px #18181810;
+      padding: 24px 22px 20px 22px;
+      min-width: 200px;
+    }
+    .top-choice-black-section .top-choice-card-icon {
+      background: #000;
+      color: #fff;
+      width: 33px;
+      height: 33px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+    }
+    .top-choice-black-section .top-choice-card-title {
+      font-weight: bold;
+      font-size: 1.08rem;
+      margin-bottom: 3px;
+    }
+    .top-choice-black-section .top-choice-card-desc {
+      font-size: 0.98rem;
+      color: #222;
+    }
+
+    /* NUEVO: Estilos para el buscador y filtros de cursos */
+    .courses-search-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: center;
+      margin: 38px auto 28px auto;
+      max-width: 1100px;
+      justify-content: flex-start;
+    }
+    .courses-search-bar input[type="text"] {
+      padding: 11px 18px;
+      border-radius: 10px;
+      border: 1.2px solid #ccc;
+      font-size: 1.08rem;
+      min-width: 220px;
+      outline: none;
+    }
+    .courses-search-bar select {
+      padding: 10px 18px;
+      border-radius: 10px;
+      border: 1.2px solid #ccc;
+      font-size: 1.08rem;
+      min-width: 150px;
+      outline: none;
+      background: #fff;
+    }
+    .courses-search-bar button {
+      background: var(--yellow);
+      color: #181818;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 1rem;
+      padding: 10px 24px;
+      cursor: pointer;
+      transition: background 0.18s, color 0.18s;
+    }
+    .courses-search-bar button:hover {
+      background: var(--black);
+      color: #fff;
+    }
   </style>
   </head>
 <body>
@@ -815,9 +981,9 @@
         <img src="<?php echo base_url('uploads/elevant/elevant.png'); ?>" alt="Elevant Logo">
       </a>
       <div class="nav-links">
-        <a href="#" class="inicio active">Inicio</a>
-        <a href="<?php echo site_url('elevant/home_elevant'); ?>">Elevant</a>
-        <a href="#">Cursos</a>
+        <a href="<?php echo base_url('elevant/home'); ?>" class="inicio">Inicio</a>
+        <a href="<?php echo base_url('elevant/home_courses'); ?>">Elevant</a>
+        <a href="#" class="active" style="color: var(--yellow);">Cursos</a>
         <a href="#">Afiliados</a>
         <a href="#">Instructor</a>
         <a href="#">Contacto</a>
@@ -840,282 +1006,269 @@
           <button class="hero-btn" style="background: var(--black); color: var(--white);">Get Started</button> <!-- negro -->
         </div>
       </div>
-      <!-- <img class="hero-img-person" src="https://placehold.org/200x240?text=Creator+Photo" alt="Creator">
-      <div class="hero-card">
-        <div class="hero-card-title">Suscríbete por 600/mens</div>
-        <img src="https://placehold.org/160x60?text=App+Screenshot" alt="App" style="width:100%;border-radius:7px;">
-        <div style="font-size:0.98rem;color:#666;margin-top:7px;">Karin Staff <span style="font-size:0.92rem;background:#eee;padding:2px 9px;border-radius:5px;margin-left:8px;">+info</span></div>
-      </div> -->
+      <!-- ...existing code... -->
     </div>
   </section>
-
-  <!-- ICON ROW -->
-  <div style="width:100%;text-align:center;margin:30px 0;">
-    <img src="<?php echo base_url('uploads/elevant/Frame 26.png'); ?>" alt="Banner" style="max-width:100%;height:auto;">
-  </div>
 
   <!-- COURSES Section -->
   <section class="courses-section">
     <div class="top-choice-header">
-      <h2 style="font-size:65px; font-weight:bold; margin-bottom:8px; letter-spacing:-1px; color:var(--black);">The top choice for creators of all sizes.</h2>
-      <button class="get-started-btn" style="background: var(--black); color: var(--white);">Get Started</button> <!-- negro -->
+      <h2 style="font-size:65px; font-weight:bold; margin-bottom:8px; letter-spacing:-1px; color:var(--black);">Explora nuestros cursos</h2>
+      <!-- <button class="get-started-btn">Ver todos</button> -->
     </div>
-    <div class="courses-grid">
-      <div class="course-card">
-        <img src="<?php echo base_url('uploads/elevant/Frame 6.png'); ?>" alt="Curso 2">
-        <div class="course-card-content">
-          <!-- La imagen ya contiene el texto, así que no mostramos título ni descripción -->
-        </div>
-      </div>
-      <div class="course-card">
-        <img src="<?php echo base_url('uploads/elevant/Frame 13.png'); ?>" alt="Curso 3">
-        <div class="course-card-content">
-          <!-- La imagen ya contiene el texto, así que no mostramos título ni descripción -->
-        </div>
-      </div>
-      <div class="course-card">
-        <img src="<?php echo base_url('uploads/elevant/Frame 14.png'); ?>" alt="Curso 4">
-        <div class="course-card-content">
-          <!-- La imagen ya contiene el texto, así que no mostramos título ni descripción -->
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Nueva sección personalizada debajo de courses-section -->
-  <section class="custom-courses-section">
-    <h2 class="custom-courses-title">Courses</h2>
-    <div class="custom-courses-grid">
-      <!-- Card 1 -->
-      <div class="custom-course-card">
-        <div class="custom-card-img-container">
-          <img src="<?php echo base_url('uploads/elevant/Frame 17.png'); ?>" alt="Creacion de Contenido">
-          <span class="custom-card-badge">Intermedio</span>
-        </div>
-        <div class="custom-card-content">
-          <div class="custom-card-level">
-            <span style="font-weight: bold;">Intermedio</span> • 00:00:30 • 2 lesson
-          </div>
-          <div class="custom-card-desc">Te ayudamos a crear el curso ideal para tu audiencia, sin importar el tema o tu experiencia. Aprende a identificar qué quieren...</div>
-          <a href="#" class="custom-card-link">Start Course &rarr;</a>
-        </div>
-      </div>
-      <!-- Card 2 -->
-      <div class="custom-course-card">
-        <div class="custom-card-img-container">
-          <img src="<?php echo base_url('uploads/elevant/Frame 18.png'); ?>" alt="Master en desarrollo">
-          <span class="custom-card-badge">Intermedio</span>
-        </div>
-        <div class="custom-card-content">
-          <div class="custom-card-level">
-            <span style="font-weight: bold;">Intermedio</span> • 00:00:30 • 2 lesson
-          </div>
-          <div class="custom-card-desc">Te ayudamos a crear el curso ideal para tu audiencia, sin importar el tema o tu experiencia...</div>
-          <a href="#" class="custom-card-link">Start Course &rarr;</a>
-        </div>
-      </div>
-      <!-- Card 3 -->
-      <div class="custom-course-card">
-        <div class="custom-card-img-container">
-          <img src="<?php echo base_url('uploads/elevant/Frame 19.png'); ?>" alt="Staff in bold">
-          <span class="custom-card-badge">Intermedio</span>
-        </div>
-        <div class="custom-card-content">
-          <div class="custom-card-level">
-            <span style="font-weight: bold;">Intermedio</span> • 00:00:30 • 2 lesson
-          </div>
-          <div class="custom-card-desc">Te ayudamos a crear el curso ideal para tu audiencia, sin importar el tema o tu experiencia. Aprende a identificar qué quieren, tal cual por tu forma de ser...</div>
-          <a href="#" class="custom-card-link">Start Course &rarr;</a>
-        </div>
-      </div>
-      <!-- Card 4 -->
-      <div class="custom-course-card">
-        <div class="custom-card-img-container">
-          <img src="<?php echo base_url('uploads/elevant/Frame 20.png'); ?>" alt="Seguimiento de SST">
-          <span class="custom-card-badge">Intermedio</span>
-        </div>
-        <div class="custom-card-content">
-          <div class="custom-card-level">
-            <span style="font-weight: bold;">Intermedio</span> • 00:00:30 • 2 lesson
-          </div>
-          <div class="custom-card-desc">Te ayudamos a crear el curso ideal para tu audiencia, sin importar el tema o tu experiencia...</div>
-          <a href="#" class="custom-card-link">Start Course &rarr;</a>
-        </div>
-      </div>
-    </div>
-  </section>
-  <!-- TOP CATEGORIES Section -->
-  <section class="top-categories-section">
-    <div class="categories-header" style="max-width: 1100px; margin: 0 auto;">
-      <h2 style="font-size:65px; font-weight:bold; margin-bottom:8px; letter-spacing:-1px; color:var(--white);">Top Categories</h2>
-      <p>From digital products to marketing tools, Kajabi has everything creators need to build.</p>
-      <div style="margin:14px 0 0 0; font-weight: bold; font-size: 30px; letter-spacing: 1px;">
-        <span style="margin-right:18px;">Farmacia</span>
-        <span style="margin-right:18px;">Podcast</span>
-        <span style="margin-right:18px;">Multimedia</span>
-        <span style="margin-right:18px;">Sistema</span>
-        <span>Odontología</span>
-      </div>
-    </div>
-    <div class="categories-grid" style="max-width: 1100px; margin: 0 auto;">
-      <div class="category-card">
-        <img src="<?php echo base_url('uploads/elevant/Rectangle 16.png'); ?>" class="cat-img-bg" alt="Farmacia">
-        <div class="cat-info">
-          <div class="cat-title">FARMACIA</div>
-          <div class="cat-desc">Te ayudamos a crear el curso ideal para tu comunidad...</div>
-          <button class="cat-read-more">Leer más</button>
-        </div>
-      </div>
-      <div class="category-card">
-        <!-- Cambiado: ahora Multimedia usa la imagen de Podcast -->
-        <img src="<?php echo base_url('uploads/elevant/Rectangle 36.png'); ?>" class="cat-img-bg" alt="Podcast">
-        <div class="cat-info">
-          <div class="cat-title">PODCAST</div>
-          <div class="cat-desc">Te ayudamos a crear el curso ideal para tu comunidad...</div>
-          <button class="cat-read-more">Leer más</button>
-        </div>
-      </div>
-      <div class="category-card">
-        <!-- Cambiado: ahora Podcast usa la imagen de Multimedia -->
-        <img src="<?php echo base_url('uploads/elevant/Rectangle 23.png'); ?>" class="cat-img-bg" alt="Multimedia">
-        <div class="cat-info">
-          <div class="cat-title">MULTIMEDIA</div>
-          <div class="cat-desc">Te ayudamos a crear el curso ideal para tu comunidad...</div>
-          <button class="cat-read-more">Leer más</button>
-        </div>
-      </div>
-    </div>
-    <!-- NUEVO: Dos columnas debajo de las tarjetas -->
-    <div style="display: flex; justify-content: center; align-items: flex-start; gap: 40px; margin-top: 40px; margin-bottom: 40px; max-width: 1100px; margin-left: auto; margin-right: auto;">
-      <div style="flex:1; text-align:left;">
-        <div style="font-size:65px; font-weight:bold; color:#fff; line-height:1.1;">The top choice for creators of all sizes.</div>
-      </div>
-      <div style="flex:1; text-align:left;">
-        <div style="font-size:1.16rem; color:#e6e6e6; margin-bottom:18px;">
-          From digital products to marketing tools, Kajabi has everything creators need to build.
-        </div>
-        <button style="background: var(--yellow); color: var(--black); border:none; border-radius:14px; font-weight:600; font-size:1.1rem; padding:12px 32px; margin-top:10px; cursor:pointer;">Get Started</button>
-      </div>
-    </div>
-    <!-- FIN NUEVO -->
-     <div style="background: #000; padding: 38px 0;">
-        <div style="display: flex; justify-content: center; gap: 32px; max-width: 900px; margin: 0 auto;">
-            <div style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px #18181810; padding: 26px 26px 20px 26px; width: 260px; min-width: 200px; display: flex; flex-direction: column; gap: 6px;">
-            <div style="background: #000; color: #fff; width: 33px; height: 33px; border-radius: 9px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px;">
-                <svg height="20" width="20" viewBox="0 0 20 20"><path d="M6 10h8m0 0-4-4m4 4-4 4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
-            </div>
-            <div style="font-weight: bold; font-size: 1.08rem; margin-bottom: 3px;">
-                No revenue sharing. Ever.
-            </div>
-            <div style="font-size: 0.98rem; color: #222;">
-                You make the content, you reap the rewards.
-            </div>
-            </div>
-            <div style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px #000; padding: 26px 26px 20px 26px; width: 260px; min-width: 200px; display: flex; flex-direction: column, gap: 6px;">
-            <div style="background: #000; color: #fff; width: 33px; height: 33px; border-radius: 9px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px;">
-                <svg height="20" width="20" viewBox="0 0 20 20"><path d="M6 10h8m0 0-4-4m4 4-4 4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
-            </div>
-            <div style="font-weight: bold; font-size: 1.08rem; margin-bottom: 3px;">
-                No revenue sharing. Ever.
-            </div>
-            <div style="font-size: 0.98rem; color: #222;">
-                You make the content, you reap the rewards.
-            </div>
-            </div>
-            <div style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px #18181810; padding: 26px 26px 20px 26px; width: 260px; min-width: 200px; display: flex; flex-direction: column; gap: 6px;">
-            <div style="background: #000; color: #fff; width: 33px; height: 33px; border-radius: 9px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px;">
-                <svg height="20" width="20" viewBox="0 0 20 20"><path d="M6 10h8m0 0-4-4m4 4-4 4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
-            </div>
-            <div style="font-weight: bold; font-size: 1.08rem; margin-bottom: 3px;">
-                No revenue sharing. Ever.
-            </div>
-            <div style="font-size: 0.98rem; color: #222;">
-                You make the content, you reap the rewards.
-            </div>
-            </div>
-        </div>
+    <section class="courses-search-bar">
+      <input type="text" id="searchInput" placeholder="Buscar cursos..." />
+      <select id="categoryFilter">
+        <option value="">Todas las categorías</option>
+        <option value="marketing">Marketing</option>
+        <option value="programacion">Programación</option>
+        <option value="negocios">Negocios</option>
+        <!-- Agrega más categorías según tu base de datos -->
+      </select>
+      <select id="levelFilter">
+        <option value="">Todos los niveles</option>
+        <option value="basico">Básico</option>
+        <option value="intermedio">Intermedio</option>
+        <option value="avanzado">Avanzado</option>
+      </select>
+      <select id="priceFilter">
+        <option value="">Todos los precios</option>
+        <option value="gratis">Gratis</option>
+        <option value="pago">De pago</option>
+      </select>
+      <button onclick="filterCourses()">Buscar</button>
+    </section>
+    <div class="courses-grid" id="coursesGrid">
+      <!-- Aquí se mostrarán los cursos filtrados -->
     </div>
   </section>
 
-  <!-- MID SECTION: THE TOP CHOICE ... -->
-  <section class="mid-section" style="padding-top: 56px; padding-bottom: 24px; max-width: 1100px; margin: 0 auto;">
-    <div style="width: 100%; display: flex; flex-direction: column;">
-      <!-- Título, descripción y botón en una sola fila -->
-      <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 32px; gap: 24px;">
-        <div>
-          <div class="mid-title" style="font-size:65px;">The top choice for creators of all sizes.</div>
-          <div class="mid-desc" style="margin-bottom: 0;">From digital products to marketing tools, Kajabi has everything creators need to build.</div>
-        </div>
-        <button class="get-started-btn" style="background: var(--black); color: var(--white); min-width: 180px; align-self: flex-start;">Get Started</button>
-      </div>
-      <!-- Contenido en dos columnas: izquierda (4) y derecha (8) -->
-      <div style="display: flex; width: 100%; gap: 32px;">
-        <!-- Columna izquierda: tarjetas (4 columnas) -->
-        <div style="flex: 0 0 33.3333%; max-width: 33.3333%; display: flex; flex-direction: column; gap: 18px;">
-          <div class="no-rev-card">
-            <span style="font-weight:bold;">No revenue sharing. Ever.</span><br>
-            <span style="font-weight:normal;">You make the content, you reap the rewards.</span>
-          </div>
-          <div class="no-rev-card">
-            <span style="font-weight:bold;">No revenue sharing. Ever.</span><br>
-            <span style="font-weight:normal;">You make the content, you reap the rewards.</span>
-          </div>
-          <div class="no-rev-card">
-            <span style="font-weight:bold;">No revenue sharing. Ever.</span><br>
-            <span style="font-weight:normal;">You make the content, you reap the rewards.</span>
-          </div>
-        </div>
-        <!-- Columna derecha: imagen (8 columnas) -->
-        <div style="flex: 0 0 66.6666%; max-width: 66.6666%; display: flex; align-items: center; justify-content: center;">
-          <img src="<?php echo base_url('uploads/elevant/banner-3.png'); ?>" alt="Mid Section" style="width: 100%; max-width: 911px; height: auto; aspect-ratio: 911/607; border-radius: 18px; object-fit: cover;">
-        </div>
-      </div>
-    </div>
-  </section>
+  <!-- Modal de detalles de curso -->
+  <div id="courseModal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.32); align-items:center; justify-content:center;">
+    <div id="courseModalContent" style="max-height:90vh;width:100%;overflow:auto;box-sizing:border-box;"></div>
+  </div>
+  <style>
+    body.modal-open {
+      overflow: hidden !important;
+    }
+    #courseModal {
+      overflow: auto !important;
+    }
+    #courseModalContent {
+      /* El modal nunca debe exceder el viewport */
+      max-height: 90vh;
+      width: 100%;
+      overflow: auto;
+      box-sizing: border-box;
+    }
+    @media (max-width: 800px) {
+      #courseModalContent {
+        max-width: 98vw !important;
+        padding: 10px !important;
+      }
+    }
+  </style>
+  <script>
+    // Simulación de cursos (en producción, esto vendría de PHP o AJAX)
+    const allCourses = [
+      {
+        title: "Curso de Marketing Digital",
+        category: "marketing",
+        level: "basico",
+        price: "gratis",
+        img: "<?php echo base_url('uploads/elevant/Frame 17.png'); ?>"
+      },
+      {
+        title: "Introducción a la Programación",
+        category: "programacion",
+        level: "basico",
+        price: "gratis",
+        img: "<?php echo base_url('uploads/elevant/Frame 18.png'); ?>"
+      },
+      {
+        title: "Negocios para Emprendedores",
+        category: "negocios",
+        level: "intermedio",
+        price: "pago",
+        img: "<?php echo base_url('uploads/elevant/Frame 19.png'); ?>"
+      },
+      {
+        title: "Programación Avanzada",
+        category: "programacion",
+        level: "avanzado",
+        price: "pago",
+        img: "<?php echo base_url('uploads/elevant/Frame 20.png'); ?>"
+      }
+      // ...agrega más cursos según tu necesidad...
+    ];
 
-  <!-- NEWSLETTER & FOOTER -->
-  <footer class="newsletter-section">
-    <div class="newsletter-content">
-      <div class="newsletter-title">NewsLetter</div>
-      <div class="newsletter-desc">Regístrate con nosotros y te enviaremos los boletines al día sobre que necesitas</div>
-      <form class="newsletter-form" autocomplete="off" onsubmit="return false;">
-        <input type="text" placeholder="Ingresa tu correo o número celular" />
-        <button class="get-started-btn" style="background: var(--yellow); color: var(--black);">Get Started</button>
-      </form>
-    </div>
-    <div class="footer-main">
-      <div class="footer-logo">
-        <span>ELEVANT</span>
-        <div class="footer-desc" style="margin-top:8px;">Study any topic, anytime, explore thousands of courses for the lowest price ever!</div>
+    // Modal HTML (ajustado para scroll y responsividad)
+    const modalTemplate = `
+<div style="background: #fff; border-radius: 16px; max-width: 700px; width: 95vw; box-shadow: 0 8px 32px #2222; padding: 32px 24px 28px 24px; margin: 40px auto; font-family: 'Arial Rounded MT Bold', Arial, Helvetica, sans-serif; position:relative; max-height:85vh; overflow-y:auto;">
+  <button onclick="closeCourseModal()" style="position:absolute;top:18px;right:18px;background:none;border:none;font-size:1.7rem;cursor:pointer;color:#888;z-index:2;">&times;</button>
+  <div style="font-size: 2rem; font-weight: bold; margin-bottom: 16px; letter-spacing: -1.2px;" id="modalCourseTitle">Details of Course</div>
+  <div style="display: flex; flex-wrap: wrap; gap: 28px;">
+    <!-- Left: Tabs and content -->
+    <div style="flex: 2.5; min-width: 220px;">
+      <!-- Tabs -->
+      <div style="display: flex; gap: 22px; border-bottom: 2px solid #e5e5e5; margin-bottom: 18px; flex-wrap:wrap;">
+        <button class="modal-tab-btn" data-tab="details" style="background: none; border: none; font-size: 1.1rem; font-weight: bold; color: #222; border-bottom: 3px solid #222; padding: 9px 16px 5px 0; cursor: pointer;">Detalles</button>
+        <button class="modal-tab-btn" data-tab="contenido" style="background: none; border: none; font-size: 1.1rem; font-weight: bold; color: #888; border-bottom: 3px solid transparent; padding: 9px 16px 5px 0; cursor: pointer;">Contenido</button>
+        <button class="modal-tab-btn" data-tab="requisitos" style="background: none; border: none; font-size: 1.1rem; font-weight: bold; color: #888; border-bottom: 3px solid transparent; padding: 9px 16px 5px 0; cursor: pointer;">Requisitos</button>
       </div>
-      <div class="footer-block">
-        <h4>Top Category</h4>
-        <ul>
-          <li>Farmacia</li>
-          <li>Multimedia</li>
-          <li>Podcast</li>
+      <!-- Content -->
+      <div id="modalTabContent-details" class="modal-tab-content" style="font-size: 1rem; color: #222; line-height: 1.7; margin-bottom: 10px;">
+        Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen. No solo sobrevivió 500 años, sino que también ingresó como texto de relleno en documentos electrónicos, quedando esencialmente igual al original. Fue popularizado en los 60s con la creación de las hojas "Letraset", las cuales contenían pasajes de Lorem Ipsum, y más recientemente con software de autoedición, como por ejemplo Aldus PageMaker, el cual incluye versiones de Lorem Ipsum.
+        <br><br>
+        <b>¿De dónde viene?</b><br>
+        Al contrario del pensamiento popular, el texto de Lorem Ipsum no es simplemente texto aleatorio. Tiene sus raíces en una pieza clásica de la literatura del Latin, que data del año 45 antes de Cristo, haciendo que este adquiera mas de 2000 años de antigüedad. Richard McClintock, un profesor de Latin de la Universidad de Hampden-Sydney en Virginia, encontró una de las palabras más oscuras del latín, "consectetur", en un pasaje de Lorem Ipsum, y tras seguir la pista a través de la literatura clásica, descubrió la fuente indudable. Lorem Ipsum proviene de las secciones 1.10.32 y 1.10.33 de "de Finibus Bonorum et Malorum" (Los Extremos del Bien y el Mal) por Cicerón, escrito en el año 45 antes de Cristo. Este libro es un tratado sobre la teoría de la ética, muy popular durante el Renacimiento. La primera línea del Lorem Ipsum, "Lorem ipsum dolor sit amet..", proviene de una línea en la sección 1.10.32
+      </div>
+      <div id="modalTabContent-contenido" class="modal-tab-content" style="display:none;font-size: 1rem; color: #222; line-height: 1.7; margin-bottom: 10px;">
+        <ul style="padding-left:18px;">
+          <li>Lección 1: Introducción</li>
+          <li>Lección 2: Conceptos básicos</li>
+          <li>Lección 3: Ejercicios prácticos</li>
         </ul>
       </div>
-      <div class="footer-block">
-        <h4>Use Link</h4>
-        <ul>
-          <li>Courses</li>
-          <li>Instructor</li>
-          <li>Afiliado</li>
-        </ul>
-      </div>
-      <div class="footer-block">
-        <h4>Help</h4>
-        <ul>
-          <li>About Us</li>
-          <li>Contact</li>
-          <li>Term and condition</li>
+      <div id="modalTabContent-requisitos" class="modal-tab-content" style="display:none;font-size: 1rem; color: #222; line-height: 1.7; margin-bottom: 10px;">
+        <ul style="padding-left:18px;">
+          <li>Ganas de aprender</li>
+          <li>Computador o dispositivo móvil</li>
+          <li>Conexión a internet</li>
         </ul>
       </div>
     </div>
-    <div class="footer-bottom">
-      © 2024 Elevant Academy. todos los derechos reservados
+    <!-- Right: Profile -->
+    <aside style="flex: 1.2; min-width: 210px;">
+      <div style="background: #fafafa; border-radius: 15px; border: 1.5px solid #e5e5e5; box-shadow: 0 1px 8px #eaeaea60; padding: 20px 16px;">
+        <div style="font-weight: 600; font-size: 1.08rem; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+          <svg width="18" height="18" fill="none" style="vertical-align: middle; margin-bottom: -3px;"><circle cx="9" cy="9" r="8" stroke="#a58bed" stroke-width="2"/><path d="M6 13c0-1.67 4-1.67 4 0" stroke="#a58bed" stroke-width="2" stroke-linecap="round"/><circle cx="9" cy="8" r="2" stroke="#a58bed" stroke-width="2"/></svg>
+          Detalle del instructor
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+          <img src="https://placehold.org/70x70?text=Foto" alt="Instructor" style="border-radius: 14px; width: 70px; height: 70px; object-fit: cover; border: 2px solid #eee;">
+          <div>
+            <div style="font-weight: bold; font-size: 1.09rem;">Cesar Gomez</div>
+            <div style="font-size: .92rem; color: #444;">@cesargomez</div>
+            <div style="font-size: .9rem; color: #888;">2 años</div>
+            <div style="font-size: .9rem; color: #888;">6 cursos</div>
+          </div>
+        </div>
+        <div style="font-size: 1.03rem; font-weight: bold; margin-bottom: 6px;">Perfil profesional</div>
+        <div style="font-size: .95rem; color: #181818; margin-bottom: 10px; line-height: 1.4;">
+          Cesar tiene más de dos años de experiencia enseñando a estudiantes de todas las edades. Ha participado en la creación de cursos de contenido digital y ha sido conferencista en diferentes eventos de su área. Actualmente se destaca como líder en la creación de cursos de la hoja de vida y habilidades.
+        </div>
+        <div style="margin-bottom: 7px;">
+          <a href="mailto:cesargomez@elevant.com" style="color: #222; font-size: 0.98rem; text-decoration: none; word-break: break-all;">
+            <svg width="15" height="15" style="vertical-align: middle; margin-bottom: -2px;" fill="none"><rect x="1.5" y="3" width="12" height="9" rx="2" stroke="#a58bed" stroke-width="1.5"/><path d="M2.5 4.5 7.5 8.5l5-4" stroke="#a58bed" stroke-width="1.2"/></svg>
+            cesargomez@elevant.com
+          </a>
+        </div>
+        <div style="margin-bottom: 7px;">
+          <svg width="16" height="16" fill="none" style="vertical-align: middle; margin-bottom: -2px;"><circle cx="8" cy="8" r="7" stroke="#a58bed" stroke-width="1.5"/><path d="M4.5 12c.5-1.5 3.5-1.5 4 0" stroke="#a58bed" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="7" r="2" stroke="#a58bed" stroke-width="1.5"/></svg>
+          +57 301 287 55 44
+        </div>
+        <div style="display: flex; gap: 8px; margin-top: 4px;">
+          <a href="#" style="color: #181818; font-size: 1.17rem;" title="Instagram"><svg width="18" height="18" fill="none"><rect x="2" y="2" width="14" height="14" rx="4" stroke="#a58bed" stroke-width="2"/><circle cx="9" cy="9" r="3" stroke="#a58bed" stroke-width="2"/><circle cx="13" cy="5" r="1" fill="#a58bed"/></svg></a>
+          <a href="#" style="color: #181818; font-size: 1.17rem;" title="Facebook"><svg width="18" height="18" fill="none"><rect x="2" y="2" width="14" height="14" rx="4" stroke="#a58bed" stroke-width="2"/><path d="M10 6.5h1.5V5.25A.75.75 0 0 1 12.25 4.5h.5A.75.75 0 0 1 13.5 5.25V6.5h1.25a.75.75 0 0 1 0 1.5H13.5v4.75a.75.75 0 0 1-.75.75h-.5a.75.75 0 0 1-.75-.75V8H10A.75.75 0 0 1 9.25 7.25v-.5A.75.75 0 0 1 10 6.5Z" fill="#a58bed"/></svg></a>
+          <a href="#" style="color: #181818; font-size: 1.17rem;" title="LinkedIn"><svg width="18" height="18" fill="none"><rect x="2" y="2" width="14" height="14" rx="4" stroke="#a58bed" stroke-width="2"/><rect x="6" y="7" width="2" height="5" fill="#a58bed"/><ellipse cx="7" cy="5.5" rx="1" ry="1" fill="#a58bed"/><rect x="10" y="9" width="2" height="3" fill="#a58bed"/></svg></a>
+        </div>
+      </div>
+    </aside>
+  </div>
+  <!-- Payment Methods -->
+  <div style="margin-top: 38px;">
+    <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 8px; letter-spacing: -1px;">Métodos<br>de Pago</div>
+    <div style="display: flex; gap: 24px; margin-top: 18px; flex-wrap:wrap;">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png" alt="Visa" style="height: 38px;">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Mastercard-logo.png" alt="Mastercard" style="height: 38px;">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/3/30/American_Express_logo_%282018%29.svg" alt="Amex" style="height: 38px;">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/4/43/Paypal.png" alt="PayPal" style="height: 38px;">
     </div>
-  </footer>
+  </div>
+</div>
+`;
+
+    // Permitir cerrar el modal haciendo clic fuera del contenido
+    document.addEventListener('DOMContentLoaded', function() {
+      var modal = document.getElementById('courseModal');
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+          closeCourseModal();
+        }
+      });
+    });
+
+    function openCourseModal(course) {
+      document.getElementById('courseModalContent').innerHTML = modalTemplate.replace('Details of Course', course.title);
+      document.getElementById('courseModal').style.display = 'flex';
+      document.body.classList.add('modal-open');
+      document.documentElement.style.overflow = 'hidden';
+
+      // Tabs funcionalidad
+      var tabBtns = document.querySelectorAll('.modal-tab-btn');
+      var tabContents = document.querySelectorAll('.modal-tab-content');
+      tabBtns.forEach(function(btn) {
+        btn.onclick = function() {
+          tabBtns.forEach(b => {
+            b.style.color = '#888';
+            b.style.borderBottom = '3px solid transparent';
+          });
+          btn.style.color = '#222';
+          btn.style.borderBottom = '3px solid #222';
+          tabContents.forEach(tc => tc.style.display = 'none');
+          document.getElementById('modalTabContent-' + btn.getAttribute('data-tab')).style.display = 'block';
+        };
+      });
+    }
+    function closeCourseModal() {
+      document.getElementById('courseModal').style.display = 'none';
+      document.body.classList.remove('modal-open');
+      document.documentElement.style.overflow = '';
+    }
+
+    function renderCourses(courses) {
+      const grid = document.getElementById('coursesGrid');
+      grid.innerHTML = '';
+      if (courses.length === 0) {
+        grid.innerHTML = '<div style="padding:30px;">No se encontraron cursos.</div>';
+        return;
+      }
+      courses.forEach(course => {
+        grid.innerHTML += `
+          <div class="course-card" style="cursor:pointer;" onclick='openCourseModal(${JSON.stringify(course)})'>
+            <img src="${course.img}" alt="${course.title}" style="width:100%;height:220px;object-fit:cover;display:block;border-radius:12px 12px 0 0;">
+            <div class="course-card-content" style="padding:18px;">
+              <div style="font-weight:bold;font-size:1.1rem;margin-bottom:7px;">${course.title}</div>
+              <div style="font-size:0.98rem;color:#888;margin-bottom:4px;">Categoría: ${course.category.charAt(0).toUpperCase() + course.category.slice(1)}</div>
+              <div style="font-size:0.98rem;color:#888;margin-bottom:4px;">Nivel: ${course.level.charAt(0).toUpperCase() + course.level.slice(1)}</div>
+              <div style="font-size:0.98rem;color:#888;">${course.price === 'gratis' ? 'Gratis' : 'De pago'}</div>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function filterCourses() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const category = document.getElementById('categoryFilter').value;
+      const level = document.getElementById('levelFilter').value;
+      const price = document.getElementById('priceFilter').value;
+      const filtered = allCourses.filter(course => {
+        return (
+          (search === '' || course.title.toLowerCase().includes(search)) &&
+          (category === '' || course.category === category) &&
+          (level === '' || course.level === level) &&
+          (price === '' || course.price === price)
+        );
+      });
+      renderCourses(filtered);
+    }
+
+    // Inicializar con todos los cursos
+    document.addEventListener('DOMContentLoaded', function() {
+      renderCourses(allCourses);
+    });
+  </script>
 </body>
 </html>

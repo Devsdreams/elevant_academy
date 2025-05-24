@@ -12,6 +12,7 @@
       --gray: #f6f6f6;
       --border: #e6e6e6;
       --white: #FFFFFF;       /* blanco */
+      --gold: #FFD600;
     }
     body {
       margin: 0;
@@ -95,7 +96,7 @@
       box-shadow: 0 2px 8px #b5935918;
     }
     .nav-links .inicio {
-      color: var(--yellow);
+      color: var(--black);
     }
     /* HERO */
     .hero {
@@ -805,6 +806,128 @@
       color: #181818;
       display: inline-block;
     }
+
+    /* Reseña Historica Section */
+    .resena-section {
+      background: #fff;
+      padding: 48px 0 20px 0;
+      text-align: center;
+    }
+    .resena-section h2 {
+      font-size: 65px;
+      font-weight: bold;
+      margin: 0 0 10px 0;
+    }
+    .resena-section .resena-sub {
+      color: #222;
+      font-size: 30px;
+      margin-bottom: 32px;
+    }
+    .resena-section .resena-desc {
+      max-width: 860px;
+      margin: 0 auto 32px auto;
+      color: #222;
+      font-size: 1rem;
+      line-height: 1.6;
+      text-align: left;
+    }
+    .resena-section .resena-btn {
+      background: #111;
+      color: #fff;
+      border: none;
+      border-radius: 13px;
+      padding: 13px 38px;
+      font-size: 1.04rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.18s, color 0.18s;
+    }
+    .resena-section .resena-btn:hover {
+      background: var(--yellow);
+      color: #fff;
+    }
+
+    /* Top Choice for Creators Section */
+    .top-choice-black-section {
+      background: #000;
+      color: #fff;
+      padding: 52px 0 58px 0;
+    }
+    .top-choice-black-section .top-choice-container {
+      max-width: 1050px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 36px 0;
+    }
+    .top-choice-black-section .top-choice-title {
+      font-size: 65px;
+      font-weight: bold;
+      margin: 0 0 20px 0;
+      letter-spacing: -1.3px;
+    }
+    .top-choice-black-section .top-choice-desc {
+      color: #e0e0e0;
+      font-size: 1.09rem;
+      margin-bottom: 8px;
+    }
+    .top-choice-black-section .top-choice-btn {
+      margin-top: 10px;
+      background: var(--yellow); /* dorado base */
+      color: #181818;
+      border: none;
+      border-radius: 14px;
+      font-weight: 600;
+      font-size: 1rem;
+      padding: 8px 22px;
+      cursor: pointer;
+      transition: background 0.18s, color 0.18s;
+    }
+    .top-choice-black-section .top-choice-btn:hover {
+      background: #fff;
+      color: #181818;
+    }
+    .top-choice-black-section .top-choice-grid {
+      max-width: 1050px;
+      margin: 40px auto 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      gap: 22px;
+    }
+    .top-choice-black-section .top-choice-card {
+      background: #fff;
+      color: #181818;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px #18181810;
+      padding: 24px 22px 20px 22px;
+      min-width: 200px;
+    }
+    .top-choice-black-section .top-choice-card-icon {
+      background: #000;
+      color: #fff;
+      width: 33px;
+      height: 33px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+    }
+    .top-choice-black-section .top-choice-card-title {
+      font-weight: bold;
+      font-size: 1.08rem;
+      margin-bottom: 3px;
+    }
+    .top-choice-black-section .top-choice-card-desc {
+      font-size: 0.98rem;
+      color: #222;
+    }
   </style>
   </head>
 <body>
@@ -815,9 +938,9 @@
         <img src="<?php echo base_url('uploads/elevant/elevant.png'); ?>" alt="Elevant Logo">
       </a>
       <div class="nav-links">
-        <a href="#" class="inicio active">Inicio</a>
-        <a href="<?php echo site_url('elevant/home_elevant'); ?>">Elevant</a>
-        <a href="#">Cursos</a>
+        <a href="<?php echo base_url('elevant/home'); ?>" class="inicio">Inicio</a>
+        <a href="#" class="active" style="color: var(--yellow);">Elevant</a>
+        <a href="<?php echo base_url('elevant/home_courses'); ?>">Cursos</a>
         <a href="#">Afiliados</a>
         <a href="#">Instructor</a>
         <a href="#">Contacto</a>
@@ -848,40 +971,47 @@
       </div> -->
     </div>
   </section>
-
-  <!-- ICON ROW -->
-  <div style="width:100%;text-align:center;margin:30px 0;">
-    <img src="<?php echo base_url('uploads/elevant/Frame 26.png'); ?>" alt="Banner" style="max-width:100%;height:auto;">
-  </div>
-
-  <!-- COURSES Section -->
-  <section class="courses-section">
-    <div class="top-choice-header">
-      <h2 style="font-size:65px; font-weight:bold; margin-bottom:8px; letter-spacing:-1px; color:var(--black);">The top choice for creators of all sizes.</h2>
-      <button class="get-started-btn" style="background: var(--black); color: var(--white);">Get Started</button> <!-- negro -->
-    </div>
-    <div class="courses-grid">
-      <div class="course-card">
-        <img src="<?php echo base_url('uploads/elevant/Frame 6.png'); ?>" alt="Curso 2">
-        <div class="course-card-content">
-          <!-- La imagen ya contiene el texto, así que no mostramos título ni descripción -->
+  
+  
+  <section class="mid-section" style="padding-top: 56px; padding-bottom: 24px; max-width: 1100px; margin: 0 auto;">
+    <div style="width: 100%; display: flex; flex-direction: column;">
+      <!-- Título, descripción y botón en una sola fila -->
+      <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 32px; gap: 24px;">
+        <div>
+          <div class="mid-title" style="font-size:65px;">The top choice for creators of all sizes.</div>
+          <div class="mid-desc" style="margin-bottom: 0;">From digital products to marketing tools, Kajabi has everything creators need to build.</div>
         </div>
+        <button class="get-started-btn" style="background: var(--black); color: var(--white); min-width: 180px; align-self: flex-start;">Get Started</button>
       </div>
-      <div class="course-card">
-        <img src="<?php echo base_url('uploads/elevant/Frame 13.png'); ?>" alt="Curso 3">
-        <div class="course-card-content">
-          <!-- La imagen ya contiene el texto, así que no mostramos título ni descripción -->
+      <!-- Contenido en dos columnas: izquierda (4) y derecha (8) -->
+      <div style="display: flex; width: 100%; gap: 32px;">
+        <!-- Columna izquierda: tarjetas (4 columnas) -->
+        <div style="flex: 0 0 33.3333%; max-width: 33.3333%; display: flex; flex-direction: column; gap: 18px;">
+          <div class="no-rev-card">
+            <span style="font-weight:bold;">No revenue sharing. Ever.</span><br>
+            <span style="font-weight:normal;">You make the content, you reap the rewards.</span>
+          </div>
+          <div class="no-rev-card">
+            <span style="font-weight:bold;">No revenue sharing. Ever.</span><br>
+            <span style="font-weight:normal;">You make the content, you reap the rewards.</span>
+          </div>
+          <div class="no-rev-card">
+            <span style="font-weight:bold;">No revenue sharing. Ever.</span><br>
+            <span style="font-weight:normal;">You make the content, you reap the rewards.</span>
+          </div>
         </div>
-      </div>
-      <div class="course-card">
-        <img src="<?php echo base_url('uploads/elevant/Frame 14.png'); ?>" alt="Curso 4">
-        <div class="course-card-content">
-          <!-- La imagen ya contiene el texto, así que no mostramos título ni descripción -->
+        <!-- Columna derecha: imagen (8 columnas) -->
+        <div style="flex: 0 0 66.6666%; max-width: 66.6666%; display: flex; align-items: center; justify-content: center;">
+          <img src="<?php echo base_url('uploads/elevant/banner-3.png'); ?>" alt="Mid Section" style="width: 100%; max-width: 911px; height: auto; aspect-ratio: 911/607; border-radius: 18px; object-fit: cover;">
         </div>
       </div>
     </div>
   </section>
-
+  <!-- ICON ROW -->
+  <div style="width:100%;text-align:center;margin:30px 0;">
+    <img src="<?php echo base_url('uploads/elevant/Frame 26.png'); ?>" alt="Banner" style="max-width:100%;height:auto;">
+  </div>
+  
   <!-- Nueva sección personalizada debajo de courses-section -->
   <section class="custom-courses-section">
     <h2 class="custom-courses-title">Courses</h2>
@@ -944,136 +1074,137 @@
       </div>
     </div>
   </section>
-  <!-- TOP CATEGORIES Section -->
-  <section class="top-categories-section">
-    <div class="categories-header" style="max-width: 1100px; margin: 0 auto;">
-      <h2 style="font-size:65px; font-weight:bold; margin-bottom:8px; letter-spacing:-1px; color:var(--white);">Top Categories</h2>
-      <p>From digital products to marketing tools, Kajabi has everything creators need to build.</p>
-      <div style="margin:14px 0 0 0; font-weight: bold; font-size: 30px; letter-spacing: 1px;">
-        <span style="margin-right:18px;">Farmacia</span>
-        <span style="margin-right:18px;">Podcast</span>
-        <span style="margin-right:18px;">Multimedia</span>
-        <span style="margin-right:18px;">Sistema</span>
-        <span>Odontología</span>
-      </div>
-    </div>
-    <div class="categories-grid" style="max-width: 1100px; margin: 0 auto;">
-      <div class="category-card">
-        <img src="<?php echo base_url('uploads/elevant/Rectangle 16.png'); ?>" class="cat-img-bg" alt="Farmacia">
-        <div class="cat-info">
-          <div class="cat-title">FARMACIA</div>
-          <div class="cat-desc">Te ayudamos a crear el curso ideal para tu comunidad...</div>
-          <button class="cat-read-more">Leer más</button>
-        </div>
-      </div>
-      <div class="category-card">
-        <!-- Cambiado: ahora Multimedia usa la imagen de Podcast -->
-        <img src="<?php echo base_url('uploads/elevant/Rectangle 36.png'); ?>" class="cat-img-bg" alt="Podcast">
-        <div class="cat-info">
-          <div class="cat-title">PODCAST</div>
-          <div class="cat-desc">Te ayudamos a crear el curso ideal para tu comunidad...</div>
-          <button class="cat-read-more">Leer más</button>
-        </div>
-      </div>
-      <div class="category-card">
-        <!-- Cambiado: ahora Podcast usa la imagen de Multimedia -->
-        <img src="<?php echo base_url('uploads/elevant/Rectangle 23.png'); ?>" class="cat-img-bg" alt="Multimedia">
-        <div class="cat-info">
-          <div class="cat-title">MULTIMEDIA</div>
-          <div class="cat-desc">Te ayudamos a crear el curso ideal para tu comunidad...</div>
-          <button class="cat-read-more">Leer más</button>
-        </div>
-      </div>
-    </div>
-    <!-- NUEVO: Dos columnas debajo de las tarjetas -->
-    <div style="display: flex; justify-content: center; align-items: flex-start; gap: 40px; margin-top: 40px; margin-bottom: 40px; max-width: 1100px; margin-left: auto; margin-right: auto;">
-      <div style="flex:1; text-align:left;">
-        <div style="font-size:65px; font-weight:bold; color:#fff; line-height:1.1;">The top choice for creators of all sizes.</div>
-      </div>
-      <div style="flex:1; text-align:left;">
-        <div style="font-size:1.16rem; color:#e6e6e6; margin-bottom:18px;">
-          From digital products to marketing tools, Kajabi has everything creators need to build.
-        </div>
-        <button style="background: var(--yellow); color: var(--black); border:none; border-radius:14px; font-weight:600; font-size:1.1rem; padding:12px 32px; margin-top:10px; cursor:pointer;">Get Started</button>
-      </div>
-    </div>
-    <!-- FIN NUEVO -->
-     <div style="background: #000; padding: 38px 0;">
-        <div style="display: flex; justify-content: center; gap: 32px; max-width: 900px; margin: 0 auto;">
-            <div style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px #18181810; padding: 26px 26px 20px 26px; width: 260px; min-width: 200px; display: flex; flex-direction: column; gap: 6px;">
-            <div style="background: #000; color: #fff; width: 33px; height: 33px; border-radius: 9px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px;">
-                <svg height="20" width="20" viewBox="0 0 20 20"><path d="M6 10h8m0 0-4-4m4 4-4 4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
-            </div>
-            <div style="font-weight: bold; font-size: 1.08rem; margin-bottom: 3px;">
-                No revenue sharing. Ever.
-            </div>
-            <div style="font-size: 0.98rem; color: #222;">
-                You make the content, you reap the rewards.
-            </div>
-            </div>
-            <div style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px #000; padding: 26px 26px 20px 26px; width: 260px; min-width: 200px; display: flex; flex-direction: column, gap: 6px;">
-            <div style="background: #000; color: #fff; width: 33px; height: 33px; border-radius: 9px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px;">
-                <svg height="20" width="20" viewBox="0 0 20 20"><path d="M6 10h8m0 0-4-4m4 4-4 4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
-            </div>
-            <div style="font-weight: bold; font-size: 1.08rem; margin-bottom: 3px;">
-                No revenue sharing. Ever.
-            </div>
-            <div style="font-size: 0.98rem; color: #222;">
-                You make the content, you reap the rewards.
-            </div>
-            </div>
-            <div style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px #18181810; padding: 26px 26px 20px 26px; width: 260px; min-width: 200px; display: flex; flex-direction: column; gap: 6px;">
-            <div style="background: #000; color: #fff; width: 33px; height: 33px; border-radius: 9px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px;">
-                <svg height="20" width="20" viewBox="0 0 20 20"><path d="M6 10h8m0 0-4-4m4 4-4 4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
-            </div>
-            <div style="font-weight: bold; font-size: 1.08rem; margin-bottom: 3px;">
-                No revenue sharing. Ever.
-            </div>
-            <div style="font-size: 0.98rem; color: #222;">
-                You make the content, you reap the rewards.
-            </div>
-            </div>
-        </div>
-    </div>
-  </section>
-
-  <!-- MID SECTION: THE TOP CHOICE ... -->
-  <section class="mid-section" style="padding-top: 56px; padding-bottom: 24px; max-width: 1100px; margin: 0 auto;">
-    <div style="width: 100%; display: flex; flex-direction: column;">
-      <!-- Título, descripción y botón en una sola fila -->
-      <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 32px; gap: 24px;">
-        <div>
-          <div class="mid-title" style="font-size:65px;">The top choice for creators of all sizes.</div>
-          <div class="mid-desc" style="margin-bottom: 0;">From digital products to marketing tools, Kajabi has everything creators need to build.</div>
-        </div>
-        <button class="get-started-btn" style="background: var(--black); color: var(--white); min-width: 180px; align-self: flex-start;">Get Started</button>
-      </div>
-      <!-- Contenido en dos columnas: izquierda (4) y derecha (8) -->
-      <div style="display: flex; width: 100%; gap: 32px;">
-        <!-- Columna izquierda: tarjetas (4 columnas) -->
-        <div style="flex: 0 0 33.3333%; max-width: 33.3333%; display: flex; flex-direction: column; gap: 18px;">
-          <div class="no-rev-card">
-            <span style="font-weight:bold;">No revenue sharing. Ever.</span><br>
-            <span style="font-weight:normal;">You make the content, you reap the rewards.</span>
-          </div>
-          <div class="no-rev-card">
-            <span style="font-weight:bold;">No revenue sharing. Ever.</span><br>
-            <span style="font-weight:normal;">You make the content, you reap the rewards.</span>
-          </div>
-          <div class="no-rev-card">
-            <span style="font-weight:bold;">No revenue sharing. Ever.</span><br>
-            <span style="font-weight:normal;">You make the content, you reap the rewards.</span>
-          </div>
-        </div>
-        <!-- Columna derecha: imagen (8 columnas) -->
-        <div style="flex: 0 0 66.6666%; max-width: 66.6666%; display: flex; align-items: center; justify-content: center;">
-          <img src="<?php echo base_url('uploads/elevant/banner-3.png'); ?>" alt="Mid Section" style="width: 100%; max-width: 911px; height: auto; aspect-ratio: 911/607; border-radius: 18px; object-fit: cover;">
-        </div>
-      </div>
-    </div>
-  </section>
 
   <!-- NEWSLETTER & FOOTER -->
+  
+  <!-- Reseña Historica Section -->
+  <section class="resena-section">
+    <h2>Reseña Historica</h2>
+    <div class="resena-sub">
+      From digital products to marketing tools, Kajabi<br>
+      has everything creators need to build.
+    </div>
+    <div class="resena-desc" style="font-size:26px;">
+      Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen. No sólo sobrevivió 500 años, sino que también ingresó como texto de relleno en documentos electrónicos, quedando esencialmente igual al original. Fue popularizado en los 60s con la creación de las hojas "Letraset", las cuales contenían pasajes de Lorem Ipsum, y más recientemente con software de autoedición, como por ejemplo Aldus PageMaker, el cual incluye versiones de Lorem Ipsum.
+    </div>
+    <button class="resena-btn">
+      Leer más
+      <svg width="18" height="16" viewBox="0 0 18 16" style="margin-left: 6px;"><path d="M4 8h10m0 0-4-4m4 4-4 4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+    </button>
+  </section>
+
+  <!-- Top Choice for Creators Section -->
+  <section class="top-choice-black-section">
+    <div class="top-choice-container">
+      <div style="flex: 2;">
+        <h2 class="top-choice-title">The top choice for<br>creators of all sizes.</h2>
+      </div>
+      <div style="flex: 1; min-width: 290px;">
+        <div class="top-choice-desc">
+          From digital products to marketing tools, Kajabi<br>
+          has everything creators need to build.
+        </div>
+        <button class="top-choice-btn">Get Started</button>
+      </div>
+    </div>
+    <div class="top-choice-grid">
+      <!-- Card -->
+      <div class="top-choice-card">
+        <div class="top-choice-card-icon">
+          <svg height="20" width="20" viewBox="0 0 20 20"><path d="M6 10h8m0 0-4-4m4 4-4 4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+        </div>
+        <div class="top-choice-card-title">
+          No revenue sharing. Ever.
+        </div>
+        <div class="top-choice-card-desc">
+          You make the content, you reap the rewards.
+        </div>
+      </div>
+      <div class="top-choice-card">
+        <div class="top-choice-card-icon">
+          <svg height="20" width="20" viewBox="0 0 20 20"><path d="M6 10h8m0 0-4-4m4 4-4 4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+        </div>
+        <div class="top-choice-card-title">
+          No revenue sharing. Ever.
+        </div>
+        <div class="top-choice-card-desc">
+          You make the content, you reap the rewards.
+        </div>
+      </div>
+      <div class="top-choice-card">
+        <div class="top-choice-card-icon">
+          <svg height="20" width="20" viewBox="0 0 20 20"><path d="M6 10h8m0 0-4-4m4 4-4 4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+        </div>
+        <div class="top-choice-card-title">
+          No revenue sharing. Ever.
+        </div>
+        <div class="top-choice-card-desc">
+          You make the content, you reap the rewards.
+        </div>
+      </div>
+      <div class="top-choice-card">
+        <div class="top-choice-card-icon">
+          <svg height="20" width="20" viewBox="0 0 20 20"><path d="M6 10h8m0 0-4-4m4 4-4 4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+        </div>
+        <div class="top-choice-card-title">
+          No revenue sharing. Ever.
+        </div>
+        <div class="top-choice-card-desc">
+          You make the content, you reap the rewards.
+        </div>
+      </div>
+      <div class="top-choice-card">
+        <div class="top-choice-card-icon">
+          <svg height="20" width="20" viewBox="0 0 20 20"><path d="M6 10h8m0 0-4-4m4 4-4 4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+        </div>
+        <div class="top-choice-card-title">
+          No revenue sharing. Ever.
+        </div>
+        <div class="top-choice-card-desc">
+          You make the content, you reap the rewards.
+        </div>
+      </div>
+      <div class="top-choice-card">
+        <div class="top-choice-card-icon">
+          <svg height="20" width="20" viewBox="0 0 20 20"><path d="M6 10h8m0 0-4-4m4 4-4 4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+        </div>
+        <div class="top-choice-card-title">
+          No revenue sharing. Ever.
+        </div>
+        <div class="top-choice-card-desc">
+          You make the content, you reap the rewards.
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- COURSES Section -->
+  <section class="courses-section">
+    <div class="top-choice-header">
+      <h2 style="font-size:65px; font-weight:bold; margin-bottom:8px; letter-spacing:-1px; color:var(--black);">Nuestro equipo de trabajo.</h2>
+      <button class="get-started-btn" style="background: var(--black); color: var(--white);">Get Started</button> <!-- negro -->
+    </div>
+    <div class="courses-grid">
+      <div class="course-card">
+        <img src="<?php echo base_url('uploads/elevant/Frame 6.png'); ?>" alt="Curso 2">
+        <div class="course-card-content">
+          <!-- La imagen ya contiene el texto, así que no mostramos título ni descripción -->
+        </div>
+      </div>
+      <div class="course-card">
+        <img src="<?php echo base_url('uploads/elevant/Frame 13.png'); ?>" alt="Curso 3">
+        <div class="course-card-content">
+          <!-- La imagen ya contiene el texto, así que no mostramos título ni descripción -->
+        </div>
+      </div>
+      <div class="course-card">
+        <img src="<?php echo base_url('uploads/elevant/Frame 14.png'); ?>" alt="Curso 4">
+        <div class="course-card-content">
+          <!-- La imagen ya contiene el texto, así que no mostramos título ni descripción -->
+        </div>
+      </div>
+    </div>
+  </section>
+  
   <footer class="newsletter-section">
     <div class="newsletter-content">
       <div class="newsletter-title">NewsLetter</div>

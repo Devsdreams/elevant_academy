@@ -361,8 +361,12 @@
       <form class="section-form" autocomplete="off" method="post" action="<?php echo site_url('user/elevant/section_add/' . $course['id']); ?>">
         <label for="section-title">Titulo de la Sección</label>
         <div class="desc">Aqui agregas el titulo para la sección y el estudiante se guie...</div>
-        <input type="text" id="section-title" name="section-title" placeholder="Titulo de la sección" required />
-        <button class="agregar-btn" type="submit">Agregar Sección</button>
+        <div id="section_area">
+          <div class="d-flex section-field">
+            <input type="text" id="section-title" name="section-title" placeholder="Titulo de la sección" required style="width:92%;max-width:600px;padding:16px 22px;border-radius:12px;border:1.7px solid #ececec;font-size:1.13rem;color:#333;outline:none;margin-bottom:28px;background:#fff;margin-top:7px;transition:border 0.18s;">
+          </div>
+        </div>
+        <button class="agregar-btn" type="submit">Guardar Sección</button>
       </form>
     </div>
     <div class="main-right">
@@ -372,17 +376,23 @@
         <button class="panel-tab" type="button">Archivos</button>
       </div>
       <div class="panel-title">Contenido agregado</div>
-      <div class="seccion-card">
-        <span class="badge-agregado">Agregado</span>
-        <span class="seccion-nombre">Sección 1</span>
-        <button class="ver-lecciones-btn" type="button">Ver Lecciones</button>
-        <button class="icon-btn" type="button" title="Editar nombre sección">
-          <!-- ...icono editar... -->
-        </button>
-        <button class="icon-btn" type="button" title="Eliminar sección">
-          <!-- ...icono eliminar... -->
-        </button>
-      </div>
+      <?php if (isset($sections) && count($sections) > 0): ?>
+        <?php foreach ($sections as $section): ?>
+          <div class="seccion-card">
+            <span class="badge-agregado">Agregado</span>
+            <span class="seccion-nombre"><?php echo htmlspecialchars($section['title']); ?></span>
+            <button class="ver-lecciones-btn" type="button">Ver Lecciones</button>
+            <button class="icon-btn" type="button" title="Editar nombre sección">
+              <!-- ...icono editar... -->
+            </button>
+            <button class="icon-btn" type="button" title="Eliminar sección">
+              <!-- ...icono eliminar... -->
+            </button>
+          </div>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <div style="color:#888; margin-top:10px;">No hay secciones agregadas aún.</div>
+      <?php endif; ?>
     </div>
   </div>
 </body>

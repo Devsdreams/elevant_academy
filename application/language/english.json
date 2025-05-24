@@ -1302,5 +1302,18 @@
     "community": "Community",
     "announcements": "Announcements",
     "instructor_earning": "Instructor earning",
-    "delete_this_course": "Delete this course"
+    "delete_this_course": "Delete this course",
+    "setup_epayco_settings": "Setup epayco settings",
+    "epayco_currency": "Epayco currency",
+    "select_epayco_currency": "Select epayco currency",
+    "public_key": "Public key",
+    "private_key": "Private key",
+    "p_cust_id_cliente": "P cust id cliente",
+    "p_key": "P key",
+    "update_epayco_keys": "Update epayco keys",
+    "choose_your_login_type": "Choose your login type",
+    "login_as_user": "Login as user",
+    "login_as_instructor": "Login as instructor",
+    "register_as_instructor": "Register as instructor",
+    "invalid_login_for_instructor": "Invalid login for instructor"
 }
