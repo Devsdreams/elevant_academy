@@ -989,8 +989,8 @@
         <a href="#">Contacto</a>
       </div>
       <div class="nav-actions">
-        <button class="login">login</button>
-        <button class="get-started">Get Started</button>
+        <button class="login" onclick="window.location.href='<?php echo site_url('elevant/login'); ?>'">login</button>
+        <button class="get-started" onclick="window.location.href='<?php echo site_url('elevant/login'); ?>'">Get Started</button>
       </div>
     </nav>
   </header>
@@ -1003,7 +1003,7 @@
         <h1>Dream it. BUILD it.<br>Monetize it.</h1>
         <p>From digital products to marketing tools, Elevant has everything creators need to build the businesses of their dreams – and make a profit – all in one place.</p>
         <div class="hero-buttons">
-          <button class="hero-btn" style="background: var(--black); color: var(--white);">Get Started</button> <!-- negro -->
+          <button class="hero-btn" style="background: var(--black); color: var(--white);" onclick="window.location.href='<?php echo site_url('elevant/login'); ?>'">Get Started</button>
         </div>
       </div>
       <!-- ...existing code... -->

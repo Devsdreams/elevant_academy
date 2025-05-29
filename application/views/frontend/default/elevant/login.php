@@ -27,27 +27,6 @@
             margin-bottom: 20px;
         }
 
-        .login-tabs {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #ccc;
-        }
-
-        .login-tab {
-            padding: 10px 20px;
-            cursor: pointer;
-            font-weight: bold;
-            color: #808080;
-            border-bottom: 2px solid transparent;
-            transition: all 0.3s ease;
-        }
-
-        .login-tab.active {
-            color: #000;
-            border-bottom: 2px solid #000;
-        }
-
         .login-container h1 {
             font-size: 24px;
             font-weight: bold;
@@ -104,71 +83,66 @@
     <div class="login-container">
         <img src="<?php echo base_url('uploads/elevant/elevant_dark.png'); ?>" alt="Logo Elevant">
 
-        <!-- Pestañas -->
-        <div class="login-tabs">
-            <div class="login-tab active" id="user-tab" onclick="showForm('user')">Login como Usuario</div>
-            <div class="login-tab" id="instructor-tab" onclick="showForm('instructor')">Login como Instructor</div>
-        </div>
-
-        <!-- Formulario de Usuario -->
-        <div id="user-form" class="login-form">
+        <!-- Formulario Único -->
+        <div id="login-form" class="login-form">
             <h1>LOGIN</h1>
-            <p>Ingresa tus credenciales de usuario</p>
-            <form action="<?php echo site_url('login/validate_login'); ?>" method="post">
-                <input type="hidden" name="localStorageRef" value="user">
+            <p>Ingresa tus credenciales</p>
+            <form action="<?php echo site_url('login/validate_login'); ?>" method="post" id="main-login-form">
                 <input type="hidden" name="is_elevant_login" value="1">
-                <input type="email" name="email" placeholder="Correo Electrónico" required>
+                <input type="email" name="email" placeholder="Correo Electrónico" required id="email-input">
                 <input type="password" name="password" placeholder="Contraseña" required>
                 <?php if (get_frontend_settings('recaptcha_status')): ?>
                     <div class="g-recaptcha" data-sitekey="<?php echo get_frontend_settings('recaptcha_sitekey'); ?>"></div>
                 <?php endif; ?>
                 <button type="submit">INICIAR SESIÓN</button>
             </form>
-            <div class="register">
+            <!-- <div id="role-message" style="margin-top:10px; color:#007bff; font-weight:bold;"></div> -->
+            <div class="register" id="register-link">
                 ¿No tienes cuenta? <a href="<?php echo site_url('elevant/register'); ?>">Regístrate</a>
-            </div>
-        </div>
-
-        <!-- Formulario de Instructor -->
-        <div id="instructor-form" class="login-form" style="display: none;">
-            <h1>LOGIN</h1>
-            <p>Ingresa tus credenciales de instructor</p>
-            <form action="<?php echo site_url('login/validate_login'); ?>" method="post">
-                <input type="hidden" name="localStorageRef" value="instructor">
-                <input type="hidden" name="is_elevant_login" value="1">
-                <input type="email" name="email" placeholder="Correo Electrónico" required>
-                <input type="password" name="password" placeholder="Contraseña" required>
-                <button type="submit">INICIAR SESIÓN</button>
-            </form>
-            <div class="register">
-                ¿No tienes cuenta? <a href="<?php echo site_url('elevant/register?instructor=1'); ?>">Regístrate como Instructor</a>
             </div>
         </div>
     </div>
 
     <script>
-        function showForm(role) {
-            document.getElementById('user-tab').classList.remove('active');
-            document.getElementById('instructor-tab').classList.remove('active');
-            document.getElementById('user-form').style.display = 'none';
-            document.getElementById('instructor-form').style.display = 'none';
-
-            if (role === 'user') {
-                document.getElementById('user-tab').classList.add('active');
-                document.getElementById('user-form').style.display = 'block';
-            } else if (role === 'instructor') {
-                document.getElementById('instructor-tab').classList.add('active');
-                document.getElementById('instructor-form').style.display = 'block';
-            }
+        // Eliminar la clave multistep si existe al cargar la página de login
+        if (localStorage.getItem('multistep')) {
+            localStorage.removeItem('multistep');
         }
 
-        // Guardar el tipo de usuario y la clave `newElevant` en localStorage antes de enviar el formulario
-        document.querySelectorAll('form').forEach(form => {
-            form.addEventListener('submit', function () {
-                const userType = this.querySelector('input[name="localStorageRef"]').value;
-                localStorage.setItem('login_user_type', userType);
-                localStorage.setItem('newElevant', 'true'); // Guardar la clave `newElevant`
-            });
+        // Guardar la clave `newElevant` en localStorage antes de enviar el formulario
+        document.getElementById('main-login-form').addEventListener('submit', function () {
+            localStorage.setItem('newElevant', 'true');
+        });
+
+        // Detectar el rol automáticamente al ingresar el correo
+        document.getElementById('email-input').addEventListener('blur', function () {
+            var email = this.value.trim();
+            var roleMsg = document.getElementById('role-message');
+            roleMsg.textContent = '';
+            if (email.length > 3 && email.includes('@')) {
+                fetch('<?php echo site_url('login/detect_role'); ?>', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    body: 'email=' + encodeURIComponent(email)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'ok') {
+                        if (data.role === 'instructor') {
+                            roleMsg.textContent = 'Rol detectado: Instructor';
+                        } else if (data.role === 'user') {
+                            roleMsg.textContent = 'Rol detectado: Usuario';
+                        } else {
+                            roleMsg.textContent = 'Rol no detectado';
+                        }
+                    } else {
+                        roleMsg.textContent = 'Correo no registrado';
+                    }
+                })
+                .catch(() => {
+                    roleMsg.textContent = '';
+                });
+            }
         });
     </script>
 </body>

@@ -121,6 +121,12 @@
             color: #000;
             margin-left: 10px;
         }
+
+        /* Nueva clase para el botón seleccionado */
+        .selected-role {
+            background-color: #000 !important;
+            color: #fff !important;
+        }
     </style>
 </head>
 <body>
@@ -176,10 +182,9 @@
             <h1>¡Crea tu contraseña!</h1>
             <p>Verifica tu información y crea una contraseña segura.</p>
             <form id="final-form" action="<?php echo site_url('login/register_user'); ?>" method="post">
+                <input type="hidden" name="from_multi_step" value="1">
                 <input type="hidden" name="role" id="role">
-                <!-- Campo oculto para is_instructor -->
-                <input type="hidden" name="is_instructor" id="is_instructor" value="0">
-                
+                <input type="hidden" name="is_instructor" id="is_instructor">
                 <!-- Información recopilada del usuario -->
                 <input type="text" name="first_name" id="final_first_name" placeholder="Primer nombre" readonly>
                 <input type="text" name="last_name" id="final_last_name" placeholder="Apellido" readonly>
@@ -199,14 +204,15 @@
     <script>
         let currentStep = 1;
         let selectedOption = '';
+        localStorage.setItem('multistep', '1');
 
         function selectOption(option) {
             selectedOption = option;
             document.getElementById('role').value = option;
-            // Si selecciona Instructor, marca is_instructor=1, si no, 0
             document.getElementById('is_instructor').value = (option === 'Instructor') ? '1' : '0';
             const buttons = document.querySelectorAll('.option-buttons button');
             buttons.forEach(btn => {
+                btn.classList.remove('selected-role');
                 btn.style.backgroundColor = '#fff';
                 btn.style.color = '#000';
             });
@@ -215,6 +221,7 @@
                 btn => btn.textContent === option
             );
             if (selectedButton) {
+                selectedButton.classList.add('selected-role');
                 selectedButton.style.backgroundColor = '#000';
                 selectedButton.style.color = '#fff';
             }
@@ -232,8 +239,6 @@
                     alert('Por favor ingresa tu nombre completo.');
                     return;
                 }
-                // Expresión regular: toma el primer "palabra" como nombre, el resto como apellido
-                // Si solo hay una palabra, apellido queda vacío
                 const nameParts = fullName.match(/^([^\s]+)\s*(.*)$/);
                 let firstName = '';
                 let lastName = '';
@@ -252,7 +257,7 @@
                     return;
                 }
                 document.getElementById('final_phone_number').value = phoneNumber;
-                document.getElementById('final_email').value = "<?php echo $this->input->get('email'); ?>"; // Asignar el correo desde la URL
+                document.getElementById('final_email').value = "<?php echo $this->input->get('email'); ?>";
             }
 
             document.getElementById(`step${currentStep}`).classList.remove('active');
@@ -264,6 +269,10 @@
             document.getElementById(`step${currentStep}`).classList.remove('active');
             currentStep--;
             document.getElementById(`step${currentStep}`).classList.add('active');
+            // Volver a marcar el botón seleccionado si regresa al paso 1
+            if (currentStep === 1 && selectedOption) {
+                selectOption(selectedOption);
+            }
         }
     </script>
 </body>

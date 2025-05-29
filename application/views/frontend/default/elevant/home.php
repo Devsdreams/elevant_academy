@@ -823,8 +823,8 @@
         <a href="#">Contacto</a>
       </div>
       <div class="nav-actions">
-        <button class="login">login</button>
-        <button class="get-started">Get Started</button>
+        <button class="login" onclick="window.location.href='<?php echo site_url('elevant/login'); ?>'">login</button>
+        <button class="get-started" onclick="window.location.href='<?php echo site_url('elevant/login'); ?>'">Get Started</button>
       </div>
     </nav>
   </header>
@@ -837,7 +837,7 @@
         <h1>Dream it. BUILD it.<br>Monetize it.</h1>
         <p>From digital products to marketing tools, Elevant has everything creators need to build the businesses of their dreams – and make a profit – all in one place.</p>
         <div class="hero-buttons">
-          <button class="hero-btn" style="background: var(--black); color: var(--white);">Get Started</button> <!-- negro -->
+          <button class="hero-btn" style="background: var(--black); color: var(--white);" onclick="window.location.href='<?php echo site_url('elevant/login'); ?>'">Get Started</button>
         </div>
       </div>
       <!-- <img class="hero-img-person" src="https://placehold.org/200x240?text=Creator+Photo" alt="Creator">
@@ -994,7 +994,7 @@
         <div style="font-size:1.16rem; color:#e6e6e6; margin-bottom:18px;">
           From digital products to marketing tools, Kajabi has everything creators need to build.
         </div>
-        <button style="background: var(--yellow); color: var(--black); border:none; border-radius:14px; font-weight:600; font-size:1.1rem; padding:12px 32px; margin-top:10px; cursor:pointer;">Get Started</button>
+        <button style="background: var(--yellow); color: var(--black); border:none; border-radius:14px; font-weight:600; font-size:1.1rem; padding:12px 32px; margin-top:10px; cursor:pointer;" onclick="window.location.href='<?php echo site_url('elevant/login'); ?>'">Get Started</button>
       </div>
     </div>
     <!-- FIN NUEVO -->
@@ -1046,7 +1046,7 @@
           <div class="mid-title" style="font-size:65px;">The top choice for creators of all sizes.</div>
           <div class="mid-desc" style="margin-bottom: 0;">From digital products to marketing tools, Kajabi has everything creators need to build.</div>
         </div>
-        <button class="get-started-btn" style="background: var(--black); color: var(--white); min-width: 180px; align-self: flex-start;">Get Started</button>
+        <button class="get-started-btn" style="background: var(--black); color: var(--white); min-width: 180px; align-self: flex-start;" onclick="window.location.href='<?php echo site_url('elevant/login'); ?>'">Get Started</button>
       </div>
       <!-- Contenido en dos columnas: izquierda (4) y derecha (8) -->
       <div style="display: flex; width: 100%; gap: 32px;">

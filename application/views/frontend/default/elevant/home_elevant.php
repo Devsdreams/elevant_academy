@@ -946,8 +946,8 @@
         <a href="#">Contacto</a>
       </div>
       <div class="nav-actions">
-        <button class="login">login</button>
-        <button class="get-started">Get Started</button>
+        <button class="login" onclick="window.location.href='<?php echo site_url('elevant/login'); ?>'">login</button>
+        <button class="get-started" onclick="window.location.href='<?php echo site_url('elevant/login'); ?>'">Get Started</button>
       </div>
     </nav>
   </header>
@@ -960,9 +960,7 @@
         <h1>Dream it. BUILD it.<br>Monetize it.</h1>
         <p>From digital products to marketing tools, Elevant has everything creators need to build the businesses of their dreams – and make a profit – all in one place.</p>
         <div class="hero-buttons">
-          <button class="hero-btn" style="background: var(--black); color: var(--white);">Get Started</button> <!-- negro -->
-        </div>
-      </div>
+          <button class="hero-btn" style="background: var(--black); color: var(--white);" onclick="window.location.href='<?php echo site_url('elevant/login'); ?>'">Get Started</button>
       <!-- <img class="hero-img-person" src="https://placehold.org/200x240?text=Creator+Photo" alt="Creator">
       <div class="hero-card">
         <div class="hero-card-title">Suscríbete por 600/mens</div>
@@ -981,7 +979,7 @@
           <div class="mid-title" style="font-size:65px;">The top choice for creators of all sizes.</div>
           <div class="mid-desc" style="margin-bottom: 0;">From digital products to marketing tools, Kajabi has everything creators need to build.</div>
         </div>
-        <button class="get-started-btn" style="background: var(--black); color: var(--white); min-width: 180px; align-self: flex-start;">Get Started</button>
+        <button class="get-started-btn" style="background: var(--black); color: var(--white); min-width: 180px; align-self: flex-start;" onclick="window.location.href='<?php echo site_url('elevant/login'); ?>'">Get Started</button>
       </div>
       <!-- Contenido en dos columnas: izquierda (4) y derecha (8) -->
       <div style="display: flex; width: 100%; gap: 32px;">
@@ -1104,7 +1102,7 @@
           From digital products to marketing tools, Kajabi<br>
           has everything creators need to build.
         </div>
-        <button class="top-choice-btn">Get Started</button>
+        <button class="top-choice-btn" onclick="window.location.href='<?php echo site_url('elevant/login'); ?>'">Get Started</button>
       </div>
     </div>
     <div class="top-choice-grid">
@@ -1181,7 +1179,7 @@
   <section class="courses-section">
     <div class="top-choice-header">
       <h2 style="font-size:65px; font-weight:bold; margin-bottom:8px; letter-spacing:-1px; color:var(--black);">Nuestro equipo de trabajo.</h2>
-      <button class="get-started-btn" style="background: var(--black); color: var(--white);">Get Started</button> <!-- negro -->
+      <button class="get-started-btn" style="background: var(--black); color: var(--white);" onclick="window.location.href='<?php echo site_url('elevant/login'); ?>'">Get Started</button> <!-- negro -->
     </div>
     <div class="courses-grid">
       <div class="course-card">

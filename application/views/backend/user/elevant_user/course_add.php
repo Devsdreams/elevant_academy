@@ -1,4 +1,4 @@
-<?php $active_page = 'course_add'; ?>
+<?php $active_page = 'courses'; ?>
 <?php include 'navigation.php'; ?>
 <?php include 'top_bar.php'; ?>
 

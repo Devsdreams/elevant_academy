@@ -695,25 +695,46 @@
 </script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const userType = localStorage.getItem('login_user_type');
-        const isNewElevant = localStorage.getItem('newElevant');
-        const loadingOverlay = document.getElementById('loading-overlay');
+        // Esperar a que todo el DOM y recursos estén listos
+        setTimeout(function() {
+            const multistep = localStorage.getItem('multistep');
+            const isElevantLogin = localStorage.getItem('newElevant');
+            const loadingOverlay = document.getElementById('loading-overlay');
 
-        if (userType === 'instructor' && isNewElevant === 'true') {
-            // Mostrar el overlay de carga
-            loadingOverlay.style.display = 'flex';
+            if (multistep === '1' || isElevantLogin === 'true') {
+                if (loadingOverlay) loadingOverlay.style.display = 'flex';
+                localStorage.removeItem('multistep');
+                // Consulta directa a la base de datos usando PHP embebido
+                <?php
+                $has_courses = false;
+                if ($this->session->userdata('user_id')) {
+                    $user_id = $this->session->userdata('user_id');
+                    $q = $this->db->where('user_id', $user_id)->get('course');
+                    if ($q->num_rows() > 0) $has_courses = true;
+                }
+                ?>
+                setTimeout(function() {
+                    <?php if ($has_courses): ?>
+                        window.location.replace('<?php echo site_url('user/elevant_user_home'); ?>');
+                    <?php else: ?>
+                        window.location.replace('<?php echo site_url('elevant/courses'); ?>');
+                    <?php endif; ?>
+                }, 800);
+                return;
+            }
 
-            // Borrar las claves de localStorage antes de redirigir
-            localStorage.removeItem('login_user_type');
-            localStorage.removeItem('newElevant');
-
-            // Redirigir a `user/elevant_user/courses`
-            setTimeout(() => {
-                window.location.replace('<?php echo site_url('user/elevant/courses'); ?>');
-            }, 500); // Esperar 500ms para mostrar el efecto de carga
-        } else {
-            // Asegurarse de que el overlay esté oculto para otros usuarios
-            loadingOverlay.style.display = 'none';
-        }
+            const userType = localStorage.getItem('login_user_type');
+            const isNewElevant = localStorage.getItem('newElevant');
+            if (userType === 'instructor' && isNewElevant === 'true') {
+                if (loadingOverlay) loadingOverlay.style.display = 'flex';
+                localStorage.removeItem('login_user_type');
+                localStorage.removeItem('newElevant');
+                setTimeout(function() {
+                    window.location.replace('<?php echo site_url('user/elevant/courses'); ?>');
+                }, 500);
+            } else {
+                if (loadingOverlay) loadingOverlay.style.display = 'none';
+            }
+        }, 50); // Pequeño delay para asegurar que el overlay existe
     });
 </script>

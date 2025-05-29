@@ -45,13 +45,12 @@ class Login extends CI_Controller
     {
         if ($this->crud_model->check_recaptcha() == false && get_frontend_settings('recaptcha_status') == true) {
             $this->session->set_flashdata('error_message', get_phrase('recaptcha_verification_failed'));
-            redirect(site_url('elevant/login'), 'refresh'); // Redirigir a elevant/login
+            redirect(site_url('elevant/login'), 'refresh');
         }
 
         $email = $this->input->post('email');
         $password = $this->input->post('password');
-        $localStorageRef = $this->input->post('localStorageRef'); // Obtener el estado de localStorage
-        $is_elevant_login = $this->input->post('is_elevant_login'); // Verificar si es login de elevant
+        $is_elevant_login = $this->input->post('is_elevant_login');
 
         $credential = array('email' => $email, 'password' => sha1($password), 'status' => 1);
 
@@ -61,32 +60,27 @@ class Login extends CI_Controller
         if ($query->num_rows() > 0) {
             $row = $query->row();
 
-            // Validar el tipo de usuario según el valor de localStorage
-            if ($localStorageRef == "instructor" && $row->is_instructor != 1) {
-                $this->session->set_flashdata('error_message', get_phrase('invalid_login_for_instructor'));
-                redirect(site_url('elevant/login'), 'refresh'); // Redirigir a elevant/login
-            } elseif ($localStorageRef != "instructor" && $row->is_instructor == 1) {
-                $this->session->set_flashdata('error_message', get_phrase('invalid_login_for_user'));
-                redirect(site_url('elevant/login'), 'refresh'); // Redirigir a elevant/login
-            }
-
-            // Guardar el tipo de usuario en la sesión
-            $this->session->set_userdata('login_user_type', $localStorageRef);
+            // Detectar el tipo de usuario automáticamente y guardar en sesión
+            $user_type = ($row->is_instructor == 1) ? 'instructor' : 'user';
+            $this->session->set_userdata('login_user_type', $user_type);
 
             // Track login and set session data
             $this->user_model->new_device_login_tracker($row->id);
             $this->user_model->set_login_userdata($row->id);
 
-            // Redirigir a la página de cursos de elevant si es login de elevant
-            if ($is_elevant_login) {
-                redirect(site_url('user/elevant_courses'), 'refresh'); // Redirigir a user/elevant_courses
+            // Redirigir SIEMPRE a elevant/courses si el login viene de elevant/login
+            if (
+                $is_elevant_login ||
+                $this->uri->segment(1) === 'elevant' && $this->uri->segment(2) === 'login'
+            ) {
+                redirect(site_url('elevant/courses'), 'refresh');
             }
 
-            // Redirigir a la confirmación de nuevo dispositivo
-            redirect(site_url('login/new_login_confirmation'), 'refresh');
+            // Redirigir a la confirmación de nuevo dispositivo SOLO si no es multi-step ni login elevant
+            redirect(site_url('elevant/courses'), 'refresh');
         } else {
             $this->session->set_flashdata('error_message', get_phrase('invalid_login_credentials'));
-            redirect(site_url('elevant/login'), 'refresh'); // Redirigir a elevant/login
+            redirect(site_url('elevant/login'), 'refresh');
         }
     }
 
@@ -278,6 +272,26 @@ class Login extends CI_Controller
         }
     }
 
+    public function ajax_login() {
+        $email = $this->input->post('email');
+        $password = $this->input->post('password');
+        $credential = array('email' => $email, 'password' => sha1($password), 'status' => 1);
+
+        $query = $this->db->get_where('users', $credential);
+
+        if ($query->num_rows() > 0) {
+            $row = $query->row();
+            $this->session->set_userdata('user_login', 1);
+            $this->session->set_userdata('user_id', $row->id);
+            $this->session->set_userdata('role_id', $row->role_id);
+            $this->session->set_userdata('is_instructor', $row->is_instructor);
+            $this->session->set_userdata('name', $row->first_name . ' ' . $row->last_name);
+            echo json_encode(['success' => true]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Credenciales inválidas']);
+        }
+    }
+
     public function register_user() {
         $data['email'] = $this->input->post('email');
         $data['first_name'] = $this->input->post('first_name');
@@ -286,8 +300,30 @@ class Login extends CI_Controller
         $data['role_id'] = 2; // Asegurar que el role_id sea 2 para todos los usuarios
         $data['date_added'] = time();
 
+        // Si viene del multi-step form, decidir is_instructor según el rol seleccionado
+        $loguear_instructor = false;
+        if ($this->input->post('from_multi_step')) {
+            $role = strtolower(trim($this->input->post('role')));
+            if ($role === 'instructor') {
+                $data['is_instructor'] = 1;
+                $loguear_instructor = true;
+            } else {
+                $data['is_instructor'] = 0;
+            }
+        }
+
         $this->db->where('email', $data['email']);
         $this->db->update('users', $data);
+
+        // Si es registro multi-step y el rol es instructor, loguear automáticamente usando validate_login y redirigir a elevant/courses
+        if ($this->input->post('from_multi_step') && isset($data['is_instructor']) && $data['is_instructor'] == 1) {
+            // Simula un POST para validate_login
+            $_POST['email'] = $this->input->post('email');
+            $_POST['password'] = $this->input->post('password');
+            $_POST['is_elevant_register'] = 1; // <-- Nuevo flag para redirigir tras registro multi-step
+            $this->validate_login();
+            return;
+        }
 
         $this->session->set_flashdata('flash_message', 'Registro completado exitosamente.');
         redirect(site_url('elevant/login'));
@@ -398,6 +434,17 @@ class Login extends CI_Controller
             echo true;
         } else {
             echo false;
+        }
+    }
+
+    public function detect_role() {
+        $email = $this->input->post('email');
+        $user = $this->db->get_where('users', ['email' => $email])->row_array();
+        if ($user) {
+            $role = (isset($user['is_instructor']) && $user['is_instructor']) ? 'instructor' : 'user';
+            echo json_encode(['status' => 'ok', 'role' => $role]);
+        } else {
+            echo json_encode(['status' => 'not_found']);
         }
     }
 

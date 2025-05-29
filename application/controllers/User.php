@@ -1828,4 +1828,14 @@ class User extends CI_Controller
         $page_data['page_title'] = 'Agregar sección';
         $this->load->view('backend/user/elevant_user/section_add', $page_data);
     }
+
+    public function elevant_user_home()
+    {
+        if (!$this->session->userdata('user_login')) {
+            redirect(site_url('elevant/login'), 'refresh');
+        }
+        $page_data['page_name'] = 'elevant_user_home';
+        $page_data['page_title'] = 'Inicio Elevant';
+        $this->load->view('backend/user/elevant_user/home', $page_data);
+    }
 }

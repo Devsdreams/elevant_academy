@@ -120,5 +120,5 @@ $route['user/elevant/course_config/(:num)'] = 'user/elevant_course_config/$1';
 $route['user/elevant/section_add/(:num)'] = 'user/elevant_section_add/$1';
 $route['elevant/home'] = 'home/elevant_home';
 $route['elevant/home_elevant'] = 'home/elevant_home_elevant';
-$route['elevant/home_courses'] = 'home/home_courses';
+$route['elevant/home_courses'] = 'home/elevant_home_courses';
 $route['translate_uri_dashes'] = FALSE;
