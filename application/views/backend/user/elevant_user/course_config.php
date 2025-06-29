@@ -282,6 +282,180 @@
       background: #000;
       color: #fff;
     }
+    .section-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 auto;
+      text-align: center;
+      max-width: 600px;
+    }
+    .section-list li {
+      font-size: 16px;
+      padding: 12px 15px;
+      border-bottom: 1px solid #ededed;
+      background: #f9f9f9;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      transition: background 0.2s, box-shadow 0.2s;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .section-list li:hover {
+      background: #e0e0e0;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+    /* Estilos para el contenido de cada pestaña */
+    .tab-content {
+      display: none;
+      padding: 15px;
+      background: #f9f9f9;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    /* Estilos para lecciones agrupadas por sección */
+    .section-lessons {
+      margin-bottom: 24px;
+      border-left: 3px solid #ededed;
+      padding-left: 15px;
+    }
+    
+    .section-lessons h3 {
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+      color: #555;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .lesson-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      background: #fff;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .lesson-item .lesson-type {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      margin-right: 10px;
+      background: #e0e0e0;
+    }
+    
+    .lesson-item .lesson-type.video {
+      background: #e3f2fd;
+      color: #1976d2;
+    }
+    
+    .lesson-item .lesson-type.document {
+      background: #e8f5e9;
+      color: #0b875b;
+    }
+    
+    .lesson-item .lesson-type.text {
+      background: #fff3e0;
+      color: #e65100;
+    }
+    
+    .lesson-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .delete-btn {
+      background: #bdbdbd;
+      color: #222;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-size: 14px;
+      cursor: pointer;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+      transition: background 0.2s, color 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    
+    .delete-btn:hover {
+      background: #222;
+      color: #fff;
+    }
+    
+    .add-lesson-btn {
+      display: inline-block;
+      background: #bdbdbd;
+      color: #222;
+      padding: 8px 25px;
+      border-radius: 20px;
+      margin-top: 10px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+      transition: background 0.2s, color 0.2s;
+    }
+    
+    .add-lesson-btn:hover {
+      background: #222;
+      color: #fff;
+    }
+    
+    /* Estilos para quiz/examen */
+    .quiz-list, .exam-list {
+      list-style: none;
+      padding: 0;
+    }
+    
+    .quiz-item, .exam-item {
+      background: #fff;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 10px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    /* Estilos para configuración */
+    .config-form {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    
+    .config-form label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+    
+    .config-form input, .config-form select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+    }
+    
+    .config-form button {
+      background: #00c48c;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
     @media (max-width: 1100px) {
       .container {
         flex-direction: column;
@@ -329,14 +503,211 @@
         <div class="card">
           <h5>Detalle del curso</h5>
           <div class="section-tabs">
-            <button class="tab active" type="button">Secciones</button>
-            <button class="tab" type="button">Lecciones</button>
-            <button class="tab" type="button">Archivos</button>
-            <button class="tab" type="button">Quiz</button>
-            <button class="tab" type="button">Examen</button>
-            <button class="tab" type="button">Configuración</button>
+            <button class="tab active" type="button" data-tab="sections">Secciones</button>
+            <button class="tab" type="button" data-tab="lessons">Lecciones</button>
+            <button class="tab" type="button" data-tab="files">Archivos</button>
+            <button class="tab" type="button" data-tab="quiz">Quiz</button>
+            <button class="tab" type="button" data-tab="exam">Examen</button>
+            <button class="tab" type="button" data-tab="config">Configuración</button>
           </div>
-          <button class="agregar-seccion-btn" type="button" onclick="window.location.href='<?php echo site_url('user/elevant/section_add/' . $course['id']); ?>'">Agregar Secciones</button>
+          
+          <?php
+          // Obtener las secciones del curso
+          $sections = $this->crud_model->get_elevant_section('course', $course['id'])->result_array();
+          
+          // Obtener todas las lecciones del curso
+          $course_lessons = $this->crud_model->get_lessons('course', $course['id'])->result_array();
+          
+          // Agrupar lecciones por sección
+          $lessons_by_section = [];
+          foreach ($course_lessons as $lesson) {
+            $section_id = $lesson['section_id'];
+            if (!isset($lessons_by_section[$section_id])) {
+              $lessons_by_section[$section_id] = [];
+            }
+            $lessons_by_section[$section_id][] = $lesson;
+          }
+          ?>
+          
+          <!-- Tab Content: Secciones -->
+          <div id="sections-content" class="tab-content active">
+            <ul class="section-list">
+              <?php foreach ($sections as $section): ?>
+                <li>
+                  <?php echo htmlspecialchars($section['title']); ?>
+                  <a href="javascript:void(0);" 
+                     class="delete-btn" 
+                     onclick="deleteItem('section', <?php echo $section['id']; ?>, <?php echo $course['id']; ?>)">
+                    Eliminar
+                  </a>
+                </li>
+              <?php endforeach; ?>
+              
+              <?php if (count($sections) == 0): ?>
+                <div style="text-align: center; padding: 20px;">
+                  <p>No hay secciones creadas para este curso.</p>
+                </div>
+              <?php endif; ?>
+            </ul>
+            
+            <button class="agregar-seccion-btn" type="button" onclick="window.location.href='<?php echo site_url('user/elevant/section_add/' . $course['id']); ?>'">Agregar Secciones</button>
+          </div>
+          
+          <!-- Tab Content: Lecciones -->
+          <div id="lessons-content" class="tab-content">
+            <?php if (count($sections) == 0): ?>
+              <div style="text-align: center; padding: 20px;">
+                <p>Debes crear al menos una sección antes de añadir lecciones.</p>
+                <button class="agregar-seccion-btn" type="button" onclick="window.location.href='<?php echo site_url('user/elevant/section_add/' . $course['id']); ?>'">Agregar Secciones</button>
+              </div>
+            <?php else: ?>
+              <?php foreach ($sections as $section): ?>
+                <div class="section-lessons">
+                  <h3>
+                    <?php echo htmlspecialchars($section['title']); ?>
+                    <a href="javascript:void(0);" 
+                       class="delete-btn" 
+                       onclick="deleteItem('section', <?php echo $section['id']; ?>, <?php echo $course['id']; ?>)">
+                      Eliminar
+                    </a>
+                  </h3>
+                  
+                  <?php if (isset($lessons_by_section[$section['id']])): ?>
+                    <?php foreach ($lessons_by_section[$section['id']] as $lesson): ?>
+                      <div class="lesson-item">
+                        <div>
+                          <span class="lesson-type <?php echo $lesson['lesson_type']; ?>">
+                            <?php 
+                              if ($lesson['lesson_type'] == 'video') echo 'Video';
+                              elseif ($lesson['lesson_type'] == 'document') echo 'Documento';
+                              else echo 'Texto';
+                            ?>
+                          </span>
+                          <?php echo htmlspecialchars($lesson['title']); ?>
+                        </div>
+                        <div class="lesson-actions">
+                          <a href="javascript:void(0);" 
+                             class="delete-btn" 
+                             onclick="deleteItem('lesson', <?php echo $lesson['id']; ?>, <?php echo $course['id']; ?>)">
+                            Eliminar
+                          </a>
+                        </div>
+                      </div>
+                    <?php endforeach; ?>
+                  <?php else: ?>
+                    <p>No hay lecciones en esta sección.</p>
+                  <?php endif; ?>
+                  
+                  <a href="<?php echo site_url('user/elevant/section_add/' . $course['id']); ?>" class="add-lesson-btn">Añadir lección</a>
+                </div>
+              <?php endforeach; ?>
+            <?php endif; ?>
+          </div>
+          
+          <!-- Tab Content: Archivos -->
+          <div id="files-content" class="tab-content">
+            <div class="file-list">
+              <?php 
+              // Mostrar archivos relacionados con el curso (documentos, recursos, etc.)
+              $course_files = []; // Aquí cargarías los archivos desde tu base de datos
+              
+              if (count($course_files) == 0): 
+              ?>
+                <div style="text-align: center; padding: 20px; width: 100%;">
+                  <p>No hay archivos asociados a este curso.</p>
+                </div>
+              <?php else: ?>
+                <?php foreach ($course_files as $file): ?>
+                  <div class="file-item">
+                    <div class="file-icon"><i class="fa fa-file"></i></div>
+                    <div class="file-name"><?php echo $file['name']; ?></div>
+                    <div class="file-size"><?php echo $file['size']; ?></div>
+                  </div>
+                <?php endforeach; ?>
+              <?php endif; ?>
+            </div>
+            
+            <button class="agregar-seccion-btn" type="button" style="margin-top: 20px;">Añadir archivos</button>
+          </div>
+          
+          <!-- Tab Content: Quiz -->
+          <div id="quiz-content" class="tab-content">
+            <ul class="quiz-list">
+              <?php 
+              // Obtener quizzes del curso
+              $quizzes = []; // Aquí cargarías los quizzes desde tu base de datos
+              
+              if (count($quizzes) == 0): 
+              ?>
+                <div style="text-align: center; padding: 20px;">
+                  <p>No hay quizzes creados para este curso.</p>
+                </div>
+              <?php else: ?>
+                <?php foreach ($quizzes as $quiz): ?>
+                  <li class="quiz-item">
+                    <div class="quiz-title"><?php echo $quiz['title']; ?></div>
+                    <div class="quiz-details">Preguntas: <?php echo $quiz['questions_count']; ?> | Duración: <?php echo $quiz['duration']; ?></div>
+                  </li>
+                <?php endforeach; ?>
+              <?php endif; ?>
+            </ul>
+            
+            <button class="agregar-seccion-btn" type="button" style="margin-top: 20px;">Crear quiz</button>
+          </div>
+          
+          <!-- Tab Content: Examen -->
+          <div id="exam-content" class="tab-content">
+            <ul class="exam-list">
+              <?php 
+              // Obtener exámenes del curso
+              $exams = []; // Aquí cargarías los exámenes desde tu base de datos
+              
+              if (count($exams) == 0): 
+              ?>
+                <div style="text-align: center; padding: 20px;">
+                  <p>No hay exámenes creados para este curso.</p>
+                </div>
+              <?php else: ?>
+                <?php foreach ($exams as $exam): ?>
+                  <li class="exam-item">
+                    <div class="exam-title"><?php echo $exam['title']; ?></div>
+                    <div class="exam-details">Preguntas: <?php echo $exam['questions_count']; ?> | Duración: <?php echo $exam['duration']; ?></div>
+                  </li>
+                <?php endforeach; ?>
+              <?php endif; ?>
+            </ul>
+            
+            <button class="agregar-seccion-btn" type="button" style="margin-top: 20px;">Crear examen</button>
+          </div>
+          
+          <!-- Tab Content: Configuración -->
+          <div id="config-content" class="tab-content">
+            <div class="config-form">
+              <label>Acceso al curso</label>
+              <select name="is_free_course">
+                <option value="0" <?php if (isset($course['is_free_course']) && $course['is_free_course'] == 0) echo 'selected'; ?>>De pago</option>
+                <option value="1" <?php if (isset($course['is_free_course']) && $course['is_free_course'] == 1) echo 'selected'; ?>>Gratuito</option>
+              </select>
+              
+              <label>Precio (si el curso es de pago)</label>
+              <input type="number" name="price" value="<?php echo isset($course['price']) ? $course['price'] : ''; ?>" step="0.01" min="0">
+              
+              <label>Estado del curso</label>
+              <select name="status">
+                <option value="draft" <?php if (isset($course['status']) && $course['status'] == 'draft') echo 'selected'; ?>>Borrador</option>
+                <option value="pending" <?php if (isset($course['status']) && $course['status'] == 'pending') echo 'selected'; ?>>Pendiente</option>
+                <option value="active" <?php if (isset($course['status']) && $course['status'] == 'active') echo 'selected'; ?>>Activo</option>
+              </select>
+              
+              <label>Visibilidad</label>
+              <select name="visibility">
+                <option value="public" <?php if (isset($course['visibility']) && $course['visibility'] == 'public') echo 'selected'; ?>>Público</option>
+                <option value="private" <?php if (isset($course['visibility']) && $course['visibility'] == 'private') echo 'selected'; ?>>Privado</option>
+              </select>
+              
+              <button type="submit" name="save_config">Guardar configuración</button>
+            </div>
+          </div>
         </div>
 
         <div class="card">
@@ -460,5 +831,99 @@
       </form>
     </div>
   </div>
+  
+  <script>
+    // Funcionalidad para las pestañas
+    document.addEventListener('DOMContentLoaded', function() {
+      const tabs = document.querySelectorAll('.section-tabs .tab');
+      const tabContents = document.querySelectorAll('.tab-content');
+      
+      tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+          // Remover clase activa de todas las pestañas
+          tabs.forEach(t => t.classList.remove('active'));
+          
+          // Agregar clase activa a la pestaña clickeada
+          tab.classList.add('active');
+          
+          // Ocultar todos los contenidos
+          tabContents.forEach(content => {
+            content.classList.remove('active');
+          });
+          
+          // Mostrar el contenido correspondiente
+          const tabId = tab.getAttribute('data-tab');
+          document.getElementById(tabId + '-content').classList.add('active');
+        });
+      });
+      
+      // Funcionalidad para eliminar elementos mediante AJAX
+      window.deleteItem = function(itemType, itemId, courseId) {
+        if (confirm('¿Estás seguro de que deseas eliminar este elemento?')) {
+          // Mostrar indicador de carga
+          const loadingOverlay = document.createElement('div');
+          loadingOverlay.style.position = 'fixed';
+          loadingOverlay.style.top = '0';
+          loadingOverlay.style.left = '0';
+          loadingOverlay.style.width = '100%';
+          loadingOverlay.style.height = '100%';
+          loadingOverlay.style.background = 'rgba(255, 255, 255, 0.7)';
+          loadingOverlay.style.display = 'flex';
+          loadingOverlay.style.justifyContent = 'center';
+          loadingOverlay.style.alignItems = 'center';
+          loadingOverlay.style.zIndex = '9999';
+          loadingOverlay.innerHTML = '<div style="background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">Eliminando...</div>';
+          document.body.appendChild(loadingOverlay);
+          
+          // Realizar petición AJAX
+          const xhr = new XMLHttpRequest();
+          xhr.open('POST', '<?php echo site_url(); ?>/user/elevant_' + itemType + '/' + courseId + '/delete/' + itemId, true);
+          xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+          xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+          
+          xhr.onload = function() {
+            if (xhr.status === 200) {
+              // Eliminar overlay de carga
+              document.body.removeChild(loadingOverlay);
+              
+              // Mostrar mensaje de éxito
+              const successMessage = document.createElement('div');
+              successMessage.style.position = 'fixed';
+              successMessage.style.top = '20px';
+              successMessage.style.left = '50%';
+              successMessage.style.transform = 'translateX(-50%)';
+              successMessage.style.background = '#4CAF50';
+              successMessage.style.color = 'white';
+              successMessage.style.padding = '15px 30px';
+              successMessage.style.borderRadius = '10px';
+              successMessage.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
+              successMessage.style.zIndex = '10000';
+              successMessage.textContent = 'Elemento eliminado correctamente';
+              document.body.appendChild(successMessage);
+              
+              // Eliminar mensaje después de 3 segundos
+              setTimeout(function() {
+                document.body.removeChild(successMessage);
+              }, 3000);
+              
+              // Recargar la página para reflejar los cambios
+              location.reload();
+            } else {
+              // Manejar error
+              alert('Ha ocurrido un error al eliminar. Por favor, inténtalo de nuevo.');
+              document.body.removeChild(loadingOverlay);
+            }
+          };
+          
+          xhr.onerror = function() {
+            alert('Ha ocurrido un error de conexión. Por favor, verifica tu conexión a internet.');
+            document.body.removeChild(loadingOverlay);
+          };
+          
+          xhr.send();
+        }
+      }
+    });
+  </script>
 </body>
 </html>

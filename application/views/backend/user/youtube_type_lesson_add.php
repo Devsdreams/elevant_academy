@@ -1,5 +1,7 @@
 <input type="hidden" name="lesson_type" value="video-url">
 <input type="hidden" name="lesson_provider" value="youtube">
+<input type="hidden" name="video_type" value="youtube">
+<!-- El campo video_type asegura que se guarde correctamente el tipo en la base de datos -->
 
 <div class="form-group">
     <label><?php echo get_phrase('video_url'); ?>( <?php echo get_phrase('for_web_application'); ?> )</label>

@@ -443,7 +443,6 @@ class User extends CI_Controller
         $page_data['page_title'] = get_phrase('lessons');
         $this->load->view('backend/index', $page_data);
     }
-
     // Manage Quizes
     public function quizes($course_id = "", $action = "", $quiz_id = "")
     {
@@ -1601,6 +1600,12 @@ class User extends CI_Controller
             if ($image_id === 'image_1') {
                 // Redimensionar la imagen 1 y guardarla en la carpeta optimizada
                 $optimized_file_path = $optimized_path . $file_name;
+
+
+
+
+
+
                 $this->resize_image($file_path, $optimized_file_path, 167, 28);
                 echo base_url($optimized_file_path); // Retornar la URL de la imagen optimizada
             } else {
@@ -1829,6 +1834,58 @@ class User extends CI_Controller
         $this->load->view('backend/user/elevant_user/section_add', $page_data);
     }
 
+    public function elevant_section($course_id = "", $action = "", $section_id = "") {
+        if ($this->session->userdata('user_login') != true) {
+            redirect(site_url('login'), 'refresh');
+        }
+
+        
+        $this->load->model('Crud_model');
+
+        if ($action == 'add') {
+            $this->Crud_model->add_elevant_section($course_id);
+            $this->session->set_flashdata('flash_message', 'Sección agregada exitosamente.');
+        } elseif ($action == 'edit') {
+            $this->Crud_model->edit_elevant_section($section_id);
+            $this->session->set_flashdata('flash_message', 'Sección actualizada exitosamente.');
+        } elseif ($action == 'delete') {
+            $this->Crud_model->delete_elevant_section($course_id, $section_id);
+            $this->session->set_flashdata('flash_message', 'Sección eliminada exitosamente.');
+        }
+
+        redirect(site_url('user/elevant/section_add/' . $course_id));
+    }
+
+    public function elevant_lessons($course_id = "", $param1 = "", $param2 = "")
+    {
+        if ($this->session->userdata('user_login') != true) {
+            redirect(site_url('login'), 'refresh');
+        }
+        if ($param1 == 'add') {
+            $this->is_the_course_belongs_to_current_instructor($course_id);
+            $this->crud_model->add_lesson();
+            $this->session->set_flashdata('flash_message', get_phrase('lesson_has_been_added_successfully'));
+            redirect('user/course_form/course_edit/' . $course_id);
+        } elseif ($param1 == 'edit') {
+            $this->is_the_course_belongs_to_current_instructor($course_id, $param2, 'lesson');
+            $this->crud_model->edit_lesson($param2);
+            $this->session->set_flashdata('flash_message', get_phrase('lesson_has_been_updated_successfully'));
+            redirect('user/course_form/course_edit/' . $course_id);
+        } elseif ($param1 == 'delete') {
+            $this->is_the_course_belongs_to_current_instructor($course_id, $param2, 'lesson');
+            $this->crud_model->delete_lesson($param2);
+            $this->session->set_flashdata('flash_message', get_phrase('lesson_has_been_deleted_successfully'));
+            redirect('user/course_form/course_edit/' . $course_id);
+        } elseif ($param1 == 'filter') {
+            redirect('user/elevant_lessons/' . $this->input->post('course_id'));
+        }
+        $page_data['page_name'] = 'elevant_lessons';
+        $page_data['lessons'] = $this->crud_model->get_lessons('course', $course_id);
+        $page_data['course_id'] = $course_id;
+        $page_data['page_title'] = get_phrase('elevant_lessons');
+        $this->load->view('backend/index', $page_data);
+    }
+
     public function elevant_user_home()
     {
         if (!$this->session->userdata('user_login')) {
@@ -1837,5 +1894,168 @@ class User extends CI_Controller
         $page_data['page_name'] = 'elevant_user_home';
         $page_data['page_title'] = 'Inicio Elevant';
         $this->load->view('backend/user/elevant_user/home', $page_data);
+    }
+
+    public function elevant_lesson($course_id = "", $action = "", $lesson_id = "") {
+        if ($this->session->userdata('user_login') != true) {
+            redirect(site_url('login'), 'refresh');
+        }
+
+        if ($action == 'add') {
+            // Validar que el curso pertenezca al usuario
+            $course = $this->crud_model->get_course_by_id($course_id)->row_array();
+            if (!$course || $course['user_id'] != $this->session->userdata('user_id')) {
+                redirect(site_url('user/elevant/cursos'), 'refresh');
+            }
+
+            // Preparar los datos según el tipo de lección
+            $_POST['course_id'] = $course_id;
+            
+            // Configurar lesson_type según formato requerido (tipo-attachment_type)
+            $lesson_type = $this->input->post('lesson_type');
+            
+            if ($lesson_type == 'video') {
+                $_POST['lesson_type'] = 'video-file';
+                $_POST['lesson_provider'] = 'system';
+                
+                // Renombrar el campo video_file a system_video_file para compatibilidad
+                if (isset($_FILES['video_file']) && !empty($_FILES['video_file']['name'])) {
+                    $_FILES['system_video_file'] = $_FILES['video_file'];
+                    unset($_FILES['video_file']);
+                }
+                
+                // Formatear duración
+                if ($this->input->post('duration')) {
+                    $_POST['system_video_file_duration'] = $this->input->post('duration');
+                } else {
+                    $_POST['system_video_file_duration'] = "00:00:00";
+                }
+                
+                // Si hay archivo de subtítulos, guardarlo por separado
+                if (isset($_FILES['caption_file']) && !empty($_FILES['caption_file']['name'])) {
+                    $caption_config['upload_path'] = './uploads/lesson_files/captions/';
+                    $caption_config['allowed_types'] = 'vtt|srt';
+                    $caption_config['max_size'] = 2048;
+                    $caption_config['file_name'] = 'caption_' . time() . '_' . rand(1000, 9999);
+                    
+                    if (!file_exists($caption_config['upload_path'])) {
+                        mkdir($caption_config['upload_path'], 0777, true);
+                    }
+                    
+                    $this->load->library('upload', $caption_config);
+                    if ($this->upload->do_upload('caption_file')) {
+                        $caption_data = $this->upload->data();
+                        $_POST['caption'] = $caption_data['file_name'];
+                    }
+                }
+            } 
+            elseif ($lesson_type == 'document') {
+                $_POST['lesson_type'] = 'other-file';
+                
+                // Renombrar el campo attachment para compatibilidad
+                if (isset($_FILES['attachment']) && !empty($_FILES['attachment']['name'])) {
+                    // Ya está correctamente nombrado para el método add_elevant_lesson
+                }
+            }
+            elseif ($lesson_type == 'text') {
+                $_POST['lesson_type'] = 'text-description';
+                $_POST['text_description'] = $this->input->post('attachment');
+            }
+            
+            // Marcar como lección gratuita
+            if ($this->input->post('is_free')) {
+                $_POST['free_lesson'] = 1;
+            } else {
+                $_POST['free_lesson'] = 0;
+            }
+            
+            // Usar el método del modelo para agregar la lección
+            $this->crud_model->add_elevant_lesson();
+            
+            $this->session->set_flashdata('flash_message', 'Lección agregada exitosamente.');
+            redirect(site_url('user/elevant/section_add/' . $course_id), 'refresh');
+
+        } elseif ($action == 'edit') {
+            // Validar que la lección pertenezca al curso del usuario
+            $lesson = $this->db->get_where('lesson', ['id' => $lesson_id])->row_array();
+            if (!$lesson || $lesson['course_id'] != $course_id) {
+                $this->session->set_flashdata('error_message', 'La lección no pertenece a este curso');
+                redirect(site_url('user/elevant/section_add/' . $course_id));
+            }
+            
+            // Preparar los datos según el tipo de lección
+            $_POST['course_id'] = $course_id;
+            
+            // Configurar lesson_type según formato requerido (tipo-attachment_type)
+            $lesson_type = $this->input->post('lesson_type');
+            
+            if ($lesson_type == 'video') {
+                $_POST['lesson_type'] = 'video-file';
+                $_POST['lesson_provider'] = 'system';
+                
+                // Renombrar el campo video_file a system_video_file para compatibilidad
+                if (isset($_FILES['video_file']) && !empty($_FILES['video_file']['name'])) {
+                    $_FILES['system_video_file'] = $_FILES['video_file'];
+                    unset($_FILES['video_file']);
+                }
+                
+                // Formatear duración
+                if ($this->input->post('duration')) {
+                    $_POST['system_video_file_duration'] = $this->input->post('duration');
+                } else {
+                    $_POST['system_video_file_duration'] = "00:00:00";
+                }
+            } 
+            elseif ($lesson_type == 'document') {
+                $_POST['lesson_type'] = 'other-file';
+            }
+            elseif ($lesson_type == 'text') {
+                $_POST['lesson_type'] = 'text-description';
+                $_POST['text_description'] = $this->input->post('attachment');
+            }
+            
+            // Marcar como lección gratuita
+            if ($this->input->post('is_free')) {
+                $_POST['free_lesson'] = 1;
+            } else {
+                $_POST['free_lesson'] = 0;
+            }
+            
+            // Usar el método del modelo para editar la lección
+            $this->crud_model->edit_elevant_lesson($lesson_id);
+            
+            $this->session->set_flashdata('flash_message', 'Lección actualizada exitosamente.');
+            redirect(site_url('user/elevant/section_add/' . $course_id), 'refresh');
+            
+        } elseif ($action == 'delete') {
+            // Validar que la lección pertenezca al curso del usuario
+            $lesson = $this->db->get_where('lesson', ['id' => $lesson_id])->row_array();
+            if (!$lesson || $lesson['course_id'] != $course_id) {
+                $this->session->set_flashdata('error_message', 'La lección no pertenece a este curso');
+                redirect(site_url('user/elevant/section_add/' . $course_id));
+            }
+            
+            // Eliminar archivos asociados antes de eliminar la lección
+            if ($lesson['video_url']) {
+                $video_file = explode('/', $lesson['video_url']);
+                $video_file_path = 'uploads/lesson_files/videos/' . end($video_file);
+                if (file_exists($video_file_path)) {
+                    unlink($video_file_path);
+                }
+            }
+            
+            if ($lesson['attachment'] && $lesson['lesson_type'] != 'text') {
+                $attachment_path = 'uploads/lesson_files/' . $lesson['attachment'];
+                if (file_exists($attachment_path)) {
+                    unlink($attachment_path);
+                }
+            }
+            
+            // Usar el método del modelo para eliminar la lección
+            $this->crud_model->delete_elevant_lesson($lesson_id);
+            
+            $this->session->set_flashdata('flash_message', 'Lección eliminada exitosamente.');
+            redirect(site_url('user/elevant/section_add/' . $course_id));
+        }
     }
 }

@@ -811,16 +811,16 @@
   <!-- Header -->
   <header>
     <nav class="nav">
-      <a href="#" class="logo">
+      <a href="<?php echo base_url('elevant/home'); ?>" class="logo">
         <img src="<?php echo base_url('uploads/elevant/elevant.png'); ?>" alt="Elevant Logo">
       </a>
       <div class="nav-links">
-        <a href="#" class="inicio active">Inicio</a>
-        <a href="<?php echo site_url('elevant/home_elevant'); ?>">Elevant</a>
-        <a href="#">Cursos</a>
-        <a href="#">Afiliados</a>
-        <a href="#">Instructor</a>
-        <a href="#">Contacto</a>
+        <a href="<?php echo base_url('elevant/home'); ?>" class="inicio active" style="color: var(--yellow);">Inicio</a>
+        <a href="<?php echo base_url('elevant/home_elevant'); ?>">Elevant</a>
+        <a href="<?php echo base_url('elevant/home_courses'); ?>">Cursos</a>
+        <a href="<?php echo base_url('elevant/affiliates'); ?>">Afiliados</a>
+        <a href="<?php echo base_url('elevant/instructor'); ?>">Instructor</a>
+        <a href="<?php echo base_url('elevant/contact'); ?>">Contacto</a>
       </div>
       <div class="nav-actions">
         <button class="login" onclick="window.location.href='<?php echo site_url('elevant/login'); ?>'">login</button>
@@ -1076,45 +1076,45 @@
   <!-- NEWSLETTER & FOOTER -->
   <footer class="newsletter-section">
     <div class="newsletter-content">
-      <div class="newsletter-title">NewsLetter</div>
-      <div class="newsletter-desc">Regístrate con nosotros y te enviaremos los boletines al día sobre que necesitas</div>
-      <form class="newsletter-form" autocomplete="off" onsubmit="return false;">
-        <input type="text" placeholder="Ingresa tu correo o número celular" />
-        <button class="get-started-btn" style="background: var(--yellow); color: var(--black);">Get Started</button>
-      </form>
+        <div class="newsletter-title">NewsLetter</div>
+        <div class="newsletter-desc">Regístrate con nosotros y te enviaremos los boletines al día sobre que necesitas</div>
+        <form class="newsletter-form" autocomplete="off" onsubmit="return false;">
+            <input type="text" placeholder="Ingresa tu correo o número celular" />
+            <button class="get-started-btn" style="background: var(--yellow); color: var(--black);">Get Started</button>
+        </form>
     </div>
     <div class="footer-main">
-      <div class="footer-logo">
-        <span>ELEVANT</span>
-        <div class="footer-desc" style="margin-top:8px;">Study any topic, anytime, explore thousands of courses for the lowest price ever!</div>
-      </div>
-      <div class="footer-block">
-        <h4>Top Category</h4>
-        <ul>
-          <li>Farmacia</li>
-          <li>Multimedia</li>
-          <li>Podcast</li>
-        </ul>
-      </div>
-      <div class="footer-block">
-        <h4>Use Link</h4>
-        <ul>
-          <li>Courses</li>
-          <li>Instructor</li>
-          <li>Afiliado</li>
-        </ul>
-      </div>
-      <div class="footer-block">
-        <h4>Help</h4>
-        <ul>
-          <li>About Us</li>
-          <li>Contact</li>
-          <li>Term and condition</li>
-        </ul>
-      </div>
+        <div class="footer-logo">
+            <span>ELEVANT</span>
+            <div class="footer-desc" style="margin-top:8px;">Study any topic, anytime, explore thousands of courses for the lowest price ever!</div>
+        </div>
+        <div class="footer-block">
+            <h4>Top Category</h4>
+            <ul>
+                <li>Farmacia</li>
+                <li>Multimedia</li>
+                <li>Podcast</li>
+            </ul>
+        </div>
+        <div class="footer-block">
+            <h4>Use Link</h4>
+            <ul>
+                <li>Courses</li>
+                <li>Instructor</li>
+                <li>Afiliado</li>
+            </ul>
+        </div>
+        <div class="footer-block">
+            <h4>Help</h4>
+            <ul>
+                <li>About Us</li>
+                <li>Contact</li>
+                <li>Term and condition</li>
+            </ul>
+        </div>
     </div>
     <div class="footer-bottom">
-      © 2024 Elevant Academy. todos los derechos reservados
+        © 2024 Elevant Academy. todos los derechos reservados
     </div>
   </footer>
 </body>

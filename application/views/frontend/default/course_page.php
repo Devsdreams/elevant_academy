@@ -700,55 +700,154 @@ $instructor_details = $this->user_model->get_all_user($course_details['user_id']
         <div class="modal-body">
           <div class="course-preview-video-wrap">
             <div class="embed-responsive embed-responsive-16by9">
-              <?php if (strtolower(strtolower($provider)) == 'youtube') : ?>
-                <!------------- PLYR.IO ------------>
-                <link rel="stylesheet" href="<?php echo base_url(); ?>assets/global/plyr/plyr.css">
+              <?php
+              // Sistema de reproducción de video personalizado
+              $video_url = $course_details['video_url'];
+              $video_type = '';
+              $video_id = '';
 
-                <div class="plyr__video-embed" id="player">
-                  <iframe height="500" src="<?php echo $course_details['video_url']; ?>?origin=https://plyr.io&amp;iv_load_policy=3&amp;modestbranding=1&amp;playsinline=1&amp;showinfo=0&amp;rel=0&amp;enablejsapi=1" allowfullscreen allowtransparency allow="autoplay"></iframe>
+              // Detectar si es YouTube
+              if (preg_match('#youtu\.be/([A-Za-z0-9_-]+)#', $video_url, $matches)) {
+                  $video_type = 'youtube';
+                  $video_id = $matches[1];
+              } elseif (preg_match('#youtube\.com.*[?&]v=([A-Za-z0-9_-]+)#', $video_url, $matches)) {
+                  $video_type = 'youtube';
+                  $video_id = $matches[1];
+              } elseif (preg_match('#vimeo\.com/([0-9]+)#', $video_url, $matches)) {
+                  $video_type = 'vimeo';
+                  $video_id = $matches[1];
+              } elseif (preg_match('/\.(mp4|webm)$/i', $video_url)) {
+                  $video_type = 'html5';
+              }
+
+              // Limpiar parámetros extra en el ID
+              if ($video_id && strpos($video_id, '?') !== false) {
+                  $video_id = explode('?', $video_id)[0];
+              }
+              ?>
+
+              <?php if ($video_type === 'youtube' && $video_id): ?>
+                <!-- Reproductor personalizado para YouTube SIN branding de YouTube -->
+                <div id="custom-player-container" style="max-width: 700px; margin: 0 auto; background: #111; border-radius: 12px; box-shadow: 0 4px 20px #0002; padding: 20px;">
+                  <div id="player-overlay" style="position: relative; width: 100%; background: #000;">
+                    <div id="yt-player"></div>
+                    <button id="custom-play-btn" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); background: #B59359; border: none; border-radius: 50%; width: 70px; height: 70px; color: #fff; font-size: 2.6rem; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 2;">
+                      ▶
+                    </button>
+                  </div>
+                  <div id="custom-controls" style="display: flex; align-items: center; gap: 10px; margin-top: 18px;">
+                    <button id="playpause" style="background: #222; color: #fff; border: none; border-radius: 6px; width: 36px; height: 36px; font-size: 1.2rem; cursor: pointer;">⏸</button>
+                    <input id="seekbar" type="range" min="0" max="100" value="0" style="flex:1; accent-color:#B59359;">
+                    <span id="currentTime" style="color:#fff;font-size:1rem;">0:00</span>
+                    <span style="color:#fff;">/</span>
+                    <span id="duration" style="color:#fff;font-size:1rem;">0:00</span>
+                    <button id="mute" style="background: #222; color: #fff; border: none; border-radius: 6px; width: 36px; height: 36px; font-size: 1.2rem; cursor: pointer;">🔊</button>
+                  </div>
                 </div>
-
-                <script src="<?php echo base_url(); ?>assets/global/plyr/plyr.js"></script>
                 <script>
-                  const player = new Plyr('#player');
+                  var player, playing = false;
+                  function onYouTubeIframeAPIReady() {
+                    player = new YT.Player('yt-player', {
+                      height: '360',
+                      width: '640',
+                      videoId: '<?php echo $video_id; ?>',
+                      playerVars: {
+                        'controls': 0,
+                        'rel': 0,
+                        'showinfo': 0,
+                        'modestbranding': 1,
+                        'fs': 0,
+                        'iv_load_policy': 3,
+                        'disablekb': 1,
+                        'playsinline': 1,
+                        'origin': window.location.origin
+                      },
+                      events: {
+                        'onReady': onPlayerReady,
+                        'onStateChange': onPlayerStateChange
+                      }
+                    });
+                  }
+                  function onPlayerReady(event) {
+                    document.getElementById('custom-play-btn').onclick = function() {
+                      player.playVideo();
+                      this.style.display = 'none';
+                      playing = true;
+                    };
+                    document.getElementById('playpause').onclick = function() {
+                      if (playing) { player.pauseVideo(); } else { player.playVideo(); }
+                    };
+                    document.getElementById('mute').onclick = function() {
+                      if (player.isMuted()) { player.unMute(); this.textContent = '🔊'; }
+                      else { player.mute(); this.textContent = '🔇'; }
+                    };
+                    document.getElementById('seekbar').oninput = function() {
+                      var seekTo = player.getDuration() * (this.value / 100);
+                      player.seekTo(seekTo, true);
+                    };
+                    setInterval(function() {
+                      if (player && player.getDuration) {
+                        var current = player.getCurrentTime();
+                        var total = player.getDuration();
+                        document.getElementById('currentTime').textContent = formatTime(current);
+                        document.getElementById('duration').textContent = formatTime(total);
+                        document.getElementById('seekbar').value = total ? (current / total) * 100 : 0;
+                      }
+                    }, 500);
+                  }
+                  function onPlayerStateChange(event) {
+                    if (event.data == YT.PlayerState.PLAYING) {
+                      playing = true;
+                      document.getElementById('playpause').textContent = '⏸';
+                    } else {
+                      playing = false;
+                      document.getElementById('playpause').textContent = '▶';
+                    }
+                  }
+                  function formatTime(sec) {
+                    sec = Math.floor(sec);
+                    var m = Math.floor(sec / 60);
+                    var s = sec % 60;
+                    return m + ':' + (s < 10 ? '0' : '') + s;
+                  }
+                  // Cargar la API de YouTube solo si no está cargada
+                  if (!window.YT) {
+                    var tag = document.createElement('script');
+                    tag.src = "https://www.youtube.com/iframe_api";
+                    document.body.appendChild(tag);
+                  } else {
+                    onYouTubeIframeAPIReady();
+                  }
                 </script>
-                <!------------- PLYR.IO ------------>
-              <?php elseif (strtolower($provider) == 'vimeo') : ?>
-                <!------------- PLYR.IO ------------>
-                <link rel="stylesheet" href="<?php echo base_url(); ?>assets/global/plyr/plyr.css">
-                <div class="plyr__video-embed" id="player">
-                  <iframe height="500" src="https://player.vimeo.com/video/<?php echo $video_details['video_id']; ?>?loop=false&amp;byline=false&amp;portrait=false&amp;title=false&amp;speed=true&amp;transparent=0&amp;gesture=media" allowfullscreen allowtransparency allow="autoplay"></iframe>
-                </div>
-
-                <script src="<?php echo base_url(); ?>assets/global/plyr/plyr.js"></script>
-                <script>
-                  const player = new Plyr('#player');
-                </script>
-                <!------------- PLYR.IO ------------>
-              <?php else : ?>
-                <!------------- PLYR.IO ------------>
-                <link rel="stylesheet" href="<?php echo base_url(); ?>assets/global/plyr/plyr.css">
-                <video poster="<?php echo $this->crud_model->get_course_thumbnail_url($course_details['id']); ?>" id="player" playsinline controls>
-                  <?php if (get_video_extension($course_details['video_url']) == 'mp4') : ?>
-                    <source src="<?php echo $course_details['video_url']; ?>" type="video/mp4">
-                  <?php elseif (get_video_extension($course_details['video_url']) == 'webm') : ?>
-                    <source src="<?php echo $course_details['video_url']; ?>" type="video/webm">
-                  <?php else : ?>
-                    <h4><?php site_phrase('video_url_is_not_supported'); ?></h4>
-                  <?php endif; ?>
-                </video>
-
-                <style media="screen">
-                  .plyr__video-wrapper {
-                    height: 450px;
+                <style>
+                  #custom-player-container input[type="range"]::-webkit-slider-thumb { background: #B59359; }
+                  #custom-player-container input[type="range"]::-moz-range-thumb { background: #B59359; }
+                  /* Ocultar logo de YouTube y controles nativos */
+                  #yt-player iframe {
+                    pointer-events: none !important;
                   }
                 </style>
-
-                <script src="<?php echo base_url(); ?>assets/global/plyr/plyr.js"></script>
-                <script>
-                  const player = new Plyr('#player');
-                </script>
-                <!------------- PLYR.IO ------------>
+              <?php elseif ($video_type === 'vimeo' && $video_id): ?>
+                <div style="text-align:center;">
+                  <iframe
+                    width="640"
+                    height="360"
+                    src="https://player.vimeo.com/video/<?php echo $video_id; ?>"
+                    frameborder="0"
+                    allowfullscreen>
+                  </iframe>
+                </div>
+              <?php elseif ($video_type === 'html5'): ?>
+                <div style="text-align:center;">
+                  <video width="640" height="360" controls>
+                    <source src="<?php echo $video_url; ?>" type="video/<?php echo pathinfo($video_url, PATHINFO_EXTENSION); ?>">
+                    <?php echo site_phrase('video_url_is_not_supported'); ?>
+                  </video>
+                </div>
+              <?php else: ?>
+                <div style="padding: 40px; text-align: center;">
+                  <h4><?php echo site_phrase('video_url_is_not_supported'); ?></h4>
+                </div>
               <?php endif; ?>
             </div>
           </div>
@@ -757,144 +856,3 @@ $instructor_details = $this->user_model->get_all_user($course_details['user_id']
     </div>
   </div>
 <?php endif; ?>
-<!-- Modal -->
-
-<style media="screen">
-  .embed-responsive-16by9::before {
-    padding-top: 0px;
-  }
-</style>
-<script type="text/javascript">
-  function handleCartItems(elem) {
-    url1 = '<?php echo site_url('home/handleCartItems'); ?>';
-    url2 = '<?php echo site_url('home/refreshWishList'); ?>';
-    $.ajax({
-      url: url1,
-      type: 'POST',
-      data: {
-        course_id: elem.id
-      },
-      success: function(response) {
-        $('#cart_items').html(response);
-        if ($(elem).hasClass('active')) {
-          $(elem).removeClass('active')
-          $(elem).text("<?php echo site_phrase('add_to_cart'); ?>");
-        } else {
-          $(elem).addClass('active');
-          $(elem).addClass('active');
-          $(elem).text("<?php echo site_phrase('added_to_cart'); ?>");
-        }
-        $.ajax({
-          url: url2,
-          type: 'POST',
-          success: function(response) {
-            $('#wishlist_items').html(response);
-          }
-        });
-      }
-    });
-  }
-
-  function handleBuyNow(elem) {
-    var url1 = '<?php echo site_url('home/handleCartItemForBuyNowButton'); ?>';
-    var url2 = '<?php echo site_url('home/refreshWishList'); ?>';
-    var urlToRedirect = '<?php echo site_url('home/shopping_cart'); ?>';
-    var explodedArray = elem.id.split("_");
-    var course_id = explodedArray[1];
-
-    // Verificar si la URL actual contiene el parámetro "ref"
-    var currentUrl = window.location.href;
-    var refParam = '';
-    if (currentUrl.includes('?ref=')) {
-        refParam = currentUrl.split('?ref=')[1].split('&')[0]; // Extraer el valor de "ref"
-        urlToRedirect += '?ref=' + refParam; // Agregar "ref" a la URL de redirección
-    }
-
-    $.ajax({
-        url: url1,
-        type: 'POST',
-        data: {
-            course_id: course_id
-        },
-        success: function(response) {
-            $('#cart_items').html(response);
-            $.ajax({
-                url: url2,
-                type: 'POST',
-                success: function(response) {
-                    $('#wishlist_items').html(response);
-                    toastr.success('<?php echo site_phrase('please_wait') . '....'; ?>');
-                    setTimeout(
-                        function() {
-                            window.location.replace(urlToRedirect);
-                        }, 1000);
-                }
-            });
-        }
-    });
-  }
-
-  function handleEnrolledButton() {
-    $.ajax({
-      url: '<?php echo site_url('home/isLoggedIn?url_history=' . base64_encode(current_url())); ?>',
-      success: function(response) {
-        if (!response) {
-          window.location.replace("<?php echo site_url('login'); ?>");
-        }
-      }
-    });
-  }
-
-  function handleAddToWishlist(elem) {
-    $.ajax({
-      url: '<?php echo site_url('home/isLoggedIn?url_history=' . base64_encode(current_url())); ?>',
-      success: function(response) {
-        if (!response) {
-          window.location.replace("<?php echo site_url('login'); ?>");
-        } else {
-          $.ajax({
-            url: '<?php echo site_url('home/handleWishList'); ?>',
-            type: 'POST',
-            data: {
-              course_id: elem.id
-            },
-            success: function(response) {
-              if ($(elem).hasClass('active')) {
-                $(elem).removeClass('active');
-                $(elem).text("<?php echo site_phrase('add_to_wishlist'); ?>");
-              } else {
-                $(elem).addClass('active');
-                $(elem).text("<?php echo site_phrase('added_to_wishlist'); ?>");
-              }
-              $('#wishlist_items').html(response);
-            }
-          });
-        }
-      }
-    });
-  }
-
-  function pausePreview() {
-    player.pause();
-  }
-
-  $('.course-compare').click(function(e) {
-    e.preventDefault()
-    var redirect_to = $(this).attr('redirect_to');
-    window.location.replace(redirect_to);
-  });
-
-  function go_course_playing_page(course_id, lesson_id) {
-    var course_playing_url = "<?php echo site_url('home/lesson/' . slugify($course_details['title'])); ?>/" + course_id + '/' + lesson_id;
-
-    $.ajax({
-      url: '<?php echo site_url('home/go_course_playing_page/'); ?>' + course_id,
-      type: 'POST',
-      success: function(response) {
-        if (response == 1) {
-          window.location.replace(course_playing_url);
-        }
-      }
-    });
-  }
-</script>

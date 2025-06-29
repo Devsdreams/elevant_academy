@@ -1234,5 +1234,13 @@
     "register_as_instructor": "Registrarse como instructor",
     "reports": "Reportes",
     "community": "Community",
-    "announcements": "Announcements"
+    "announcements": "Announcements",
+    "elevant_lessons": "Elevant lessons",
+    "invalid_attachment": "Invalid attachment",
+    "invalid_lesson_provider": "Invalid lesson provider",
+    "upload_system_video_file": "Upload system video file",
+    "for_web_and_mobile_application": "For web and mobile application",
+    "select_system_video_file": "Select system video file",
+    "has_to_be_bigger_than": "Has to be bigger than",
+    "your_video_file_uploaded_succesfully": "Your video file uploaded succesfully"
 }

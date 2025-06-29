@@ -1642,12 +1642,70 @@ class Home extends CI_Controller
     // Elevant Cursos personalizado
     public function elevant_home_courses()
     {
-        $this->load->view('frontend/default/elevant/home_courses');
+        $page_data['page_name'] = "home_courses";
+        $page_data['page_title'] = "Cursos";
+        $page_data['courses'] = [
+            [
+                'id' => 1,
+                'title' => 'Curso de Desarrollo Web',
+                'difficulty' => 'Intermedio',
+                'duration' => '5 horas',
+                'category' => 'Programación',
+                'price' => '100',
+                'description' => 'Aprende a desarrollar sitios web modernos y responsivos.'
+            ],
+            [
+                'id' => 2,
+                'title' => 'Curso de Diseño Gráfico',
+                'difficulty' => 'Básico',
+                'duration' => '3 horas',
+                'category' => 'Diseño',
+                'price' => '80',
+                'description' => 'Domina las herramientas esenciales para el diseño gráfico.'
+            ]
+        ];
+        $this->load->view('frontend/default/elevant/home_courses', $page_data);
     }
 
     public function elevant_home()
     {
         $this->load->view('frontend/default/elevant/home');
+    }
+
+    public function home_course_details($course_id = "") {
+        // Datos dummy para el curso
+        $course_details = [
+            'title' => 'Curso de Desarrollo Web',
+            'difficulty' => 'Intermedio',
+            'duration' => '5 horas',
+            'category' => 'Programación',
+            'price' => '100',
+            'description' => 'Aprende a desarrollar sitios web modernos y responsivos.',
+            'details' => 'Este curso cubre HTML, CSS, JavaScript y frameworks populares.',
+            'content' => 'Módulo 1: Introducción, Módulo 2: HTML y CSS, Módulo 3: JavaScript.',
+            'requirements' => 'Conocimientos básicos de informática y acceso a una computadora.'
+        ];
+
+        // Datos dummy para el instructor
+        $instructor_details = [
+            'name' => 'Juan Pérez',
+            'title' => 'Desarrollador Senior',
+            'bio' => 'Juan tiene más de 10 años de experiencia en desarrollo web.',
+            'image' => 'https://randomuser.me/api/portraits/men/32.jpg',
+            'email' => 'juanperez@elearning.com',
+            'phone' => '+57 (324) 297 55 44',
+            'instagram' => '#',
+            'linkedin' => '#',
+            'facebook' => '#',
+            'twitter' => '#'
+        ];
+
+        // Pasar datos dummy a la vista
+        $page_data['course'] = $course_details;
+        $page_data['instructor'] = $instructor_details;
+        $page_data['page_name'] = "home_course_details";
+        $page_data['page_title'] = 'Detalles del Curso';
+        $this->load->view('frontend/default/elevant/home_course_details', $page_data);
     }
 }
 

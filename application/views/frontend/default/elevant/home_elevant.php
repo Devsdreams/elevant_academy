@@ -934,16 +934,16 @@
   <!-- Header -->
   <header>
     <nav class="nav">
-      <a href="#" class="logo">
+      <a href="<?php echo base_url('elevant/home'); ?>" class="logo">
         <img src="<?php echo base_url('uploads/elevant/elevant.png'); ?>" alt="Elevant Logo">
       </a>
       <div class="nav-links">
         <a href="<?php echo base_url('elevant/home'); ?>" class="inicio">Inicio</a>
-        <a href="#" class="active" style="color: var(--yellow);">Elevant</a>
+        <a href="<?php echo base_url('elevant/home_elevant'); ?>" class="active" style="color: var(--yellow);">Elevant</a>
         <a href="<?php echo base_url('elevant/home_courses'); ?>">Cursos</a>
-        <a href="#">Afiliados</a>
-        <a href="#">Instructor</a>
-        <a href="#">Contacto</a>
+        <a href="<?php echo base_url('elevant/affiliates'); ?>">Afiliados</a>
+        <a href="<?php echo base_url('elevant/instructor'); ?>">Instructor</a>
+        <a href="<?php echo base_url('elevant/contact'); ?>">Contacto</a>
       </div>
       <div class="nav-actions">
         <button class="login" onclick="window.location.href='<?php echo site_url('elevant/login'); ?>'">login</button>
@@ -1246,5 +1246,6 @@
       © 2024 Elevant Academy. todos los derechos reservados
     </div>
   </footer>
+  <?php include 'footer.php'; ?>
 </body>
 </html>
