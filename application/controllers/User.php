@@ -2058,4 +2058,76 @@ class User extends CI_Controller
             redirect(site_url('user/elevant/section_add/' . $course_id));
         }
     }
+
+    /**
+     * Obtiene los cursos para mostrar en la página home_courses
+     */
+    public function get_frontend_courses()
+    {
+        // Obtener todos los cursos activos
+        $filter_data = array(
+            'selected_category_id'   => $this->input->get('category_id'),
+            'selected_instructor_id' => null,
+            'selected_price'         => $this->input->get('price'),
+            'selected_status'        => 'active', // Solo cursos activos
+        );
+
+        // Si no hay límite especificado, mostrar todos los cursos
+        $limit = 100; // Valor razonable para mostrar en frontend
+        $start = 0;
+        $courses = $this->lazyload->courses($limit, $start, null, null, $filter_data);
+
+        $processed_courses = array();
+        if (!empty($courses)) {
+            foreach ($courses as $row) {
+                $instructor_details = $this->user_model->get_all_user($row->user_id)->row_array();
+                $category_details = $this->crud_model->get_category_details_by_id($row->sub_category_id)->row_array();
+                
+                $price = 0;
+                if ($row->is_free_course == null) {
+                    if ($row->discount_flag == 1) {
+                        $price = $row->discounted_price;
+                    } else {
+                        $price = $row->price;
+                    }
+                } elseif ($row->is_free_course == 1) {
+                    $price = 0;
+                }
+                
+                // Estructurar el curso para la vista
+                $course_data = array(
+                    'id' => $row->id,
+                    'title' => $row->title,
+                    'thumbnail' => $row->thumbnail,
+                    'price' => $price,
+                    'is_free_course' => $row->is_free_course,
+                    'instructor_name' => $instructor_details['first_name'] . ' ' . $instructor_details['last_name'],
+                    'instructor_id' => $row->user_id,
+                    'category_id' => $row->category_id,
+                    'sub_category_id' => $row->sub_category_id,
+                    'category_name' => $category_details ? $category_details['name'] : '',
+                    'level' => $row->level,
+                    'short_description' => $row->short_description,
+                    'status' => $row->status,
+                    'course_type' => $row->course_type,
+                    'language' => $row->language
+                );
+                
+                $processed_courses[] = $course_data;
+            }
+        }
+        
+        return $processed_courses;
+    }
+
+    /**
+     * Muestra la página de cursos en el frontend
+     */
+    public function elevant_home_courses()
+    {
+        $page_data['page_name'] = 'elevant/home_courses';
+        $page_data['page_title'] = 'Cursos';
+        $page_data['courses'] = $this->get_frontend_courses();
+        $this->load->view('frontend/index', $page_data);
+    }
 }

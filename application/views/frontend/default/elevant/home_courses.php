@@ -1014,45 +1014,213 @@
   <!-- COURSES Section -->
   <section class="courses-section">
     <div class="top-choice-header">
-      <h2 style="font-size:65px; font-weight:bold; margin-bottom:8px; letter-spacing:-1px; color:var(--black);">Explora nuestros cursos</h2>
+      <h2 style="font-size:65px; font-weight:bold; margin-bottom:8px; letter-spacing:-1px; color:var(--black);">
+        Explora nuestros cursos
+        <span style="font-size:1.2rem; font-weight:normal; color:#666; vertical-align:middle; margin-left:10px;">
+          (<?php echo $this->crud_model->get_active_course()->num_rows(); ?> cursos disponibles)
+        </span>
+      </h2>
     </div>
     <section class="courses-search-bar">
       <input type="text" id="searchInput" placeholder="Buscar cursos..." />
       <select id="categoryFilter">
         <option value="">Todas las categorías</option>
-        <option value="marketing">Marketing</option>
-        <option value="programacion">Programación</option>
-        <option value="negocios">Negocios</option>
-        <!-- Agrega más categorías según tu base de datos -->
+        <?php
+        // Obtener categorías únicas de los cursos disponibles
+        $categories = array();
+        $active_courses = $this->crud_model->get_active_course()->result_array();
+        
+        if (!empty($active_courses)) {
+          foreach ($active_courses as $course) {
+            if (!empty($course['category_id']) && !in_array($course['category_id'], $categories)) {
+              $category_details = $this->db->get_where('category', array('id' => $course['category_id']))->row_array();
+              if (!empty($category_details)) {
+                $categories[$course['category_id']] = $category_details['name'];
+              }
+            }
+          }
+          foreach ($categories as $id => $name) {
+            echo '<option value="'.$id.'">'.htmlspecialchars($name).'</option>';
+          }
+        }
+        ?>
       </select>
       <select id="levelFilter">
         <option value="">Todos los niveles</option>
-        <option value="basico">Básico</option>
-        <option value="intermedio">Intermedio</option>
-        <option value="avanzado">Avanzado</option>
+        <option value="beginner">Básico</option>
+        <option value="intermediate">Intermedio</option>
+        <option value="advanced">Avanzado</option>
       </select>
       <select id="priceFilter">
         <option value="">Todos los precios</option>
-        <option value="gratis">Gratis</option>
-        <option value="pago">De pago</option>
+        <option value="free">Gratis</option>
+        <option value="paid">De pago</option>
       </select>
       <button onclick="filterCourses()">Buscar</button>
     </section>
     <div class="courses-grid" id="coursesGrid">
-      <?php foreach ($courses as $course): ?>
-        <div class="course-card">
-          <img src="<?php echo base_url('uploads/elevant/Frame 17.png'); ?>" alt="<?php echo $course['title']; ?>" style="width:100%;height:220px;object-fit:cover;display:block;border-radius:12px 12px 0 0;">
-          <div class="course-card-content" style="padding:18px;">
-            <div style="font-weight:bold;font-size:1.1rem;margin-bottom:7px;"><?php echo $course['title']; ?></div>
-            <div style="font-size:0.98rem;color:#888;margin-bottom:4px;">Categoría: <?php echo $course['category']; ?></div>
-            <div style="font-size:0.98rem;color:#888;margin-bottom:4px;">Nivel: <?php echo $course['difficulty']; ?></div>
-            <div style="font-size:0.98rem;color:#888;">Precio: $<?php echo $course['price']; ?> USD</div>
-            <a href="<?php echo site_url('home/home_course_details/' . $course['id']); ?>" class="details-btn" style="display:block;margin-top:10px;font-weight:bold;color:var(--yellow);">Ver detalles</a>
+      <?php 
+      // Obtener directamente los cursos activos del modelo
+      $active_courses = $this->crud_model->get_active_course()->result_array();
+      
+      if (!empty($active_courses)): 
+      ?>
+        <?php foreach ($active_courses as $course): ?>
+          <div class="course-card">
+            <?php
+            // Simplificar el código para mostrar directamente la imagen del curso
+            $course_thumbnail = '';
+            
+            if (!empty($course['thumbnail'])) {
+              // Si el nombre de la imagen tiene una ruta completa, usarla
+              if (strpos($course['thumbnail'], 'http') === 0) {
+                $course_thumbnail = $course['thumbnail'];
+              } 
+              // Si es un nombre de archivo, usar la ruta de thumbnails
+              else {
+                // Comprobar si existe en thumbnails
+                if (file_exists('uploads/thumbnails/course_thumbnails/optimized/' . $course['thumbnail'])) {
+                  $course_thumbnail = base_url('uploads/thumbnails/course_thumbnails/optimized/' . $course['thumbnail']);
+                }
+                // Comprobar si existe en course_images
+                else if (file_exists('uploads/course_images/' . $course['thumbnail'])) {
+                  $course_thumbnail = base_url('uploads/course_images/' . $course['thumbnail']);
+                }
+                // Usar el formato course_img_XXXXXX.jpg/png que parece estar en la base de datos
+                else {
+                  $course_thumbnail = base_url('uploads/course_images/' . $course['thumbnail']);
+                }
+              }
+            }
+            
+            // Si no se encontró imagen, usar la imagen por defecto
+            if (empty($course_thumbnail)) {
+              if (file_exists('uploads/thumbnails/course_thumbnails/optimized/course_thumbnail_default_2.jpg')) {
+                $course_thumbnail = base_url('uploads/thumbnails/course_thumbnails/optimized/course_thumbnail_default_2.jpg');
+              } else {
+                $course_thumbnail = 'https://placehold.co/320x220/e0e0e0/111111?text=Sin+Imagen';
+              }
+            }
+            ?>
+            <img src="<?php echo $course_thumbnail; ?>" alt="<?php echo htmlspecialchars($course['title']); ?>" style="width:100%;height:220px;object-fit:cover;display:block;border-radius:12px 12px 0 0;">
+            <div class="course-card-content" style="padding:18px;">
+              <div style="font-weight:bold;font-size:1.1rem;margin-bottom:7px;"><?php echo htmlspecialchars($course['title']); ?></div>
+              <?php
+              // Obtener el nombre de la categoría
+              $category_name = 'Sin categoría';
+              if (!empty($course['category_id'])) {
+                $category = $this->db->get_where('category', array('id' => $course['category_id']))->row_array();
+                if (!empty($category)) {
+                  $category_name = $category['name'];
+                }
+              }
+              
+              // Obtener nivel de dificultad
+              $difficulty = 'No especificado';
+              if (!empty($course['level'])) {
+                switch($course['level']) {
+                  case 'beginner':
+                  case 'principiante':
+                    $difficulty = 'Básico';
+                    break;
+                  case 'intermediate':
+                    $difficulty = 'Intermedio';
+                    break;
+                  case 'advanced':
+                    $difficulty = 'Avanzado';
+                    break;
+                }
+              }
+              
+              // Obtener precio
+              $price_text = 'Gratis';
+              if (isset($course['is_free_course']) && $course['is_free_course'] == 0) {
+                if (isset($course['price']) && $course['price'] > 0) {
+                  $price_text = '$'.number_format($course['price'], 2).' USD';
+                } else {
+                  $price_text = 'Precio no disponible';
+                }
+              }
+              ?>
+              <div style="font-size:0.98rem;color:#888;margin-bottom:4px;">Categoría: <?php echo htmlspecialchars($category_name); ?></div>
+              <div style="font-size:0.98rem;color:#888;margin-bottom:4px;">Nivel: <?php echo htmlspecialchars($difficulty); ?></div>
+              <div style="font-size:0.98rem;color:#888;"><?php echo $price_text; ?></div>
+              <a href="<?php echo site_url('home/course/'.rawurlencode(slugify($course['title'])).'/'.$course['id']); ?>" class="details-btn" style="display:block;margin-top:10px;font-weight:bold;color:var(--yellow);">Ver detalles</a>
+            </div>
           </div>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <div style="width:100%;text-align:center;padding:40px 20px;">
+          <p style="font-size:1.2rem;color:#666;">No hay cursos activos disponibles en este momento.</p>
+          <p style="font-size:1rem;color:#888;margin-top:10px;">Por favor, vuelve a revisar más tarde.</p>
         </div>
-      <?php endforeach; ?>
+      <?php endif; ?>
     </div>
   </section>
+
+  <!-- Script para filtrar cursos -->
+  <script>
+    function filterCourses() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const categoryId = document.getElementById('categoryFilter').value;
+      const level = document.getElementById('levelFilter').value;
+      const priceFilter = document.getElementById('priceFilter').value;
+      
+      const courseCards = document.querySelectorAll('.course-card');
+      let visibleCount = 0;
+      
+      courseCards.forEach(card => {
+        const title = card.querySelector('.course-card-content div:first-child').textContent.toLowerCase();
+        const category = card.querySelector('.course-card-content div:nth-child(2)').textContent.toLowerCase();
+        const difficulty = card.querySelector('.course-card-content div:nth-child(3)').textContent.toLowerCase();
+        const price = card.querySelector('.course-card-content div:nth-child(4)').textContent.toLowerCase();
+        
+        let matches = title.includes(searchTerm);
+        
+        if (categoryId && !category.includes(categoryId)) matches = false;
+        if (level && !difficulty.includes(level.toLowerCase())) matches = false;
+        if (priceFilter === 'free' && !price.toLowerCase().includes('gratis')) matches = false;
+        if (priceFilter === 'paid' && price.toLowerCase().includes('gratis')) matches = false;
+        
+        if (matches) {
+          card.style.display = 'flex';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+      
+      // Mostrar mensaje si no hay resultados
+      const noResultsMessage = document.getElementById('noResultsMessage');
+      if (visibleCount === 0) {
+        if (!noResultsMessage) {
+          const message = document.createElement('div');
+          message.id = 'noResultsMessage';
+          message.style.width = '100%';
+          message.style.textAlign = 'center';
+          message.style.padding = '40px 20px';
+          message.innerHTML = `
+            <p style="font-size:1.2rem;color:#666;">No se encontraron cursos con los filtros seleccionados.</p>
+            <p style="font-size:1rem;color:#888;margin-top:10px;">Por favor, intenta con diferentes criterios de búsqueda.</p>
+          `;
+          document.getElementById('coursesGrid').appendChild(message);
+        }
+      } else if (noResultsMessage) {
+        noResultsMessage.remove();
+      }
+    }
+    
+    // Inicializar filtros al cargar la página
+    document.addEventListener('DOMContentLoaded', function() {
+      const searchInput = document.getElementById('searchInput');
+      searchInput.addEventListener('keyup', filterCourses);
+      
+      const filterSelects = document.querySelectorAll('.courses-search-bar select');
+      filterSelects.forEach(select => {
+        select.addEventListener('change', filterCourses);
+      });
+    });
+  </script>
 
   <?php include 'footer.php'; ?>
 </body>

@@ -303,7 +303,42 @@
   <div class="page-container">
     <header class="course-header">
       <div class="course-meta">
-        <img src="<?php echo base_url('uploads/elevant/curso_details_temp.png'); ?>" alt="Detalles del Curso" style="width: 100%; border-radius: 12px;">
+        <?php
+        // Simplificar el código para mostrar directamente la imagen del curso
+        $course_image = '';
+        
+        if (!empty($course['thumbnail'])) {
+          // Si el nombre de la imagen tiene una ruta completa, usarla
+          if (strpos($course['thumbnail'], 'http') === 0) {
+            $course_image = $course['thumbnail'];
+          } 
+          // Si es un nombre de archivo, usar la ruta de thumbnails
+          else {
+            // Comprobar si existe en thumbnails
+            if (file_exists('uploads/thumbnails/course_thumbnails/optimized/' . $course['thumbnail'])) {
+              $course_image = base_url('uploads/thumbnails/course_thumbnails/optimized/' . $course['thumbnail']);
+            }
+            // Comprobar si existe en course_images
+            else if (file_exists('uploads/course_images/' . $course['thumbnail'])) {
+              $course_image = base_url('uploads/course_images/' . $course['thumbnail']);
+            }
+            // Usar el formato course_img_XXXXXX.jpg/png que parece estar en la base de datos
+            else {
+              $course_image = base_url('uploads/course_images/' . $course['thumbnail']);
+            }
+          }
+        }
+        
+        // Si no se encontró imagen, usar la imagen por defecto
+        if (empty($course_image)) {
+          if (file_exists('uploads/thumbnails/course_thumbnails/optimized/course_thumbnail_default_2.jpg')) {
+            $course_image = base_url('uploads/thumbnails/course_thumbnails/optimized/course_thumbnail_default_2.jpg');
+          } else {
+            $course_image = 'https://placehold.co/800x400/e0e0e0/111111?text=Curso+' . htmlspecialchars($course['title']);
+          }
+        }
+        ?>
+        <img src="<?php echo $course_image; ?>" alt="Detalles del Curso" style="width: 100%; border-radius: 12px;">
       </div>
       <div class="course-interest">
         <div class="course-interest-content">
@@ -389,7 +424,18 @@
       <aside class="instructor-card">
         <h3>Detalle del instructor</h3>
         <div class="instructor-profile">
-          <img src="<?php echo $instructor['image']; ?>" alt="Instructor" class="instructor-img">
+          <?php
+          // Obtener la imagen del instructor o usar un placeholder
+          $instructor_image = 'https://placehold.co/180x200/e0e0e0/111111?text=Instructor';
+          if (isset($instructor['image']) && !empty($instructor['image'])) {
+            $instructor_image = $instructor['image'];
+            // Verificar si la imagen existe en el sistema
+            if (!filter_var($instructor_image, FILTER_VALIDATE_URL) && !file_exists($instructor_image)) {
+              $instructor_image = 'https://placehold.co/180x200/e0e0e0/111111?text=Instructor';
+            }
+          }
+          ?>
+          <img src="<?php echo $instructor_image; ?>" alt="Instructor" class="instructor-img">
           <div class="instructor-info">
             <div><span><?php echo $instructor['name']; ?></span></div>
             <div>Nombre Completo</div>
@@ -412,24 +458,24 @@
       </aside>
     </main>
   </div>
+
   <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      const tabs = document.querySelectorAll(".tab");
-      const tabContents = {
-        details: document.getElementById("details"),
-        contenido: document.getElementById("contenido"),
-        requisitos: document.getElementById("requisitos")
-      };
-      tabs.forEach(tab => {
-        tab.addEventListener("click", function() {
-          tabs.forEach(t => t.classList.remove("active"));
-          tab.classList.add("active");
-          Object.values(tabContents).forEach(tc => tc.style.display = "none");
-          tabContents[tab.dataset.tab].style.display = "block";
-        });
+    // Script para manejar las pestañas de detalles del curso
+    const tabs = document.querySelectorAll(".tab");
+    const tabContents = {
+      details: document.getElementById("details"),
+      contenido: document.getElementById("contenido"),
+      requisitos: document.getElementById("requisitos")
+    };
+
+    tabs.forEach(tab => {
+      tab.addEventListener("click", function() {
+        tabs.forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+        Object.values(tabContents).forEach(tc => tc.style.display = "none");
+        tabContents[tab.dataset.tab].style.display = "block";
       });
     });
   </script>
   <?php include 'footer.php'; ?>
-</html>
 </html>
